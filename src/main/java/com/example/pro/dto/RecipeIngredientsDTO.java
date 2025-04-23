@@ -16,7 +16,7 @@ public class RecipeIngredientsDTO {
     @NotEmpty
     private Long recipeId;
     @NotEmpty
-    private IngredientDTO ingredientDTO;
+    private IngredientDTO ingredient;
     @NotEmpty
     private Long quantity;
 

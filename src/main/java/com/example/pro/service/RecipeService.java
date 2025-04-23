@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface RecipeService {
-    void insertRecipe(RecipeDTO recipeDTO, Principal principal, Map<String, String> paramMap);
+    void registerRecipe(RecipeDTO recipeDTO, String username);
     List<RecipeDTO> getAllRecipe();
     RecipeEntity getRecipeById(Long id);
     void updateRecipe(RecipeEntity recipeEntity, UserDTO userDTO);
@@ -20,7 +20,7 @@ public interface RecipeService {
         RecipeEntity recipeEntity = new RecipeEntity();
         recipeEntity.setTitle(recipeDTO.getTitle());
         recipeEntity.setCategory(recipeDTO.getCategory());
-        recipeEntity.setMainImage(recipeDTO.getMainImage());
+//        recipeEntity.setMainImage(recipeDTO.getMainImage());
         recipeEntity.setYoutubeLink(recipeDTO.getYoutubeLink());
         return recipeEntity;
     }
@@ -30,7 +30,7 @@ public interface RecipeService {
         recipeDTO.setId(recipeEntity.getId());
         recipeDTO.setTitle(recipeEntity.getTitle());
         recipeDTO.setCategory(recipeEntity.getCategory());
-        recipeDTO.setMainImage(recipeEntity.getMainImage());
+//        recipeDTO.setMainImage(recipeEntity.getMainImage());
         recipeDTO.setYoutubeLink(recipeEntity.getYoutubeLink());
         recipeDTO.setUsername(recipeEntity.getUser().getUsername());
         recipeDTO.setCreatedAt(recipeEntity.getCreatedAt());

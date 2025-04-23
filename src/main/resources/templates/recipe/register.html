@@ -2,11 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<div class="mt-5" layout:fragment="content">
+<div class="container-fluid text-white p-5" layout:fragment="content"
+     style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
+
     <section class="page-section" id="recipe-form-section">
         <div class="container">
             <h2 class="text-center mt-0">🍳 나만의 레시피 작성하기</h2>
-            <hr class="divider my-4" />
+            <hr class="divider my-4"/>
 
             <form action="/recipe/register" method="post" enctype="multipart/form-data">
                 <!-- 회원ID 전달 -->
@@ -14,7 +16,7 @@
                 <!-- 제목 -->
                 <div class="form-group mb-3">
                     <label>레시피 제목</label>
-                    <input type="text" name="title" class="form-control" placeholder="레시피 제목을 입력하세요" required />
+                    <input type="text" name="title" class="form-control" placeholder="레시피 제목을 입력하세요" required/>
                 </div>
 
                 <!-- 카테고리 -->
@@ -29,80 +31,155 @@
                 <!-- YouTube 링크 -->
                 <div class="form-group mb-3">
                     <label>YouTube 링크</label>
-                    <input type="url" name="youtubeLink" class="form-control" />
+                    <input type="url" name="youtubeLink" class="form-control"/>
                 </div>
 
                 <!-- 메인 이미지 업로드 -->
                 <div class="form-group mb-3">
                     <label>대표 이미지 업로드</label>
-                    <input type="file" name="mainImage" multiple class="form-control" />
+                    <input type="file" name="mainImage" class="form-control"/>
                 </div>
 
                 <!-- 재료 목록 -->
                 <div class="form-group mb-4" id="ingredients-section">
                     <label>재료</label>
-                    <div class="ingredient-entry mb-2">
-                        <input list="ingredientList" name="ingredients[0].ingredientName" placeholder="재료명" class="form-control d-inline w-50" />
-                        <input type="number" name="ingredients[0].quantity" placeholder="수량" class="form-control d-inline w-25" min="1" />
-                        <button type="button" class="btn btn-danger btn-sm remove-ingredient">삭제</button>
+                    <div class="ingredient-entry mb-2 d-flex align-items-center gap-2">
+                        <div class="input-group flex-grow-1">
+                            <input type="text" name="ingredients[0].ingredientName" placeholder="재료명" class="form-control ingredient-name" readonly />
+                            <button type="button" class="btn btn-outline-secondary btn-sm open-ingredient-modal">검색</button>
+                        </div>
+                        <input type="number" name="ingredients[0].quantity" placeholder="수량" class="form-control w-auto" min="1" />
                     </div>
-                    <datalist id="ingredientList">
-                        <option th:each="ing : ${ingredients}" th:value="${ing.ingredientName}"></option>
-                    </datalist>
                     <button type="button" class="btn btn-primary btn-sm mt-2" id="add-ingredient">➕ 재료 추가</button>
                 </div>
 
                 <!-- 요리 순서 -->
                 <div class="form-group mb-4" id="steps-section">
                     <label>요리 순서</label>
-                    <div class="step-entry mb-3">
-                        <textarea name="steps[0].stepContent" placeholder="요리 설명" class="form-control mb-2"></textarea>
-                        <input type="file" name="steps[0].stepImage" class="form-control mb-2" accept="image/*" />
-                        <button type="button" class="btn btn-danger btn-sm remove-step">삭제</button>
+                    <div class="step-entry mb-3 d-flex align-items-start gap-2">
+                        <textarea name="steps[0].stepContent" placeholder="요리 설명" class="form-control" style="min-height: 90px;"></textarea>
+                        <input type="file" name="steps[0].stepImage" class="form-control w-auto" accept="image/*" />
                     </div>
                     <button type="button" class="btn btn-success btn-sm" id="add-step">➕ 순서 추가</button>
                 </div>
 
-                <!-- 전송 버튼 -->
                 <div class="form-group text-center">
                     <button type="submit" class="btn btn-primary btn-xl">레시피 등록</button>
                 </div>
             </form>
         </div>
     </section>
+
+    <!-- Ingredient Modal -->
+    <div class="modal fade" id="ingredientModal" tabindex="-1" aria-labelledby="ingredientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background-color: #2c3034;">
+                <div class="modal-header">
+                    <h5 class="modal-title">재료 검색</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-3" id="ingredientSearchInput" placeholder="재료명 검색..."/>
+                    <div class="row" id="ingredientSearchList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const ingredients = [[${ingredients}]];
+    </script>
+
 </div>
+
 <script layout:fragment="script">
     let ingredientIndex = 1;
     let stepIndex = 1;
+    let selectedInput = null;
 
+    /* Ingredient 추가 */
     $('#add-ingredient').click(() => {
         $('#add-ingredient').before(`
-            <div class="ingredient-entry mb-2">
-                <input list="ingredientList" name="ingredients[${ingredientIndex}].ingredientName" placeholder="재료명" class="form-control d-inline w-50" />
-                <input type="number" name="ingredients[${ingredientIndex}].quantity" placeholder="수량" class="form-control d-inline w-25" min="1" />
-                <button type="button" class="btn btn-danger btn-sm remove-ingredient">삭제</button>
+            <div class="ingredient-entry mb-2 d-flex align-items-center gap-2">
+                <div class="input-group flex-grow-1">
+                    <input type="text" name="ingredients[${ingredientIndex}].ingredientName" placeholder="재료명" class="form-control ingredient-name" readonly/>
+                    <button type="button" class="btn btn-outline-secondary btn-sm open-ingredient-modal">검색</button>
+                </div>
+                <input type="number" name="ingredients[${ingredientIndex}].quantity" placeholder="수량" class="form-control w-auto" min="1"/>
+                <button type="button" class="btn btn-danger btn-sm remove-ingredient" style="min-width: 70px;">삭제</button>
             </div>
         `);
         ingredientIndex++;
     });
 
-    $('#ingredients-section').on('click', '.remove-ingredient', function() {
+    /* Ingredient 삭제 */
+    $('#ingredients-section').on('click', '.remove-ingredient', function () {
         $(this).parent().remove();
     });
 
+    /* RecipeStep 추가 */
     $('#add-step').click(() => {
         $('#add-step').before(`
-            <div class="step-entry mb-3">
-                <textarea name="steps[${stepIndex}].stepContent" placeholder="요리 설명" class="form-control mb-2"></textarea>
-                <input type="file" name="steps[${stepIndex}].stepImage" class="form-control mb-2" accept="image/*" />
-                <button type="button" class="btn btn-danger btn-sm remove-step">삭제</button>
+            <div class="step-entry mb-3 d-flex align-items-start gap-2">
+                <textarea name="steps[${stepIndex}].stepContent" placeholder="요리 설명" class="form-control" style="min-height: 90px;"></textarea>
+                <input type="file" name="steps[${stepIndex}].stepImage" class="form-control w-auto" accept="image/*"/>
+                <button type="button" class="btn btn-danger btn-sm remove-step" style="min-width: 70px;">삭제</button>
             </div>
         `);
         stepIndex++;
     });
 
-    $('#steps-section').on('click', '.remove-step', function() {
+    /* RecipeStep 삭제 */
+    $('#steps-section').on('click', '.remove-step', function () {
         $(this).parent().remove();
+    });
+
+    /* 재료 검색 모달 나타나기 */
+    $(document).on('click', '.open-ingredient-modal', function () {
+        selectedInput = $(this).closest('.ingredient-entry').find('.ingredient-name');
+
+        const modalEl = document.getElementById('ingredientModal');
+        console.log(modalEl);
+
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+
+        $('#ingredientSearchInput').val('');
+        renderIngredientList('');
+    });
+
+    /* 모달 검색 키워드 */
+    $('#ingredientSearchInput').on('input', function () {
+        const keyword = $(this).val().toLowerCase();
+        renderIngredientList(keyword);
+    });
+
+    /* 모달 재료 검색 리스트*/
+    function renderIngredientList(keyword) {
+        const list = $('#ingredientSearchList');
+        list.empty();
+        ingredients
+            .filter(ing => ing.ingredientName.toLowerCase().includes(keyword))
+            .forEach(ing => {
+                list.append(`
+                    <div class="col-6 col-md-4 mb-3">
+                        <div class="card ingredient-select" style="cursor: pointer;" data-name="${ing.ingredientName}">
+                            <img src="${ing.imageUrl}" class="card-img-top" alt="이미지" style="height: 120px; object-fit: cover;">
+                            <div class="card-body p-2 text-center">
+                                <strong style="color: black;">${ing.ingredientName}</strong><br/>
+                                <small style="color: black;">${ing.price?.toLocaleString() || '가격 없음'}원</small>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+    }
+
+    /* 모달 숨기기 */
+    $(document).on('click', '.ingredient-select', function () {
+        const name = $(this).data('name');
+        if (selectedInput) selectedInput.val(name);
+        $('#ingredientModal').modal('hide');
     });
 </script>
 

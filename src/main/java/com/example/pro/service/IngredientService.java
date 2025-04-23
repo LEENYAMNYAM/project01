@@ -8,7 +8,7 @@ import com.example.pro.entity.IngredientEntity;
 import java.util.List;
 
 public interface IngredientService {
-    List<RecipeIngredientsDTO> findAllIngredient();
+    List<IngredientDTO> findAllIngredient();
 
     default IngredientEntity dtoToEntity(IngredientDTO ingredientDTO) {
 

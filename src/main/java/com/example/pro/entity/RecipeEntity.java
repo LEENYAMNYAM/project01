@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="recipe")
@@ -49,6 +51,7 @@ public class RecipeEntity {
         this.likeCount = this.likeCount == null ? 0 : this.likeCount;
     }
 
-
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecipeStepEntity> steps = new ArrayList<>();
 
 }

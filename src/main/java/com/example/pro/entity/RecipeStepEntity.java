@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity(name = "recipe_step")
 @Getter @Setter
 public class RecipeStepEntity {
@@ -12,8 +15,8 @@ public class RecipeStepEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipeId")
-    private RecipeEntity recipeEntity;
+    @JoinColumn(name = "recipe_id") // 외래키 컬럼명 (DB 테이블에 실제로 들어갈 이름)
+    private RecipeEntity recipe;
 
     @Column(nullable = false)
     private int stepNumber;
@@ -22,5 +25,4 @@ public class RecipeStepEntity {
     private String content;
 
     private String imagename;
-
 }
