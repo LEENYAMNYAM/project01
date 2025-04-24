@@ -34,17 +34,24 @@ public class CustomSecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.disable())
                 .authorizeHttpRequests(authorizeHttpRequestsConfigurer -> authorizeHttpRequestsConfigurer
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                        .requestMatchers("/login","/user/**", "/", "/recipe/**", "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/board/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/replies/**").permitAll()
+                        .requestMatchers( "/", "/login","/userinfo/**","/recipe/**","/qnaboard/**","/notice/**", "/review/**", "/userinfo/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/",
+                                "/home",
+                                "/assets/**",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/style.css",
+                                "/favicon.ico",
+                                "/error").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(formLoginConfigurer -> formLoginConfigurer
                         .loginPage("/user/login")
                         .loginProcessingUrl("/loginProcess")
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("/", true)
                         .permitAll())
                 .logout(logoutConfigurer -> logoutConfigurer
                         .logoutUrl("/logout")

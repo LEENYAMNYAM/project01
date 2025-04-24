@@ -2,31 +2,25 @@ package com.example.pro.controller;
 
 import com.example.pro.dto.RecipeDTO;
 import com.example.pro.dto.RecipeStepDTO;
-import com.example.pro.entity.RecipeEntity;
-import com.example.pro.entity.RecipeStepEntity;
-import com.example.pro.entity.UserEntity;
 import com.example.pro.repository.UserRepository;
 import com.example.pro.service.FileService;
 import com.example.pro.service.IngredientService;
 import com.example.pro.service.RecipeService;
+import com.example.pro.service.RecipeStepService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.Principal;
-import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/recipe")
@@ -38,8 +32,7 @@ public class RecipeController {
     private final UserRepository userRepository;
     private final IngredientService ingredientService;
     private final RecipeService recipeService;
-
-    private static final String UPLOAD_DIR = "D:/JMT/Project01/projerct01/src/main/resources/static/assets";
+    private final RecipeStepService recipeStepService;
 
     @GetMapping("/register")
     public void recipeRegister(Model model) {
@@ -50,39 +43,70 @@ public class RecipeController {
 
     @PostMapping("/register")
     public String recipeRegister(@ModelAttribute RecipeDTO recipeDTO,
-                                 @RequestParam("mainImage") MultipartFile mainImage,
+//                                 @AuthenticationPrincipal PrincipalDetail principalDetail,
                                  @RequestParam Map<String, String> paramMap,
-                                 @RequestParam("stepImages") List<MultipartFile> stepImages,
-                                 Principal principal,
+                                 MultipartHttpServletRequest request,
                                  Model model) throws IOException {
 
-            // 대표 이미지 저장
-            if (!mainImage.isEmpty()) {
-                String savedName = fileService.saveFile(mainImage);
-                recipeDTO.setMainImageUrl(savedName);
-            }
+        //1. 로그인 사용자 정보 세팅
+//        if (principalDetail != null) {
+//            recipeDTO.setUsername(principalDetail.getUsername());
+//        }
+        recipeDTO.setUsername("hong");
 
-            // 요리 순서 이미지 저장
-            List<RecipeStepDTO> stepDTOs = recipeDTO.getSteps();
-            if (stepDTOs != null) {
-                for (int i = 0; i < stepDTOs.size(); i++) {
-                    MultipartFile file = stepImages.get(i);
-                    if (!file.isEmpty()) {
-                        String savedName = fileService.saveFile(file);
-                        stepDTOs.get(i).setImageName(savedName);
-                    }
-                }
-            }
+        // 2. steps[0].stepImage → 대표 이미지
+        MultipartFile mainImage = request.getFile("steps[0].stepImage");
+        if (mainImage != null && !mainImage.isEmpty()) {
+            String mainImageUrl = fileService.saveFile(mainImage);
+            recipeDTO.setMainImagePath(mainImageUrl); // RecipeDTO에 setter 있어야 함
+        }
 
-            recipeService.registerRecipe(recipeDTO, principal.getName());
+        // 3. steps[1..].stepImage → 요리 순서 이미지
+        List<MultipartFile> recipeStepImages = request.getFileMap().entrySet().stream()
+                .filter(entry -> entry.getKey().matches("steps\\[\\d+\\]\\.stepImage"))
+                .sorted(Comparator.comparing(e -> extractStepIndex(e.getKey()))) // 순서 정렬
+                .skip(1) // steps[0]은 대표 이미지니까 제외
+                .map(Map.Entry::getValue)
+                .toList();
+
+        // 4. 레시피 저장 서비스 호출
+        recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap);
+
+        //5. model에 보내기
 
             return "redirect:/recipe/list";
     }
 
     @GetMapping("/list")
-    public void recipeList(Model model){
+    public String recipeList(Model model){
         List<RecipeDTO> recipeList = recipeService.getAllRecipe();
         model.addAttribute("recipeList", recipeList);
+        return "/recipe/list";
     }
+
+    @GetMapping("/read/{recipe_id}")
+    public String recipeRead(@PathVariable Long recipe_id, Model model) {
+        RecipeDTO recipe = recipeService.getRecipeById(recipe_id);
+        List<RecipeStepDTO> recipeSteps = recipeStepService.getRecipeStepByRecipeId(recipe.getId());
+
+        if (recipe == null) {
+            return "redirect:/recipe/list"; // 없으면 목록으로 보내기
+        }
+        model.addAttribute("recipe", recipe);
+        model.addAttribute("recipeSteps", recipeSteps);
+
+        return "recipe/view";
+    }
+
+
+
+    private int extractStepIndex(String key) {
+        Matcher matcher = Pattern.compile("steps\\[(\\d+)]\\.stepImage").matcher(key);
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        }
+        return Integer.MAX_VALUE;
+    }
+
 
 }

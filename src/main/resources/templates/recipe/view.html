@@ -2,6 +2,162 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<div class="mt-5" layout:fragment="content">
-    <img src="data:image/jpeg;base64,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">
+<div class="container-fluid text-white p-5" layout:fragment="content"
+     style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
+
+    <section class="page-section">
+        <div class="container">
+            <!-- 레시피 제목 및 기본 정보 -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h1 class="text-white" th:text="${recipe.title}">레시피 제목</h1>
+                    <p class="text-white-50">
+                        <span class="badge bg-primary me-2" th:text="${recipe.category}">카테고리</span>
+                        <span th:text="'작성자: ' + ${recipe.username}">작성자</span> |
+                        <span th:text="'작성일: ' + ${#temporals.format(recipe.createdAt, 'yyyy-MM-dd')}">작성일</span> |
+                        <span th:text="'좋아요: ' + ${recipe.likeCount}">좋아요 수</span>
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <!-- 수정/삭제 버튼 (작성자만 보이게) -->
+                    <div th:if="${#authentication.principal.username == recipe.username}">
+                        <a th:href="@{/recipe/update(id=${recipe.id})}" class="btn btn-warning">수정</a>
+                        <a th:href="@{/recipe/delete(id=${recipe.id})}" class="btn btn-danger"
+                           onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메인 이미지 및 유튜브 링크 -->
+            <div class="row mb-5">
+                <div class="col-md-8">
+                    <img th:if="${recipe.mainImage}" th:src="@{'/assets/recipeImg/' + ${recipe.mainImage}}"
+                         class="img-fluid rounded" alt="레시피 이미지" style="max-height: 400px; width: 100%; object-fit: cover;">
+                </div>
+                <div class="col-md-4">
+                    <!-- 유튜브 링크가 있을 경우 -->
+                    <div th:if="${recipe.youtubeLink}" class="ratio ratio-16x9">
+                        <iframe th:src="${recipe.youtubeLink}" title="YouTube video" allowfullscreen></iframe>
+                    </div>
+                    <!-- 유튜브 링크가 없을 경우 -->
+                    <div th:unless="${recipe.youtubeLink}" class="card bg-dark text-white">
+                        <div class="card-body text-center">
+                            <p>유튜브 영상이 없습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 재료 목록 -->
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-header">
+                    <h3>🥕 재료</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-2" th:each="ingredient : ${recipe.ingredients}">
+                            <div class="d-flex align-items-center">
+                                <img th:if="${ingredient.ingredientEntity.imageUrl}" 
+                                     th:src="${ingredient.ingredientEntity.imageUrl}" 
+                                     class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                <div>
+                                    <span th:text="${ingredient.ingredientEntity.ingredientName}">재료명</span>
+                                    <span th:text="${ingredient.quantity} + '개'">수량</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 요리 순서 -->
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-header">
+                    <h3>👨‍🍳 요리 순서</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4" th:each="step, stepStat : ${recipe.steps}">
+                        <div class="col-md-8">
+                            <h4 th:text="'Step ' + ${stepStat.count}">Step 1</h4>
+                            <p th:text="${step.content}">요리 설명</p>
+                        </div>
+                        <div class="col-md-4">
+                            <img th:if="${step.imagename}" th:src="@{'/assets/uploads/' + ${step.imagename}}"
+                                 class="img-fluid rounded" alt="요리 단계 이미지">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 리뷰 섹션 -->
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3>💬 리뷰</h3>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">리뷰 작성</button>
+                </div>
+                <div class="card-body">
+                    <!-- 리뷰가 없을 경우 -->
+                    <div th:if="${#lists.isEmpty(recipe.reviews)}" class="text-center py-4">
+                        <p>아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
+                    </div>
+                    
+                    <!-- 리뷰 목록 -->
+                    <div th:unless="${#lists.isEmpty(recipe.reviews)}" class="mb-3" th:each="review : ${recipe.reviews}">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 th:text="${review.user.username}">사용자명</h5>
+                                <div class="text-warning mb-2">
+                                    <!-- 별점 표시 -->
+                                    <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, review.rating)}"></i>
+                                    <i class="bi bi-star" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}"></i>
+                                </div>
+                                <p th:text="${review.content}">리뷰 내용</p>
+                            </div>
+                            <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">작성일</small>
+                        </div>
+                        <hr class="text-white-50">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 리뷰 작성 모달 -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">리뷰 작성</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/review/register}" method="post">
+                        <input type="hidden" name="recipeId" th:value="${recipe.id}">
+                        
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">별점</label>
+                            <select class="form-select" id="rating" name="rating" required>
+                                <option value="5">⭐⭐⭐⭐⭐ (5점)</option>
+                                <option value="4">⭐⭐⭐⭐ (4점)</option>
+                                <option value="3">⭐⭐⭐ (3점)</option>
+                                <option value="2">⭐⭐ (2점)</option>
+                                <option value="1">⭐ (1점)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label">리뷰 내용</label>
+                            <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                            <button type="submit" class="btn btn-primary">등록</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+</html>

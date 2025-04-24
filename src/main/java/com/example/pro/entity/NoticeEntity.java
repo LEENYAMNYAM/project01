@@ -4,14 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity(name = "notice")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class NoticeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,10 +22,11 @@ public class NoticeEntity {
 
     private boolean important; // 중요 여부 표시, true면 중요 공지, false면 일반 공지
 
-    public void change(String title, String content, boolean important) {
+    public void change(String title, String content, boolean important, String writer) {
         this.title = title;
         this.content = content;
         this.important = important;
+        this.writer = writer;
     }
 
     public String getNoticeType() {

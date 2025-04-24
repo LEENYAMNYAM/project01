@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class UploadFileDTO {
-    private List<MultipartFile> files;
+    private MultipartFile files;
     /* uploadFrom.html 의 input type="file"의 name속성값이랑 반드시 맞춰야함. */
 
 }

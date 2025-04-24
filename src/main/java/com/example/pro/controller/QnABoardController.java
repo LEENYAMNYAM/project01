@@ -1,5 +1,6 @@
 package com.example.pro.controller;
 
+
 import com.example.pro.dto.QnABoardDTO;
 import com.example.pro.service.QnABoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,27 +14,28 @@ import java.util.List;
 public class QnABoardController {
 
     @Autowired
-    private QnABoardService qBoardService;
+    private QnABoardService qnaBoardService;
 
     @GetMapping("/list")
     public List<QnABoardDTO> getAll() {
-        return qBoardService.getAllQBoards();
+        return qnaBoardService.getAllQBoards();
     }
 
     @PostMapping
     public QnABoardDTO create(@RequestBody QnABoardDTO dto) {
-        return qBoardService.createQBoard(dto);
+        return qnaBoardService.createQBoard(dto);
     }
 
     @PutMapping("/update")
     public void update(@PathVariable Long id, @RequestBody QnABoardDTO dto) {
-        qBoardService.updateQBoard(id, dto);
+        qnaBoardService.updateQBoard(id, dto);
     }
 
     @DeleteMapping("/delete")
     public void delete(@PathVariable Long id) {
-        qBoardService.deleteQBoard(id);
+        qnaBoardService.deleteQBoard(id);
     }
+
 
 
 }

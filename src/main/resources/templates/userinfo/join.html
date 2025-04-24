@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+<div class="container-fluid text-white p-5" layout:fragment="content">
+  <div class="d-flex justify-content-center mt-5">
+    <div class="card p-4 shadow" style="max-width: 500px; width: 100%; background-color: #f9f9f9;">
+
+    <h2 class="text-center mb-4">회원가입</h2>
+    <form action="/userinfo/register"  method="post" id="signupForm" onsubmit="return validateForm()">
+      <div class="form-group mb-3">
+        <label for="username">Id</label>
+        <input type="text" id="username" name="username" class="form-control" required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="name">이름</label>
+        <input type="text" id="name" name="name" class="form-control" required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="email">이메일</label>
+        <input type="email" id="email" name="email" class="form-control" required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="confirm_password">비밀번호 확인</label>
+        <input type="password" id="confirm_password" name="passwordConfirmation" class="form-control" required>
+      </div>
+      <div class="form-group mb-3">
+        <label>성별</label>
+        <div>
+          <label><input type="radio" name="gender" value="male" required> 남자</label>
+          <label><input type="radio" name="gender" value="female" required> 여자</label>
+        </div>
+      </div>
+      <div class="form-group mb-3">
+        <label for="address">주소</label>
+        <input type="text" id="address" name="address" class="form-control" placeholder="시/도" required>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="phone">전화번호</label>
+        <input type="tel" id="phone" name="phone" class="form-control" placeholder="전화번호" required>
+      </div>
+
+      <br/>
+      <div class="form-group text-center">
+        <button type="submit" class="btn btn-primary">회원가입</button>
+
+        <button type="reset" class="btn btn-secondary">취소</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+  .container {
+    max-width: 500px; /* 폼의 최대 너비를 500px로 제한 */
+    padding: 20px;
+    background-color: #f9f9f9;
+
+  }
+
+  .form-group {
+    margin-bottom: 15px; /* 폼 요소들 사이의 간격 */
+  }
+
+  .form-control {
+    padding: 12px; /* 입력창 여백 */
+    font-size: 14px; /* 글자 크기 */
+    border-radius: 5px; /* 입력창 둥글게 */
+  }
+
+  label {
+    font-weight: bold; /* 레이블을 굵게 */
+    font-size: 16px; /* 레이블 글자 크기 */
+  }
+
+  .btn {
+    padding: 12px; /* 버튼 여백 */
+    font-size: 16px; /* 버튼 글자 크기 */
+    margin-bottom: 10px; /* 버튼 간격 */
+    border-radius: 5px; /* 버튼 둥글게 */
+  }
+
+  .text-center {
+    margin-top: 20px; /* 폼 하단 여백 */
+  }
+
+  .btn-primary {
+    background-color: #007bff; /* 버튼 배경색 */
+    border: none;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d; /* 취소 버튼 배경색 */
+    border: none;
+  }
+
+  /* 반응형 디자인 */
+  @media (max-width: 576px) {
+    .container {
+      padding: 10px;
+      width: 100%; /* 모바일에서는 100% 너비 */
+    }
+  }
+</style>
+
+<script>
+  function validateForm() {
+    // 모든 필드가 제대로 입력되었는지 확인
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    let confirmPassword = document.getElementById("confirm_password").value;
+    let phone = document.getElementById("phone").value;
+    let address = document.getElementById("address").value;
+    let district = document.getElementById("district").value;
+    let detailedAddress = document.getElementById("detailed_address").value;
+
+    // 필수 입력 필드들이 비어 있지 않은지 확인
+    if (!name || !email || !password || !confirmPassword || !phone || !address || !district || !detailedAddress) {
+      alert("모든 필드를 작성해주세요.");
+      return false; // 폼 제출을 막음
+    }
+
+    // 비밀번호와 확인 비밀번호가 일치하는지 확인
+    if (password !== confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return false; // 폼 제출을 막음
+    }
+
+    return true; // 모든 검증을 통과하면 폼 제출
+  }
+</script>
+</div>
+
+</body>
+</html>

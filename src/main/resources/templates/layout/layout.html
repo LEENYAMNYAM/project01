@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
       lang="en">
     <head>
         <meta charset="utf-8" />
@@ -50,17 +51,34 @@
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="/recipe/register">레시피 등록</a></li>
+                        <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/recipe/register">레시피 등록</a></li>
                         <li class="nav-item"><a class="nav-link" href="/recipe/list">레시피 전체보기</a></li>
                         <li class="nav-item"><a class="nav-link" href="/notice/list">공지사항</a></li>
                         <li class="nav-item"><a class="nav-link" href="/qboard/list">Q&A</a></li>
+                        <li sec:authorize="isAuthenticated()" class="nav-item">
+                            <a class="nav-link" href="/userinfo/userlist">userlist Page</a>
+                        </li>
+                        <li sec:authorize="isAnonymous()" class="nav-item">
+                            <a class="nav-link text-white" href="/userinfo/login">Login</a>
+                        </li>
+                        <li sec:authorize="isAuthenticated()" class="nav-item">
+                            <a class="nav-link" href="/logout">Logout([[${#authentication.principal.username}]])</a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <div class="container-fluid" layout:fragment="content">
-            <p> 여기 변경됨 </p>
+        <div class="container-fluid" layout:fragment="content"
+             style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
+            <div class="container-fluid text-white p-5">
+                <section class="page-section">
+                    <div class="container">
+                        <h2 class="text-center mt-0"> 메인화면 작성하면 됩니다.</h2>
+                        <hr class="divider my-4"/>
+                    </div>
+                </section>
+            </div>
         </div>
 
 

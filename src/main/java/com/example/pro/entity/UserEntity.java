@@ -24,7 +24,8 @@ public class UserEntity  extends BaseEntity{
     private String email;
     @Column(nullable = false)
     private String phone;
-
+    @Column(nullable = false)
+    private String name;
     private String gender;
     @Column(nullable = false)
     private String role;
@@ -32,10 +33,10 @@ public class UserEntity  extends BaseEntity{
     private  String address;
 
     @Column(nullable = false)
-    private int points;
+    private int point;
 
     public void addPoints(int amount) {
-        points += amount;
+        point += amount;
     }
     public void change(String email, String phone,String address) {
         this.email = email;

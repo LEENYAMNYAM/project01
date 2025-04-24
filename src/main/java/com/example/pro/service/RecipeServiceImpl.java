@@ -2,11 +2,8 @@ package com.example.pro.service;
 
 import com.example.pro.dto.RecipeDTO;
 import com.example.pro.dto.UserDTO;
-import com.example.pro.entity.RecipeEntity;
-import com.example.pro.entity.RecipeStepEntity;
-import com.example.pro.entity.UserEntity;
-import com.example.pro.repository.RecipeRepository;
-import com.example.pro.repository.UserRepository;
+import com.example.pro.entity.*;
+import com.example.pro.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +14,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,34 +22,68 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecipeServiceImpl implements RecipeService {
 
-    private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
+    private final IngredientRepository ingredientRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
+    private final RecipeStepRepository recipeStepRepository;
+    private final FileService fileService;
+    private final UserRepository userRepository;
 
     @Override
-    public void registerRecipe(RecipeDTO recipeDTO, String username) {
-        // 사용자 조회
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(() ->
-                new IllegalArgumentException("사용자를 찾을 수 없습니다: " + username));
+    public void registerRecipe(RecipeDTO recipeDTO, List<MultipartFile> recipeStepImages, Map<String, String> paramMap) {
 
-        // DTO -> Entity 변환
+        // 1. RecipeEntity 저장
         RecipeEntity recipeEntity = dtoToEntity(recipeDTO);
-        recipeEntity.setMainImage(recipeDTO.getMainImageUrl());
-        recipeEntity.setUser(user);
-        recipeEntity.setCreatedAt(LocalDateTime.now());
+        recipeRepository.save(recipeEntity);
 
-        // Step DTO -> Step Entity 매핑
-        if (recipeDTO.getSteps() != null) {
-            List<RecipeStepEntity> stepEntities = recipeDTO.getSteps().stream().map(dto -> {
-                RecipeStepEntity step = new RecipeStepEntity();
-                step.setContent (dto.getContent());
-                step.setImagename(dto.getImageName());
-                step.setRecipe(recipeEntity);
-                return step;
-            }).collect(Collectors.toList());
-            recipeEntity.setSteps(stepEntities);
+        // 2. 재료 저장
+        int ingredientIndex = 0;
+        while (true) {
+            String nameKey = "ingredients[" + ingredientIndex + "].ingredientName";
+            String qtyKey = "ingredients[" + ingredientIndex + "].quantity";
+            if (!paramMap.containsKey(nameKey)) break;
+
+            String name = paramMap.get(nameKey);
+            Long quantity = Long.parseLong(paramMap.getOrDefault(qtyKey, "1"));
+
+            // 재료가 DB에 없을때 예외 처리
+            IngredientEntity ingredient = ingredientRepository.findByIngredientName(name)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 재료입니다: " + name));
+
+            RecipeIngredientsEntity recipeIng = RecipeIngredientsEntity.builder()
+                    .recipeEntity(recipeEntity)
+                    .ingredientEntity(ingredient)
+                    .quantity(quantity)
+                    .build();
+
+            recipeIngredientRepository.save(recipeIng);
+            ingredientIndex++;
         }
 
-        recipeRepository.save(recipeEntity);
+        // 3. 요리 순서 저장
+        int stepIndex = 1; // steps[0]은 대표 이미지니까
+        for (MultipartFile stepImage : recipeStepImages) {
+            String contentKey = "steps[" + stepIndex + "].stepContent";
+            if (!paramMap.containsKey(contentKey)) break;
+
+            String content = paramMap.get(contentKey);
+            String imageName = null;
+
+            if (!stepImage.isEmpty()) {
+                imageName = fileService.saveFile(stepImage);
+            }
+
+            RecipeStepEntity step = RecipeStepEntity.builder()
+                    .recipe(recipeEntity)
+                    .stepNumber(stepIndex)
+                    .content(content)
+                    .imageName(imageName)
+                    .build();
+
+            recipeStepRepository.save(step);
+            stepIndex++;
+        }
+
     }
 
     @Override
@@ -64,12 +96,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public RecipeEntity getRecipeById(Long id) {
+    public RecipeDTO getRecipeById(Long id) {
         return null;
     }
 
     @Override
-    public void updateRecipe(RecipeEntity recipeEntity, UserDTO userDTO) {
+    public void updateRecipe(RecipeDTO recipeDTO, UserDTO userDTO) {
 
     }
 
@@ -77,5 +109,34 @@ public class RecipeServiceImpl implements RecipeService {
     public void deleteRecipe(Long id) {
 
     }
+
+
+    RecipeEntity dtoToEntity(RecipeDTO recipeDTO) {
+        RecipeEntity recipeEntity = new RecipeEntity();
+        recipeEntity.setTitle(recipeDTO.getTitle());
+        recipeEntity.setCategory(recipeDTO.getCategory());
+        recipeEntity.setYoutubeLink(recipeDTO.getYoutubeLink());
+        recipeEntity.setUser(userRepository.findByUsername(recipeDTO.getUsername()).orElse(null));
+        recipeEntity.setMainImage(recipeDTO.getMainImagePath());
+        recipeEntity.setCreatedAt(LocalDateTime.now());
+        recipeEntity.setLikeCount(recipeDTO.getLikeCount() != null ? recipeDTO.getLikeCount() : 0L);
+        return recipeEntity;
+    }
+
+    RecipeDTO entityToDto(RecipeEntity recipeEntity){
+        RecipeDTO recipeDTO = new RecipeDTO();
+        recipeDTO.setId(recipeEntity.getId());
+        recipeDTO.setTitle(recipeEntity.getTitle());
+        recipeDTO.setCategory(recipeEntity.getCategory());
+//        recipeDTO.setMainImage(recipeEntity.getMainImage());
+        recipeDTO.setYoutubeLink(recipeEntity.getYoutubeLink());
+        recipeDTO.setUsername(recipeEntity.getUser().getUsername());
+        recipeDTO.setCreatedAt(recipeEntity.getCreatedAt());
+        recipeDTO.setLikeCount(recipeEntity.getLikeCount());
+        return recipeDTO;
+    }
+
+
+
 }
 

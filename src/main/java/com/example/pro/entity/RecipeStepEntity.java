@@ -1,14 +1,16 @@
 package com.example.pro.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "recipe_step")
 @Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RecipeStepEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,11 +20,9 @@ public class RecipeStepEntity {
     @JoinColumn(name = "recipe_id") // 외래키 컬럼명 (DB 테이블에 실제로 들어갈 이름)
     private RecipeEntity recipe;
 
-    @Column(nullable = false)
     private int stepNumber;
 
-    @Column(nullable = false)
     private String content;
 
-    private String imagename;
+    private String imageName;
 }

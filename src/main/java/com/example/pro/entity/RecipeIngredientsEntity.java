@@ -1,14 +1,14 @@
 package com.example.pro.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity(name = "recipe_ingredients")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RecipeIngredientsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

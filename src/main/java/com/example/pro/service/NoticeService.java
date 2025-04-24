@@ -1,6 +1,5 @@
 package com.example.pro.service;
 
-
 import com.example.pro.dto.NoticeDTO;
 
 import java.util.List;

@@ -8,7 +8,7 @@ public class sampleController {
 
     @GetMapping("/")
     public String sample() {
-        return "/layout/layout";
+        return "/home";
     }
 
 }

@@ -22,6 +22,6 @@ public class RecipeStepDTO {
 
     private String content;
 
-    private String imageName;
+    private String imagePath;
 
 }

@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,8 +27,8 @@ public class RecipeDTO {
     /* youtubeLink */
     private String youtubeLink;
 
-    /* 메인이미지 */
-    private String mainImageUrl;
+    /* 메인이미지주소 */
+    private String mainImagePath;
 
     /* 작성자 */
     private String username;

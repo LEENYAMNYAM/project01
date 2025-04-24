@@ -13,14 +13,14 @@ import java.util.Collection;
 @Data
 public class PrincipalDetail implements UserDetails {
     private UserEntity user;
-     public PrincipalDetail(UserEntity user) {
-         this.user = user;
-     }
+    public PrincipalDetail(UserEntity user) {
+        this.user = user;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-       Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-       authorities.add(()->{return user.getRole();});
+        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.add(()->{return user.getRole();});
 
         return authorities;
     }
@@ -53,5 +53,9 @@ public class PrincipalDetail implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
+    }
+
+    public UserEntity getUser() {
+        return this.user;
     }
 }

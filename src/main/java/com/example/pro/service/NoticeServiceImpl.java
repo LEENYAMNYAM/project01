@@ -32,14 +32,14 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public NoticeDTO createNotice(NoticeDTO dto) {
         NoticeEntity noticeEntity = new NoticeEntity();
-        noticeEntity.change(dto.title, dto.content, dto.important);
+        noticeEntity.change(dto.title, dto.content, dto.important, dto.writer);
         return toDTO(noticeRepository.save(noticeEntity));
     }
 
     @Override
     public void updateNotice(Long id, NoticeDTO dto) {
         NoticeEntity noticeEntity = noticeRepository.findById(id).orElseThrow();
-        noticeEntity.change(dto.title, dto.content, dto.important);
+        noticeEntity.change(dto.title, dto.content, dto.important, dto.writer);
         noticeRepository.save(noticeEntity);
     }
 

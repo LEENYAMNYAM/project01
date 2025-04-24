@@ -1,8 +1,7 @@
 package com.example.pro.entity;
+
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,9 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity(name="q_board")
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity(name="qna_board")
 public class QnABoardEntity {
 
     @Id

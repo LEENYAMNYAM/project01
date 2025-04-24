@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="ko">
+<div class="container-fluid text-white p-5"  layout:fragment="content">
+
+    <h2 class="text-center mb-4 display-6 text-uppercase fw-bold">공지사항</h2>
+    <link rel="stylesheet" href="/css/styles.css">
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle text-center">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">제목</th>
+                <th scope="col">작성자</th>
+                <th scope="col">중요도</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="notice : ${noticeList}" th:classappend="${notice.important} ? 'table-danger' : ''">
+                <td th:text="${notice.id}">1</td>
+                <td class="text-start ps-4">
+                    <a th:href="@{'/notice/view?id='+ ${notice.id}}" th:text="${notice.title}" class="text-decoration-none link-dark fw-semibold"></a>
+                </td>
+                <td th:text="${notice.writer}">홍길동</td>
+                <td>
+                        <span th:class="${notice.important} ? 'badge bg-danger' : 'badge bg-secondary'"
+                              th:text="${notice.important} ? '중요' : '일반'"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-end mt-4">
+        <a href="/notice/create" class="btn btn-primary">+ 새 공지 작성</a>
+    </div>
+</div>
+</html>

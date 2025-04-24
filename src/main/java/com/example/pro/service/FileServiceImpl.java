@@ -1,39 +1,40 @@
 package com.example.pro.service;
 
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
-@Log4j2
 public class FileServiceImpl implements FileService {
 
-    private static final String UPLOAD_DIR = "D:/JMT/Project01/projerct01/src/main/resources/static/assets";
+    private final String uploadDir = new File("src/main/resources/static/assets/uploads").getAbsolutePath();
 
     @Override
-    public String saveFile(MultipartFile file) throws IOException {
-        String originalName = file.getOriginalFilename();
-        String uuid = UUID.randomUUID().toString();
-        String saveName = uuid + "_" + originalName;
-        Path savePath = Paths.get(UPLOAD_DIR, saveName);
+    public String saveFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
 
-        Files.copy(file.getInputStream(), savePath);
-        return "/assets/" + saveName;
+        // 파일명 중복 방지를 위해 UUID 붙임
+        String originalFilename = file.getOriginalFilename();
+        String savedFilename = UUID.randomUUID() + "_" + originalFilename;
+
+        File savePath = new File(uploadDir, savedFilename);
+
+        // 디렉토리 없으면 생성
+        savePath.getParentFile().mkdirs();
+
+        try {
+            file.transferTo(savePath); // 실제 파일 저장
+        } catch (IOException e) {
+            throw new RuntimeException("파일 저장 실패: " + originalFilename, e);
+        }
+
+        // 저장된 파일명 반환 (DB에는 이 경로를 저장)
+        return "/assets/uploads/" + savedFilename;
     }
 
-    @Override
-    public void deleteFile(String fileName) {
-
-    }
-
-    @Override
-    public String getFileName(String fileUrl) {
-        return "";
-    }
 }
