@@ -12,9 +12,8 @@ import lombok.NoArgsConstructor;
 public class IngredientDTO {
     private Long id;
     private String ingredientName;
-    private String productId;
+    private String detail;
     private Long price;
-    private String mallLink;
-    private String mallName;
+
     private String imageUrl;
 }
