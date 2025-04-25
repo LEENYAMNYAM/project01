@@ -1,39 +1,120 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout.html}" lang="ko">
-<div class="container-fluid text-white p-5"  layout:fragment="content">
+      layout:decorate="~{layout/layout.html}" lang="en">
+<div class="container-fluid text-white p-5" layout:fragment="content"
+     style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
+    <section class="page-section">
+        <div class="container">
+            <h2 class="text-center mt-0">📢 공지사항</h2>
+            <hr class="divider my-4" />
 
-    <h2 class="text-center mb-4 display-6 text-uppercase fw-bold">공지사항</h2>
-    <link rel="stylesheet" href="/css/styles.css">
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle text-center">
-            <thead class="table-dark">
-            <tr>
-                <th scope="col">번호</th>
-                <th scope="col">제목</th>
-                <th scope="col">작성자</th>
-                <th scope="col">중요도</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="notice : ${noticeList}" th:classappend="${notice.important} ? 'table-danger' : ''">
-                <td th:text="${notice.id}">1</td>
-                <td class="text-start ps-4">
-                    <a th:href="@{'/notice/view?id='+ ${notice.id}}" th:text="${notice.title}" class="text-decoration-none link-dark fw-semibold"></a>
-                </td>
-                <td th:text="${notice.writer}">홍길동</td>
-                <td>
-                        <span th:class="${notice.important} ? 'badge bg-danger' : 'badge bg-secondary'"
-                              th:text="${notice.important} ? '중요' : '일반'"></span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+            <!-- 검색 기능 -->
+            <div class="row mb-4">
+                <div class="col-md-6 offset-md-6">
+                    <form th:action="@{/notice/list}" method="get" class="d-flex">
+                        <select name="searchType" class="form-select me-2" style="width: 120px;">
+                            <option value="title" th:selected="${searchType == 'title'}">제목</option>
+                            <option value="content" th:selected="${searchType == 'content'}">내용</option>
+                            <option value="all" th:selected="${searchType == 'all'}">제목+내용</option>
+                        </select>
+                        <input type="text" name="keyword" class="form-control me-2" placeholder="검색어를 입력하세요" 
+                               th:value="${keyword}">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+                </div>
+            </div>
 
-    <div class="text-end mt-4">
-        <a href="/notice/create" class="btn btn-primary">+ 새 공지 작성</a>
-    </div>
+            <!-- 공지사항 목록 -->
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%">번호</th>
+                                    <th style="width: 50%">제목</th>
+                                    <th style="width: 15%">작성자</th>
+                                    <th style="width: 15%">작성일</th>
+                                    <th style="width: 10%">조회수</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 공지사항이 없을 경우 -->
+                                <tr th:if="${#lists.isEmpty(noticeList)}">
+                                    <td colspan="5" class="text-center">등록된 공지사항이 없습니다.</td>
+                                </tr>
+                                
+                                <!-- 중요 공지사항 (상단 고정) -->
+                                <tr th:each="notice : ${pinnedNotices}" class="table-primary">
+                                    <td><span class="badge bg-danger">중요</span></td>
+                                    <td>
+                                        <a th:href="@{/notice/view(id=${notice.id})}" class="text-white text-decoration-none">
+                                            <span th:text="${notice.title}">공지사항 제목</span>
+                                            <!-- 첨부파일이 있는 경우 아이콘 표시 -->
+                                            <i th:if="${notice.hasAttachment}" class="bi bi-paperclip ms-1"></i>
+                                            <!-- 최근 게시물 표시 -->
+                                            <span th:if="${notice.isNew}" class="badge bg-success ms-1">New</span>
+                                        </a>
+                                    </td>
+                                    <td th:text="${notice.writer}">관리자</td>
+                                    <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}">작성일</td>
+                                    <td th:text="${notice.viewCount}">조회수</td>
+                                </tr>
+                                
+                                <!-- 일반 공지사항 -->
+                                <tr th:each="notice, status : ${noticeList}">
+                                    <td th:text="${paging.totalElements - (paging.number * paging.size) - status.index}">번호</td>
+                                    <td>
+                                        <a th:href="@{/notice/view(id=${notice.id})}" class="text-white text-decoration-none">
+                                            <span th:text="${notice.title}">공지사항 제목</span>
+                                            <!-- 첨부파일이 있는 경우 아이콘 표시 -->
+                                            <i th:if="${notice.hasAttachment}" class="bi bi-paperclip ms-1"></i>
+                                            <!-- 최근 게시물 표시 -->
+                                            <span th:if="${notice.isNew}" class="badge bg-success ms-1">New</span>
+                                        </a>
+                                    </td>
+                                    <td th:text="${notice.writer}">관리자</td>
+                                    <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}">작성일</td>
+                                    <td th:text="${notice.viewCount}">조회수</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <nav aria-label="Page navigation" th:if="${paging.totalPages > 0}">
+                <ul class="pagination justify-content-center">
+                    <!-- 이전 페이지 -->
+                    <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                        <a class="page-link" th:href="@{/notice/list(page=${paging.number - 1}, searchType=${searchType}, keyword=${keyword})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    
+                    <!-- 페이지 번호 -->
+                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, paging.totalPages - 1)}" 
+                        th:classappend="${pageNumber == paging.number} ? 'active'">
+                        <a class="page-link" th:href="@{/notice/list(page=${pageNumber}, searchType=${searchType}, keyword=${keyword})}" 
+                           th:text="${pageNumber + 1}">1</a>
+                    </li>
+                    
+                    <!-- 다음 페이지 -->
+                    <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                        <a class="page-link" th:href="@{/notice/list(page=${paging.number + 1}, searchType=${searchType}, keyword=${keyword})}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- 관리자만 보이는 글쓰기 버튼 -->
+            <div class="text-end mt-3" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                <a th:href="@{/notice/register}" class="btn btn-primary">공지사항 작성</a>
+            </div>
+        </div>
+    </section>
 </div>
 </html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+<div class="container-fluid text-white p-5" layout:fragment="content"
+     style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
+    <section class="page-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="mt-0">🎉 결제 완료</h2>
+                <hr class="divider my-4" />
+                <p class="lead">주문이 성공적으로 완료되었습니다. 감사합니다!</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <!-- 주문 완료 정보 -->
+                    <div class="card bg-dark text-white mb-4">
+                        <div class="card-header">
+                            <h3>주문 정보</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">주문 번호:</div>
+                                <div class="col-md-8" th:text="${order.orderNumber}">ORD-20230101-001234</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">주문 일시:</div>
+                                <div class="col-md-8" th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}">2023-01-01 12:34:56</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">결제 금액:</div>
+                                <div class="col-md-8" th:text="${#numbers.formatInteger(order.totalAmount, 0, 'COMMA')} + '원'">50,000원</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">결제 방법:</div>
+                                <div class="col-md-8" th:text="${order.paymentMethod}">신용카드</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">배송지:</div>
+                                <div class="col-md-8">
+                                    <div th:text="${order.shippingAddress}">서울시 강남구 테헤란로 123</div>
+                                    <div th:if="${order.shippingAddressDetail}" th:text="${order.shippingAddressDetail}">상세주소</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">배송 요청사항:</div>
+                                <div class="col-md-8" th:text="${order.deliveryRequest}">문 앞에 놓아주세요</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 주문 상품 목록 -->
+                    <div class="card bg-dark text-white mb-4">
+                        <div class="card-header">
+                            <h3>주문 상품</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-dark">
+                                    <thead>
+                                        <tr>
+                                            <th>상품명</th>
+                                            <th>수량</th>
+                                            <th>가격</th>
+                                            <th>합계</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${order.orderItems}">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img th:if="${item.ingredient.imageUrl}" th:src="${item.ingredient.imageUrl}" 
+                                                         class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                    <span th:text="${item.ingredient.ingredientName}">재료명</span>
+                                                </div>
+                                            </td>
+                                            <td th:text="${item.quantity}">1</td>
+                                            <td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'">10,000원</td>
+                                            <td th:text="${#numbers.formatInteger(item.price * item.quantity, 0, 'COMMA')} + '원'">10,000원</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>상품 금액:</strong></td>
+                                            <td th:text="${#numbers.formatInteger(order.itemsAmount, 0, 'COMMA')} + '원'">45,000원</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>배송비:</strong></td>
+                                            <td th:text="${#numbers.formatInteger(order.shippingFee, 0, 'COMMA')} + '원'">3,000원</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>포인트 사용:</strong></td>
+                                            <td th:text="'-' + ${#numbers.formatInteger(order.usedPoints, 0, 'COMMA')} + '원'">-1,000원</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>총 결제 금액:</strong></td>
+                                            <td th:text="${#numbers.formatInteger(order.totalAmount, 0, 'COMMA')} + '원'">47,000원</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 적립 포인트 정보 -->
+                    <div class="card bg-dark text-white mb-4">
+                        <div class="card-header">
+                            <h3>포인트 정보</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">사용 포인트:</div>
+                                <div class="col-md-8" th:text="${order.usedPoints} + ' 포인트'">1,000 포인트</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">적립 포인트:</div>
+                                <div class="col-md-8" th:text="${order.earnedPoints} + ' 포인트'">470 포인트</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4 fw-bold">현재 보유 포인트:</div>
+                                <div class="col-md-8" th:text="${user.points} + ' 포인트'">2,470 포인트</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="text-center mt-4">
+                        <a href="/mypage/orders" class="btn btn-primary me-2">주문 내역 확인</a>
+                        <a href="/recipe/list" class="btn btn-secondary">계속 쇼핑하기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</html>

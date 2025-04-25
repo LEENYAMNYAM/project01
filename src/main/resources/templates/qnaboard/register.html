@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+<div class="container-fluid text-white p-5" layout:fragment="content"
+     style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
+    <section class="page-section">
+        <div class="container">
+            <h2 class="text-center mt-0">❓ 문의하기</h2>
+            <hr class="divider my-4" />
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card bg-dark text-white mb-4">
+                        <div class="card-header">
+                            <h3>문의글 작성</h3>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/qBoard/register}" method="post" enctype="multipart/form-data">
+                                <!-- 카테고리 선택 -->
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">카테고리</label>
+                                    <select id="category" name="category" class="form-select" required>
+                                        <option value="">카테고리를 선택해주세요</option>
+                                        <option value="상품문의">상품문의</option>
+                                        <option value="배송문의">배송문의</option>
+                                        <option value="결제문의">결제문의</option>
+                                        <option value="기타문의">기타문의</option>
+                                    </select>
+                                </div>
+
+                                <!-- 제목 입력 -->
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">제목</label>
+                                    <input type="text" id="title" name="title" class="form-control" 
+                                           placeholder="제목을 입력해주세요" required>
+                                </div>
+
+                                <!-- 내용 입력 -->
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">내용</label>
+                                    <textarea id="content" name="content" class="form-control" rows="10" 
+                                              placeholder="문의 내용을 상세히 작성해주세요" required></textarea>
+                                </div>
+
+                                <!-- 첨부파일 -->
+                                <div class="mb-3">
+                                    <label for="files" class="form-label">첨부파일</label>
+                                    <input type="file" id="files" name="files" class="form-control" multiple>
+                                    <div class="form-text text-white-50">최대 3개까지 첨부 가능합니다. (파일당 최대 5MB)</div>
+                                </div>
+
+                                <!-- 비밀글 설정 -->
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" id="isSecret" name="isSecret" class="form-check-input">
+                                    <label for="isSecret" class="form-check-label">비밀글로 작성</label>
+                                    <div class="form-text text-white-50">비밀글은 작성자와 관리자만 확인할 수 있습니다.</div>
+                                </div>
+
+                                <!-- 관련 주문 선택 (선택사항) -->
+                                <div class="mb-3">
+                                    <label for="orderId" class="form-label">관련 주문</label>
+                                    <select id="orderId" name="orderId" class="form-select">
+                                        <option value="">선택 (선택사항)</option>
+                                        <option th:each="order : ${recentOrders}" 
+                                                th:value="${order.id}" 
+                                                th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd')} + ' - ' + ${order.orderNumber} + ' (' + ${#numbers.formatInteger(order.totalAmount, 0, 'COMMA')} + '원)'">
+                                            2023-01-01 - ORD-20230101-001234 (50,000원)
+                                        </option>
+                                    </select>
+                                    <div class="form-text text-white-50">문의하실 주문이 있다면 선택해주세요.</div>
+                                </div>
+
+                                <!-- 버튼 영역 -->
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary">등록하기</button>
+                                    <a th:href="@{/qBoard/list}" class="btn btn-secondary ms-2">취소</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script layout:fragment="script">
+    // 파일 업로드 제한
+    document.getElementById('files').addEventListener('change', function() {
+        const maxFiles = 3;
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (this.files.length > maxFiles) {
+            alert(`최대 ${maxFiles}개까지만 첨부할 수 있습니다.`);
+            this.value = '';
+            return;
+        }
+
+        for (let i = 0; i < this.files.length; i++) {
+            if (this.files[i].size > maxSize) {
+                alert(`파일 크기는 5MB를 초과할 수 없습니다. (${this.files[i].name})`);
+                this.value = '';
+                return;
+            }
+        }
+    });
+
+    // 폼 제출 전 유효성 검사
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const category = document.getElementById('category').value;
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+
+        if (!category) {
+            e.preventDefault();
+            alert('카테고리를 선택해주세요.');
+            return;
+        }
+
+        if (!title.trim()) {
+            e.preventDefault();
+            alert('제목을 입력해주세요.');
+            document.getElementById('title').focus();
+            return;
+        }
+
+        if (!content.trim()) {
+            e.preventDefault();
+            alert('내용을 입력해주세요.');
+            document.getElementById('content').focus();
+            return;
+        }
+    });
+</script>
+</html>

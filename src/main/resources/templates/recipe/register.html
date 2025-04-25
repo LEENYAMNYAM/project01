@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<div class="container-fluid text-white p-5" layout:fragment="content">
+<div class="container-fluid text-white p-5" layout:fragment="content"
+     style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
 
     <section class="page-section" id="recipe-form-section">
         <div class="container">
@@ -10,6 +11,8 @@
             <hr class="divider my-4"/>
 
             <form action="/recipe/register" method="post" enctype="multipart/form-data">
+                <!-- 회원ID 전달 -->
+<!--                <input type="hidden" name="username" th:value="${#authentication.principal.username}" />-->
                 <!-- 제목 -->
                 <div class="form-group mb-3">
                     <label>레시피 제목</label>
@@ -54,8 +57,8 @@
                 <div class="form-group mb-4" id="steps-section">
                     <label>요리 순서</label>
                     <div class="step-entry mb-3 d-flex align-items-start gap-2">
-                        <textarea name="steps[1].stepContent" placeholder="요리 설명" class="form-control" style="min-height: 90px;"></textarea>
-                        <input type="file" name="steps[1].stepImage" class="form-control w-auto" accept="image/*" />
+                        <textarea name="steps[0].stepContent" placeholder="요리 설명" class="form-control" style="min-height: 90px;"></textarea>
+                        <input type="file" name="steps[0].stepImage" class="form-control w-auto" accept="image/*" />
                     </div>
                     <button type="button" class="btn btn-success btn-sm" id="add-step">➕ 순서 추가</button>
                 </div>
@@ -91,7 +94,7 @@
 
 <script layout:fragment="script">
     let ingredientIndex = 1;
-    let stepIndex = 2;
+    let stepIndex = 1;
     let selectedInput = null;
 
     /* Ingredient 추가 */

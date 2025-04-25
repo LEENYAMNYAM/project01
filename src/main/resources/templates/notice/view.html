@@ -1,10 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+<div class="container-fluid text-white p-5" layout:fragment="content"
+     style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
+    <section class="page-section">
+        <div class="container">
+            <h2 class="text-center mt-0">📢 공지사항</h2>
+            <hr class="divider my-4" />
 
-</body>
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 th:text="${notice.title}">공지사항 제목</h3>
+                        <span th:if="${notice.isPinned}" class="badge bg-danger">중요</span>
+                    </div>
+                    <div class="text-muted mt-2">
+                        <span th:text="'작성자: ' + ${notice.writer}">작성자: 관리자</span> |
+                        <span th:text="'작성일: ' + ${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}">작성일: 2023-01-01</span> |
+                        <span th:text="'조회수: ' + ${notice.viewCount}">조회수: 0</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- 공지사항 내용 -->
+                    <div class="mb-4">
+                        <div th:utext="${notice.content}" class="notice-content">
+                            공지사항 내용이 여기에 표시됩니다.
+                        </div>
+                    </div>
+
+                    <!-- 첨부파일 -->
+                    <div th:if="${notice.hasAttachment}" class="mt-4 p-3 bg-secondary rounded">
+                        <h5>첨부파일</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-dark text-white border-secondary" th:each="file : ${notice.attachments}">
+                                <a th:href="@{/notice/download(fileId=${file.id})}" class="text-white">
+                                    <i class="bi bi-file-earmark"></i>
+                                    <span th:text="${file.originalName}">파일명.확장자</span>
+                                    <span class="text-muted" th:text="'(' + ${#numbers.formatInteger(file.fileSize / 1024, 0)} + 'KB)'">파일크기</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <!-- 이전글/다음글 -->
+                            <a th:if="${prevNotice}" th:href="@{/notice/view(id=${prevNotice.id})}" class="btn btn-outline-secondary me-2">
+                                <i class="bi bi-arrow-left"></i> 이전글
+                            </a>
+                            <a th:if="${nextNotice}" th:href="@{/notice/view(id=${nextNotice.id})}" class="btn btn-outline-secondary">
+                                다음글 <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <!-- 목록으로 돌아가기 -->
+                            <a th:href="@{/notice/list}" class="btn btn-secondary">목록</a>
+                            
+                            <!-- 관리자만 보이는 수정/삭제 버튼 -->
+                            <th:block th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                                <a th:href="@{/notice/update(id=${notice.id})}" class="btn btn-warning ms-2">수정</a>
+                                <a th:href="@{/notice/delete(id=${notice.id})}" class="btn btn-danger ms-2"
+                                   onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style layout:fragment="style">
+    .notice-content {
+        min-height: 300px;
+        line-height: 1.6;
+    }
+    .notice-content img {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
 </html>

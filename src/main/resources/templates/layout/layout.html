@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en">
     <head>
         <meta charset="utf-8" />
@@ -54,7 +54,7 @@
                         <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/recipe/register">레시피 등록</a></li>
                         <li class="nav-item"><a class="nav-link" href="/recipe/list">레시피 전체보기</a></li>
                         <li class="nav-item"><a class="nav-link" href="/notice/list">공지사항</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/qboard/list">Q&A</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/qBoard/list">Q&A</a></li>
                         <li sec:authorize="isAuthenticated()" class="nav-item">
                             <a class="nav-link" href="/userinfo/userlist">userlist Page</a>
                         </li>
@@ -84,7 +84,7 @@
 
         <!-- Footer-->
         <footer class="bg-light py-5">
-            <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2023 - Company Name</div></div>
+            <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2025 - Team dont sell people</div></div>
         </footer>
         <!-- J쿼리-->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
