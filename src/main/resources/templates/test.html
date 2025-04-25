@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mangoice - Backend Test Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Axios from WebJar -->
+    <script th:src="@{/webjars/axios/1.6.7/dist/axios.min.js}"></script>
+    <style>
+        .test-section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        .test-result {
+            margin-top: 15px;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+        .test-button {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+        pre {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Mangoice Backend Test Page</h1>
+        <p class="lead">This page allows you to test various backend functionalities to ensure the application is working correctly.</p>
+        
+        <div class="alert alert-info">
+            <strong>Note:</strong> This page is intended for development and testing purposes only.
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs" id="testTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab" aria-controls="basic" aria-selected="true">Basic Tests</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button" role="tab" aria-controls="user" aria-selected="false">User Tests</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="notice-tab" data-bs-toggle="tab" data-bs-target="#notice" type="button" role="tab" aria-controls="notice" aria-selected="false">Notice Tests</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="inquiry-tab" data-bs-toggle="tab" data-bs-target="#inquiry" type="button" role="tab" aria-controls="inquiry" aria-selected="false">Inquiry Tests</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review" type="button" role="tab" aria-controls="review" aria-selected="false">Review Tests</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="purchase-tab" data-bs-toggle="tab" data-bs-target="#purchase" type="button" role="tab" aria-controls="purchase" aria-selected="false">Purchase Tests</button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="testTabsContent">
+            <!-- Basic Tests Tab -->
+            <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
+                <div class="test-section">
+                    <h3>API Connection Test</h3>
+                    <p>Tests the connection to the backend API by making a simple request.</p>
+                    <button id="testApiBtn" class="btn btn-primary test-button">Test API Connection</button>
+                    <div id="apiTestResult" class="test-result"></div>
+                </div>
+                
+                <div class="test-section">
+                    <h3>Database Connection Test</h3>
+                    <p>Tests the connection to the database by retrieving a simple count.</p>
+                    <button id="testDbBtn" class="btn btn-primary test-button">Test Database Connection</button>
+                    <div id="dbTestResult" class="test-result"></div>
+                </div>
+                
+                <div class="test-section">
+                    <h3>Logging Test</h3>
+                    <p>Tests the logging functionality by triggering logs at different levels.</p>
+                    <button id="testLoggingBtn" class="btn btn-primary test-button">Test Logging</button>
+                    <div id="loggingTestResult" class="test-result"></div>
+                </div>
+            </div>
+            
+            <!-- User Tests Tab -->
+            <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user-tab">
+                <div class="test-section">
+                    <h3>User Registration Test</h3>
+                    <p>Tests the user registration functionality.</p>
+                    <div class="mb-3">
+                        <input type="text" id="regUsername" class="form-control mb-2" placeholder="Username">
+                        <input type="password" id="regPassword" class="form-control mb-2" placeholder="Password">
+                        <input type="text" id="regName" class="form-control mb-2" placeholder="Name">
+                        <input type="email" id="regEmail" class="form-control mb-2" placeholder="Email">
+                        <input type="text" id="regPhone" class="form-control mb-2" placeholder="Phone">
+                        <input type="text" id="regAddress" class="form-control mb-2" placeholder="Address">
+                    </div>
+                    <button id="testRegisterBtn" class="btn btn-primary test-button">Test Registration</button>
+                    <div id="registerTestResult" class="test-result"></div>
+                </div>
+                
+                <div class="test-section">
+                    <h3>User Login Test</h3>
+                    <p>Tests the user login functionality.</p>
+                    <div class="mb-3">
+                        <input type="text" id="loginUsername" class="form-control mb-2" placeholder="Username">
+                        <input type="password" id="loginPassword" class="form-control mb-2" placeholder="Password">
+                    </div>
+                    <button id="testLoginBtn" class="btn btn-primary test-button">Test Login</button>
+                    <div id="loginTestResult" class="test-result"></div>
+                </div>
+                
+                <div class="test-section">
+                    <h3>User Profile Test</h3>
+                    <p>Tests retrieving user profile information (requires login).</p>
+                    <button id="testProfileBtn" class="btn btn-primary test-button">Test Profile Retrieval</button>
+                    <div id="profileTestResult" class="test-result"></div>
+                </div>
+            </div>
+            
+            <!-- Notice Tests Tab -->
+            <div class="tab-pane fade" id="notice" role="tabpanel" aria-labelledby="notice-tab">
+                <div class="test-section">
+                    <h3>Notice List Test</h3>
+                    <p>Tests retrieving the list of notices.</p>
+                    <button id="testNoticeListBtn" class="btn btn-primary test-button">Test Notice List</button>
+                    <div id="noticeListTestResult" class="test-result"></div>
+                </div>
+                
+                <div class="test-section">
+                    <h3>Notice Detail Test</h3>
+                    <p>Tests retrieving a specific notice by ID.</p>
+                    <div class="mb-3">
+                        <input type="number" id="noticeId" class="form-control mb-2" placeholder="Notice ID">
+                    </div>
+                    <button id="testNoticeDetailBtn" class="btn btn-primary test-button">Test Notice Detail</button>
+                    <div id="noticeDetailTestResult" class="test-result"></div>
+                </div>
+            </div>
+            
+            <!-- Inquiry Tests Tab -->
+            <div class="tab-pane fade" id="inquiry" role="tabpanel" aria-labelledby="inquiry-tab">
+                <div class="test-section">
+                    <h3>Inquiry List Test</h3>
+                    <p>Tests retrieving the list of inquiries.</p>
+                    <button id="testInquiryListBtn" class="btn btn-primary test-button">Test Inquiry List</button>
+                    <div id="inquiryListTestResult" class="test-result"></div>
+                </div>
+                
+                <div class="test-section">
+                    <h3>Inquiry Creation Test</h3>
+                    <p>Tests creating a new inquiry (requires login).</p>
+                    <div class="mb-3">
+                        <input type="text" id="inquiryTitle" class="form-control mb-2" placeholder="Title">
+                        <textarea id="inquiryContent" class="form-control mb-2" placeholder="Content" rows="3"></textarea>
+                    </div>
+                    <button id="testInquiryCreateBtn" class="btn btn-primary test-button">Test Inquiry Creation</button>
+                    <div id="inquiryCreateTestResult" class="test-result"></div>
+                </div>
+            </div>
+            
+            <!-- Review Tests Tab -->
+            <div class="tab-pane fade" id="review" role="tabpanel" aria-labelledby="review-tab">
+                <div class="test-section">
+                    <h3>Review List Test</h3>
+                    <p>Tests retrieving the list of reviews.</p>
+                    <button id="testReviewListBtn" class="btn btn-primary test-button">Test Review List</button>
+                    <div id="reviewListTestResult" class="test-result"></div>
+                </div>
+                
+                <div class="test-section">
+                    <h3>Review Creation Test</h3>
+                    <p>Tests creating a new review (requires login).</p>
+                    <div class="mb-3">
+                        <input type="number" id="reviewPurchaseId" class="form-control mb-2" placeholder="Purchase ID">
+                        <input type="number" id="reviewRating" class="form-control mb-2" placeholder="Rating (1-5)">
+                        <textarea id="reviewContent" class="form-control mb-2" placeholder="Content" rows="3"></textarea>
+                    </div>
+                    <button id="testReviewCreateBtn" class="btn btn-primary test-button">Test Review Creation</button>
+                    <div id="reviewCreateTestResult" class="test-result"></div>
+                </div>
+            </div>
+            
+            <!-- Purchase Tests Tab -->
+            <div class="tab-pane fade" id="purchase" role="tabpanel" aria-labelledby="purchase-tab">
+                <div class="test-section">
+                    <h3>Purchase List Test</h3>
+                    <p>Tests retrieving the list of purchases (requires login).</p>
+                    <button id="testPurchaseListBtn" class="btn btn-primary test-button">Test Purchase List</button>
+                    <div id="purchaseListTestResult" class="test-result"></div>
+                </div>
+                
+                <div class="test-section">
+                    <h3>Purchase Creation Test</h3>
+                    <p>Tests creating a new purchase (requires login).</p>
+                    <div class="mb-3">
+                        <input type="text" id="purchaseRecipe" class="form-control mb-2" placeholder="Recipe Name">
+                        <textarea id="purchaseIngredients" class="form-control mb-2" placeholder="Ingredients (comma separated)" rows="3"></textarea>
+                        <input type="text" id="purchaseAddress" class="form-control mb-2" placeholder="Delivery Address">
+                    </div>
+                    <button id="testPurchaseCreateBtn" class="btn btn-primary test-button">Test Purchase Creation</button>
+                    <div id="purchaseCreateTestResult" class="test-result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Test Scripts -->
+    <script>
+        // Utility function to display test results
+        function displayResult(elementId, success, message, data) {
+            const resultElement = document.getElementById(elementId);
+            let html = `<div class="${success ? 'success' : 'error'}">
+                <strong>${success ? 'Success' : 'Error'}:</strong> ${message}
+            </div>`;
+            
+            if (data) {
+                html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+            
+            resultElement.innerHTML = html;
+        }
+        
+        // Store JWT token from login
+        let authToken = '';
+        
+        // Basic Tests
+        document.getElementById('testApiBtn').addEventListener('click', function() {
+            axios.get('/api/sample')
+                .then(function(response) {
+                    displayResult('apiTestResult', true, 'API connection successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('apiTestResult', false, 'API connection failed: ' + error.message);
+                });
+        });
+        
+        document.getElementById('testDbBtn').addEventListener('click', function() {
+            axios.get('/api/sample/db-test')
+                .then(function(response) {
+                    displayResult('dbTestResult', true, 'Database connection successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('dbTestResult', false, 'Database connection failed: ' + error.message);
+                });
+        });
+        
+        document.getElementById('testLoggingBtn').addEventListener('click', function() {
+            axios.get('/api/sample/log-test')
+                .then(function(response) {
+                    displayResult('loggingTestResult', true, 'Logging test successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('loggingTestResult', false, 'Logging test failed: ' + error.message);
+                });
+        });
+        
+        // User Tests
+        document.getElementById('testRegisterBtn').addEventListener('click', function() {
+            const userData = {
+                username: document.getElementById('regUsername').value,
+                password: document.getElementById('regPassword').value,
+                name: document.getElementById('regName').value,
+                email: document.getElementById('regEmail').value,
+                phone: document.getElementById('regPhone').value,
+                address: document.getElementById('regAddress').value
+            };
+            
+            axios.post('/api/auth/signup', userData)
+                .then(function(response) {
+                    displayResult('registerTestResult', true, 'User registration successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('registerTestResult', false, 'User registration failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        document.getElementById('testLoginBtn').addEventListener('click', function() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            axios.post(`/api/auth/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
+                .then(function(response) {
+                    authToken = response.data.token;
+                    displayResult('loginTestResult', true, 'User login successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('loginTestResult', false, 'User login failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        document.getElementById('testProfileBtn').addEventListener('click', function() {
+            if (!authToken) {
+                displayResult('profileTestResult', false, 'Authentication required. Please login first.');
+                return;
+            }
+            
+            axios.get('/api/users/profile', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+                .then(function(response) {
+                    displayResult('profileTestResult', true, 'Profile retrieval successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('profileTestResult', false, 'Profile retrieval failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        // Notice Tests
+        document.getElementById('testNoticeListBtn').addEventListener('click', function() {
+            axios.get('/api/notices')
+                .then(function(response) {
+                    displayResult('noticeListTestResult', true, 'Notice list retrieval successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('noticeListTestResult', false, 'Notice list retrieval failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        document.getElementById('testNoticeDetailBtn').addEventListener('click', function() {
+            const noticeId = document.getElementById('noticeId').value;
+            
+            if (!noticeId) {
+                displayResult('noticeDetailTestResult', false, 'Please enter a Notice ID');
+                return;
+            }
+            
+            axios.get(`/api/notices/${noticeId}`)
+                .then(function(response) {
+                    displayResult('noticeDetailTestResult', true, 'Notice detail retrieval successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('noticeDetailTestResult', false, 'Notice detail retrieval failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        // Inquiry Tests
+        document.getElementById('testInquiryListBtn').addEventListener('click', function() {
+            axios.get('/api/inquiries')
+                .then(function(response) {
+                    displayResult('inquiryListTestResult', true, 'Inquiry list retrieval successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('inquiryListTestResult', false, 'Inquiry list retrieval failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        document.getElementById('testInquiryCreateBtn').addEventListener('click', function() {
+            if (!authToken) {
+                displayResult('inquiryCreateTestResult', false, 'Authentication required. Please login first.');
+                return;
+            }
+            
+            const inquiryData = {
+                title: document.getElementById('inquiryTitle').value,
+                content: document.getElementById('inquiryContent').value
+            };
+            
+            axios.post('/api/inquiries', inquiryData, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+                .then(function(response) {
+                    displayResult('inquiryCreateTestResult', true, 'Inquiry creation successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('inquiryCreateTestResult', false, 'Inquiry creation failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        // Review Tests
+        document.getElementById('testReviewListBtn').addEventListener('click', function() {
+            axios.get('/api/reviews')
+                .then(function(response) {
+                    displayResult('reviewListTestResult', true, 'Review list retrieval successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('reviewListTestResult', false, 'Review list retrieval failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        document.getElementById('testReviewCreateBtn').addEventListener('click', function() {
+            if (!authToken) {
+                displayResult('reviewCreateTestResult', false, 'Authentication required. Please login first.');
+                return;
+            }
+            
+            const reviewData = {
+                purchaseId: document.getElementById('reviewPurchaseId').value,
+                rating: document.getElementById('reviewRating').value,
+                content: document.getElementById('reviewContent').value
+            };
+            
+            axios.post('/api/reviews', reviewData, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+                .then(function(response) {
+                    displayResult('reviewCreateTestResult', true, 'Review creation successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('reviewCreateTestResult', false, 'Review creation failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        // Purchase Tests
+        document.getElementById('testPurchaseListBtn').addEventListener('click', function() {
+            if (!authToken) {
+                displayResult('purchaseListTestResult', false, 'Authentication required. Please login first.');
+                return;
+            }
+            
+            axios.get('/api/purchases', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+                .then(function(response) {
+                    displayResult('purchaseListTestResult', true, 'Purchase list retrieval successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('purchaseListTestResult', false, 'Purchase list retrieval failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+        
+        document.getElementById('testPurchaseCreateBtn').addEventListener('click', function() {
+            if (!authToken) {
+                displayResult('purchaseCreateTestResult', false, 'Authentication required. Please login first.');
+                return;
+            }
+            
+            const purchaseData = {
+                recipe: document.getElementById('purchaseRecipe').value,
+                ingredients: document.getElementById('purchaseIngredients').value.split(',').map(item => item.trim()),
+                deliveryAddress: document.getElementById('purchaseAddress').value
+            };
+            
+            axios.post('/api/purchases', purchaseData, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+                .then(function(response) {
+                    displayResult('purchaseCreateTestResult', true, 'Purchase creation successful', response.data);
+                })
+                .catch(function(error) {
+                    displayResult('purchaseCreateTestResult', false, 'Purchase creation failed: ' + 
+                        (error.response ? error.response.data : error.message));
+                });
+        });
+    </script>
+</body>
+</html>
