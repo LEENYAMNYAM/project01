@@ -19,7 +19,6 @@ public class IngredientEntity {
     private String ingredientName;
     @Column(unique = true, nullable = false)
     private String productId;
-    @Column(nullable = false)
     private Long price;
     private String mallLink;
     private String mallName;
