@@ -1,6 +1,5 @@
 package com.example.pro.dto;
 
-import com.example.pro.entity.IngredientEntity;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -55,13 +55,13 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4 mb-2" th:each="ingredient : ${recipe.ingredients}">
+                        <div class="col-md-4 mb-2" th:each="ingredient : ${recipeIngredientsDTOList}">
                             <div class="d-flex align-items-center">
-                                <img th:if="${ingredient.ingredientEntity.imageUrl}" 
-                                     th:src="${ingredient.ingredientEntity.imageUrl}" 
+                                <img th:if="${ingredient.ingredient.imageUrl}"
+                                     th:src="${ingredient.ingredient.imageUrl}"
                                      class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
                                 <div>
-                                    <span th:text="${ingredient.ingredientEntity.ingredientName}">재료명</span>
+                                    <span th:text="${ingredient.ingredient.ingredientName}">재료명</span>
                                     <span th:text="${ingredient.quantity} + '개'">수량</span>
                                 </div>
                             </div>
@@ -76,88 +76,88 @@
                     <h3>👨‍🍳 요리 순서</h3>
                 </div>
                 <div class="card-body">
-                    <div class="row mb-4" th:each="step, stepStat : ${recipe.steps}">
+                    <div class="row mb-4" th:each="step : ${recipeSteps}">
                         <div class="col-md-8">
-                            <h4 th:text="'Step ' + ${stepStat.count}">Step 1</h4>
+                            <h4 th:text="'Step ' + ${step.stepNumber}">순서</h4>
                             <p th:text="${step.content}">요리 설명</p>
                         </div>
                         <div class="col-md-4">
-                            <img th:if="${step.imagename}" th:src="@{'/assets/uploads/' + ${step.imagename}}"
+                            <img th:if="${step.imagePath}" th:src="@{'/assets/uploads/' + ${step.imagePath}}"
                                  class="img-fluid rounded" alt="요리 단계 이미지">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 리뷰 섹션 -->
-            <div class="card bg-dark text-white mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3>💬 리뷰</h3>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">리뷰 작성</button>
-                </div>
-                <div class="card-body">
-                    <!-- 리뷰가 없을 경우 -->
-                    <div th:if="${#lists.isEmpty(recipe.reviews)}" class="text-center py-4">
-                        <p>아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
-                    </div>
-                    
-                    <!-- 리뷰 목록 -->
-                    <div th:unless="${#lists.isEmpty(recipe.reviews)}" class="mb-3" th:each="review : ${recipe.reviews}">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h5 th:text="${review.user.username}">사용자명</h5>
-                                <div class="text-warning mb-2">
-                                    <!-- 별점 표시 -->
-                                    <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, review.rating)}"></i>
-                                    <i class="bi bi-star" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}"></i>
-                                </div>
-                                <p th:text="${review.content}">리뷰 내용</p>
-                            </div>
-                            <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">작성일</small>
-                        </div>
-                        <hr class="text-white-50">
-                    </div>
-                </div>
-            </div>
+<!--            &lt;!&ndash; 리뷰 섹션 &ndash;&gt;-->
+<!--            <div class="card bg-dark text-white mb-4">-->
+<!--                <div class="card-header d-flex justify-content-between align-items-center">-->
+<!--                    <h3>💬 리뷰</h3>-->
+<!--                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">리뷰 작성</button>-->
+<!--                </div>-->
+<!--                <div class="card-body">-->
+<!--                    &lt;!&ndash; 리뷰가 없을 경우 &ndash;&gt;-->
+<!--                    <div th:if="${#lists.isEmpty(recipe.reviews)}" class="text-center py-4">-->
+<!--                        <p>아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>-->
+<!--                    </div>-->
+<!--                    -->
+<!--                    &lt;!&ndash; 리뷰 목록 &ndash;&gt;-->
+<!--                    <div th:unless="${#lists.isEmpty(recipe.reviews)}" class="mb-3" th:each="review : ${recipe.reviews}">-->
+<!--                        <div class="d-flex justify-content-between">-->
+<!--                            <div>-->
+<!--                                <h5 th:text="${review.user.username}">사용자명</h5>-->
+<!--                                <div class="text-warning mb-2">-->
+<!--                                    &lt;!&ndash; 별점 표시 &ndash;&gt;-->
+<!--                                    <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, review.rating)}"></i>-->
+<!--                                    <i class="bi bi-star" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}"></i>-->
+<!--                                </div>-->
+<!--                                <p th:text="${review.content}">리뷰 내용</p>-->
+<!--                            </div>-->
+<!--                            <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">작성일</small>-->
+<!--                        </div>-->
+<!--                        <hr class="text-white-50">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
     </section>
 
-    <!-- 리뷰 작성 모달 -->
-    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark text-white">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="reviewModalLabel">리뷰 작성</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form th:action="@{/review/register}" method="post">
-                        <input type="hidden" name="recipeId" th:value="${recipe.id}">
-                        
-                        <div class="mb-3">
-                            <label for="rating" class="form-label">별점</label>
-                            <select class="form-select" id="rating" name="rating" required>
-                                <option value="5">⭐⭐⭐⭐⭐ (5점)</option>
-                                <option value="4">⭐⭐⭐⭐ (4점)</option>
-                                <option value="3">⭐⭐⭐ (3점)</option>
-                                <option value="2">⭐⭐ (2점)</option>
-                                <option value="1">⭐ (1점)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="content" class="form-label">리뷰 내용</label>
-                            <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
-                        </div>
-                        
-                        <div class="text-end">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                            <button type="submit" class="btn btn-primary">등록</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+<!--    &lt;!&ndash; 리뷰 작성 모달 &ndash;&gt;-->
+<!--    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">-->
+<!--        <div class="modal-dialog">-->
+<!--            <div class="modal-content bg-dark text-white">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title" id="reviewModalLabel">리뷰 작성</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+<!--                    <form th:action="@{/review/register}" method="post">-->
+<!--                        <input type="hidden" name="recipeId" th:value="${recipe.id}">-->
+<!--                        -->
+<!--                        <div class="mb-3">-->
+<!--                            <label for="rating" class="form-label">별점</label>-->
+<!--                            <select class="form-select" id="rating" name="rating" required>-->
+<!--                                <option value="5">⭐⭐⭐⭐⭐ (5점)</option>-->
+<!--                                <option value="4">⭐⭐⭐⭐ (4점)</option>-->
+<!--                                <option value="3">⭐⭐⭐ (3점)</option>-->
+<!--                                <option value="2">⭐⭐ (2점)</option>-->
+<!--                                <option value="1">⭐ (1점)</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        -->
+<!--                        <div class="mb-3">-->
+<!--                            <label for="content" class="form-label">리뷰 내용</label>-->
+<!--                            <textarea class="form-control" id="content" name="content" rows="4" required></textarea>-->
+<!--                        </div>-->
+<!--                        -->
+<!--                        <div class="text-end">-->
+<!--                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>-->
+<!--                            <button type="submit" class="btn btn-primary">등록</button>-->
+<!--                        </div>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 </div>
 </html>

@@ -6,15 +6,12 @@ import com.example.pro.entity.*;
 import com.example.pro.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +21,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
-    private final RecipeIngredientRepository recipeIngredientRepository;
+    private final RecipeIngredientsRepository recipeIngredientsRepository;
     private final RecipeStepRepository recipeStepRepository;
     private final FileService fileService;
     private final UserRepository userRepository;
@@ -33,6 +30,8 @@ public class RecipeServiceImpl implements RecipeService {
     public void registerRecipe(RecipeDTO recipeDTO, List<MultipartFile> recipeStepImages, Map<String, String> paramMap) {
 
         // 1. RecipeEntity 저장
+        log.info("userRepository.findByUsername(recipeDTO.getUsername() : " + userRepository.findByUsername(recipeDTO.getUsername()));
+
         RecipeEntity recipeEntity = dtoToEntity(recipeDTO);
         recipeRepository.save(recipeEntity);
 
@@ -56,7 +55,7 @@ public class RecipeServiceImpl implements RecipeService {
                     .quantity(quantity)
                     .build();
 
-            recipeIngredientRepository.save(recipeIng);
+            recipeIngredientsRepository.save(recipeIng);
             ingredientIndex++;
         }
 
@@ -97,7 +96,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public RecipeDTO getRecipeById(Long id) {
-        return null;
+        RecipeDTO recipeDTO = entityToDto(recipeRepository.findById(id).orElseThrow());
+        return recipeDTO;
     }
 
     @Override
@@ -114,9 +114,9 @@ public class RecipeServiceImpl implements RecipeService {
     RecipeEntity dtoToEntity(RecipeDTO recipeDTO) {
         RecipeEntity recipeEntity = new RecipeEntity();
         recipeEntity.setTitle(recipeDTO.getTitle());
+        recipeEntity.setUser(userRepository.findByUsername(recipeDTO.getUsername()).orElseThrow(null));
         recipeEntity.setCategory(recipeDTO.getCategory());
         recipeEntity.setYoutubeLink(recipeDTO.getYoutubeLink());
-        recipeEntity.setUser(userRepository.findByUsername(recipeDTO.getUsername()).orElse(null));
         recipeEntity.setMainImage(recipeDTO.getMainImagePath());
         recipeEntity.setCreatedAt(LocalDateTime.now());
         recipeEntity.setLikeCount(recipeDTO.getLikeCount() != null ? recipeDTO.getLikeCount() : 0L);

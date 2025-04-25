@@ -1,14 +1,13 @@
 package com.example.pro.controller;
 
+import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.RecipeDTO;
+import com.example.pro.dto.RecipeIngredientsDTO;
 import com.example.pro.dto.RecipeStepDTO;
-import com.example.pro.repository.UserRepository;
-import com.example.pro.service.FileService;
-import com.example.pro.service.IngredientService;
-import com.example.pro.service.RecipeService;
-import com.example.pro.service.RecipeStepService;
+import com.example.pro.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +28,10 @@ import java.util.regex.Pattern;
 public class RecipeController {
 
     private final FileService fileService;
-    private final UserRepository userRepository;
     private final IngredientService ingredientService;
     private final RecipeService recipeService;
     private final RecipeStepService recipeStepService;
+    private final RecipeIngredientsServiceImpl recipeIngredientsService;
 
     @GetMapping("/register")
     public void recipeRegister(Model model) {
@@ -43,16 +42,16 @@ public class RecipeController {
 
     @PostMapping("/register")
     public String recipeRegister(@ModelAttribute RecipeDTO recipeDTO,
-//                                 @AuthenticationPrincipal PrincipalDetail principalDetail,
+                                 @AuthenticationPrincipal PrincipalDetail principalDetail,
                                  @RequestParam Map<String, String> paramMap,
                                  MultipartHttpServletRequest request,
                                  Model model) throws IOException {
 
         //1. 로그인 사용자 정보 세팅
-//        if (principalDetail != null) {
-//            recipeDTO.setUsername(principalDetail.getUsername());
-//        }
-        recipeDTO.setUsername("hong");
+        if (principalDetail != null) {
+            recipeDTO.setUsername(principalDetail.getUsername());
+        }
+//        recipeDTO.setUsername("hong");
 
         // 2. steps[0].stepImage → 대표 이미지
         MultipartFile mainImage = request.getFile("steps[0].stepImage");
@@ -72,8 +71,6 @@ public class RecipeController {
         // 4. 레시피 저장 서비스 호출
         recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap);
 
-        //5. model에 보내기
-
             return "redirect:/recipe/list";
     }
 
@@ -88,17 +85,16 @@ public class RecipeController {
     public String recipeRead(@PathVariable Long recipe_id, Model model) {
         RecipeDTO recipe = recipeService.getRecipeById(recipe_id);
         List<RecipeStepDTO> recipeSteps = recipeStepService.getRecipeStepByRecipeId(recipe.getId());
+        List<RecipeIngredientsDTO> recipeIngredientsDTOList = recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipe.getId());
 
-        if (recipe == null) {
+        if (recipe == null || recipeSteps.isEmpty() ||  recipeIngredientsDTOList.isEmpty() ) {
             return "redirect:/recipe/list"; // 없으면 목록으로 보내기
         }
         model.addAttribute("recipe", recipe);
         model.addAttribute("recipeSteps", recipeSteps);
-
+        model.addAttribute("recipeIngredientsDTOList", recipeIngredientsDTOList);
         return "recipe/view";
     }
-
-
 
     private int extractStepIndex(String key) {
         Matcher matcher = Pattern.compile("steps\\[(\\d+)]\\.stepImage").matcher(key);
