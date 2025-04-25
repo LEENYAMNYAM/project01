@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>테스트 페이지 - 모든 기능</title>
+    <style>
+        .feature-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .feature-section h2 {
+            color: #333;
+            margin-top: 0;
+            border-bottom: 2px solid #666;
+            padding-bottom: 10px;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 10px;
+        }
+        .feature-list a {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .feature-list a:hover {
+            background-color: #45a049;
+        }
+        .feature-description {
+            margin-top: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1 class="text-center my-4">테스트 페이지 - 모든 기능</h1>
+        <p class="text-center mb-5">이 페이지에서는 애플리케이션의 모든 기능을 테스트할 수 있습니다.</p>
+        
+        <!-- 사용자 관리 기능 -->
+        <div class="feature-section">
+            <h2>사용자 관리</h2>
+            <ul class="feature-list">
+                <li>
+                    <a href="/userinfo/join">회원가입</a>
+                    <div class="feature-description">새로운 사용자 계정을 생성합니다.</div>
+                </li>
+                <li>
+                    <a href="/userinfo/login">로그인</a>
+                    <div class="feature-description">기존 계정으로 로그인합니다.</div>
+                </li>
+                <li>
+                    <a href="/userinfo/userlist">사용자 정보</a>
+                    <div class="feature-description">현재 로그인한 사용자의 정보를 확인합니다.</div>
+                </li>
+                <li>
+                    <a href="/userinfo/userupdate">사용자 정보 수정</a>
+                    <div class="feature-description">사용자 정보를 수정합니다.</div>
+                </li>
+                <li>
+                    <a href="/userinfo/delete">회원 탈퇴</a>
+                    <div class="feature-description">사용자 계정을 삭제합니다.</div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 레시피 기능 -->
+        <div class="feature-section">
+            <h2>레시피</h2>
+            <ul class="feature-list">
+                <li>
+                    <a href="/recipe/register">레시피 등록</a>
+                    <div class="feature-description">새로운 레시피를 등록합니다.</div>
+                </li>
+                <li>
+                    <a href="/recipe/list">레시피 목록</a>
+                    <div class="feature-description">등록된 모든 레시피를 확인합니다.</div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 공지사항 기능 -->
+        <div class="feature-section">
+            <h2>공지사항</h2>
+            <ul class="feature-list">
+                <li>
+                    <a href="/notice">공지사항 목록</a>
+                    <div class="feature-description">모든 공지사항을 확인합니다.</div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Q&A 게시판 기능 -->
+        <div class="feature-section">
+            <h2>Q&A 게시판</h2>
+            <ul class="feature-list">
+                <li>
+                    <a href="/qBoard/list">Q&A 게시판 목록</a>
+                    <div class="feature-description">모든 Q&A 게시글을 확인합니다.</div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 리뷰 기능 -->
+        <div class="feature-section">
+            <h2>리뷰</h2>
+            <ul class="feature-list">
+                <li>
+                    <a href="/view/read/1">리뷰 작성 (레시피 ID: 1)</a>
+                    <div class="feature-description">레시피에 대한 리뷰를 작성합니다.</div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 장바구니 및 결제 기능 -->
+        <div class="feature-section">
+            <h2>장바구니 및 결제</h2>
+            <ul class="feature-list">
+                <li>
+                    <a href="/cart">장바구니</a>
+                    <div class="feature-description">장바구니를 확인합니다.</div>
+                </li>
+                <li>
+                    <a href="/payment">결제</a>
+                    <div class="feature-description">결제 페이지로 이동합니다.</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

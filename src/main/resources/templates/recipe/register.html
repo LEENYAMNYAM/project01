@@ -136,8 +136,6 @@
         selectedInput = $(this).closest('.ingredient-entry').find('.ingredient-name');
 
         const modalEl = document.getElementById('ingredientModal');
-        console.log(modalEl);
-
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
 
@@ -151,7 +149,7 @@
         renderIngredientList(keyword);
     });
 
-    /* 모달 재료 검색 리스트*/
+    /* 모달 재료 검색 리스트 */
     function renderIngredientList(keyword) {
         const list = $('#ingredientSearchList');
         list.empty();

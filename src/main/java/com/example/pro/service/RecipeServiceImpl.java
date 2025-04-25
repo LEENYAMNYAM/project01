@@ -33,6 +33,13 @@ public class RecipeServiceImpl implements RecipeService {
         log.info("userRepository.findByUsername(recipeDTO.getUsername() : " + userRepository.findByUsername(recipeDTO.getUsername()));
 
         RecipeEntity recipeEntity = dtoToEntity(recipeDTO);
+
+        UserEntity userEntity = userRepository.findByUsername(recipeDTO.getUsername()).orElseThrow(null);
+        log.info("userEntity : " + userEntity);
+        recipeEntity.setUser(userEntity);
+        log.info("recipeEntity.getUser() : " + recipeEntity.getUser());
+        log.info("recipeEntity.getUser().getUsername() : " + recipeEntity.getUser().getUsername());
+
         recipeRepository.save(recipeEntity);
 
         // 2. 재료 저장
@@ -88,8 +95,13 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public List<RecipeDTO> getAllRecipe() {
            List<RecipeEntity> recipeEntityList = recipeRepository.findAll();
+//           log.info("recipeEntityList.getUser(): " + recipeEntityList.get(1).getUser().getUsername());
         List<RecipeDTO> recipeListDTOs = recipeEntityList.stream()
-                .map( recipeEntity -> entityToDto(recipeEntity))
+                .map( recipeEntity -> {
+                    RecipeDTO recipeDTO = entityToDto(recipeEntity);
+//                    log.info("recipeDTO.getUsername(): " + recipeDTO.getUsername());
+                    return recipeDTO;
+                })
                 .collect(Collectors.toList());
         return recipeListDTOs;
     }
@@ -114,7 +126,6 @@ public class RecipeServiceImpl implements RecipeService {
     RecipeEntity dtoToEntity(RecipeDTO recipeDTO) {
         RecipeEntity recipeEntity = new RecipeEntity();
         recipeEntity.setTitle(recipeDTO.getTitle());
-        recipeEntity.setUser(userRepository.findByUsername(recipeDTO.getUsername()).orElseThrow(null));
         recipeEntity.setCategory(recipeDTO.getCategory());
         recipeEntity.setYoutubeLink(recipeDTO.getYoutubeLink());
         recipeEntity.setMainImage(recipeDTO.getMainImagePath());
