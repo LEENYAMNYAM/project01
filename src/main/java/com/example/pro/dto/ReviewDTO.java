@@ -6,12 +6,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewDTO {
     private Long id;
+
+    private Long recipeId;
 
     private UserEntity buyer;
 
@@ -22,4 +26,8 @@ public class ReviewDTO {
     private int rating;
 
     private String imagePath;
+
+    private String reply;
+
+    private LocalDateTime replyDate;
 }

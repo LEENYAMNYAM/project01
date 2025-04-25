@@ -4,9 +4,13 @@ import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.RecipeDTO;
 import com.example.pro.dto.RecipeIngredientsDTO;
 import com.example.pro.dto.RecipeStepDTO;
+import com.example.pro.entity.ReviewEntity;
 import com.example.pro.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +36,7 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final RecipeStepService recipeStepService;
     private final RecipeIngredientsServiceImpl recipeIngredientsService;
+    private final ReviewService reviewService;
 
     @GetMapping("/register")
     public void recipeRegister(Model model) {
@@ -81,20 +86,41 @@ public class RecipeController {
         return "/recipe/list";
     }
 
-    @GetMapping("/view")
-    public String recipeRead(@RequestParam("id") Long recipe_id, Model model) {
+    @GetMapping({"/view", "/update"})
+    public void recipeRead(@RequestParam("id") Long recipe_id,
+                            @RequestParam(value = "sort", required = false, defaultValue = "newest") String sortBy,
+                            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                            @RequestParam(value = "size", required = false, defaultValue = "5") int size,
+                            @RequestParam(value = "replyError", required = false) String replyError,
+                            Model model) {
         RecipeDTO recipe = recipeService.getRecipeById(recipe_id);
         List<RecipeStepDTO> recipeSteps = recipeStepService.getRecipeStepByRecipeId(recipe.getId());
         List<RecipeIngredientsDTO> recipeIngredientsDTOList = recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipe.getId());
 
-        if (recipe == null || recipeSteps.isEmpty() ||  recipeIngredientsDTOList.isEmpty() ) {
-            return "redirect:/recipe/list"; // 없으면 목록으로 보내기
-        }
+        // Create Pageable object for pagination
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Get paginated reviews
+        Page<ReviewEntity> reviewPage = reviewService.getReviewsByRecipePaged(recipe_id, sortBy, pageable);
+
+        double averageRating = reviewService.calculateAverageRating(recipe_id);
+        int reviewCount = (int) reviewPage.getTotalElements();
+
         model.addAttribute("recipe", recipe);
         model.addAttribute("recipeSteps", recipeSteps);
         model.addAttribute("recipeIngredientsDTOList", recipeIngredientsDTOList);
-        return "recipe/view";
+        model.addAttribute("categories", List.of("밥", "국", "메인반찬", "밑반찬", "면"));
+        model.addAttribute("ingredients", ingredientService.findAllIngredient());
+
+        }
+
+    @PostMapping("/update")
+    public String recipeUpdate(@RequestParam("id") Long recipe_id, Model model) {
+        return "/recipe/list";
     }
+
+
+
 
 
     private int extractStepIndex(String key) {

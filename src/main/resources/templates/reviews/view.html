@@ -25,21 +25,21 @@
                                 <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span>
                             </p>
                         </div>
-                        
+
                         <!-- 리뷰 이미지 -->
                         <div class="mb-4" th:if="${review.imagePath != null}">
                             <img th:src="@{${review.imagePath}}" class="img-fluid rounded" alt="리뷰 이미지" />
                         </div>
-                        
+
                         <!-- 리뷰 내용 -->
                         <div class="mb-4">
                             <h6>리뷰 내용</h6>
                             <p class="card-text" th:text="${review.content}">리뷰 내용이 여기에 표시됩니다.</p>
                         </div>
-                        
+
                         <!-- 버튼 -->
                         <div class="d-flex justify-content-between mt-4">
-                            <a th:href="@{/reviews/list}" class="btn btn-secondary">목록으로</a>
+                            <a th:href="@{/reviews/list/{id}(id=${review.recipe.id})}" class="btn btn-secondary">목록으로</a>
                             <div th:if="${#authentication.principal.username == review.buyer.username}">
                                 <a th:href="@{/reviews/update/{id}(id=${review.id})}" class="btn btn-warning me-2">수정</a>
                                 <a th:href="@{/reviews/delete/{id}(id=${review.id})}" 
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- 레시피로 돌아가기 -->
                 <div class="text-center mt-3">
                     <a th:href="@{/recipe/view/{id}(id=${review.recipe.id})}" class="btn btn-outline-primary">

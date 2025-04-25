@@ -11,10 +11,16 @@
                         <h3 class="mb-0">리뷰 작성하기</h3>
                     </div>
                     <div class="card-body">
-                        <form action="/view/reviewregister" method="post" enctype="multipart/form-data">
+                        <!-- 에러 메시지 표시 -->
+                        <div th:if="${error}" class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span th:text="${error}">에러 메시지</span>
+                        </div>
+
+                        <form action="/reviews/register" method="post" enctype="multipart/form-data">
                             <!-- 레시피 ID (hidden) -->
-                            <input type="hidden" name="recipeId" th:value="${recipe_id}" />
-                            
+                            <input type="hidden" name="recipeId" th:value="${reviewDTO.recipeId}" />
+
                             <!-- 별점 -->
                             <div class="form-group mb-3">
                                 <label for="rating">별점</label>
@@ -27,24 +33,24 @@
                                     <option value="5">★★★★★ (5점)</option>
                                 </select>
                             </div>
-                            
+
                             <!-- 리뷰 내용 -->
                             <div class="form-group mb-3">
                                 <label for="content">리뷰 내용</label>
                                 <textarea id="content" name="content" class="form-control" rows="5" 
                                           placeholder="리뷰 내용을 입력하세요 (최대 1000자)" maxlength="1000" required></textarea>
                             </div>
-                            
+
                             <!-- 이미지 업로드 -->
                             <div class="form-group mb-3">
                                 <label for="image">이미지 첨부 (선택사항)</label>
                                 <input type="file" id="image" name="image" class="form-control" accept="image/*" />
                                 <small class="form-text text-muted">요리 결과 사진이나 관련 이미지를 첨부할 수 있습니다.</small>
                             </div>
-                            
+
                             <!-- 버튼 -->
                             <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/recipe/view/{id}(id=${recipe_id})}" class="btn btn-secondary">취소</a>
+                                <a th:href="@{/recipe/view/{id}(id=${recipe.id})}" class="btn btn-secondary">취소</a>
                                 <button type="submit" class="btn btn-primary">리뷰 등록</button>
                             </div>
                         </form>

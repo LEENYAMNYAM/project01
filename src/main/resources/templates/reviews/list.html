@@ -39,7 +39,7 @@
             </div>
 
             <div class="mt-4 text-center" th:if="${recipeId != null}">
-                <a th:href="@{/view/read/{recipe_id}(recipe_id=${recipeId})}" class="btn btn-primary btn-lg">➕ 리뷰 작성하기</a>
+                <a th:href="@{/reviews/register/{id}(id=${recipeId})}" class="btn btn-primary btn-lg">➕ 리뷰 작성하기</a>
             </div>
         </div>
     </section>
