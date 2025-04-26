@@ -8,8 +8,32 @@
             <h2 class="text-center mt-0">🍱 전체 레시피 목록</h2>
             <hr class="divider my-4" />
 
+            <!-- 카테고리 검색 리스트 -->
+            <div class="d-flex mb-4" style="gap: 8px;">
+                <a href="/recipe/list" class="btn btn-secondary">전체</a>
+                <a href="/recipe/list?category=밥" class="btn btn-secondary">밥</a>
+                <a href="/recipe/list?category=국" class="btn btn-secondary">국</a>
+                <a href="/recipe/list?category=메인반찬" class="btn btn-secondary">메인반찬</a>
+                <a href="/recipe/list?category=밑반찬" class="btn btn-secondary">밑반찬</a>
+                <a href="/recipe/list?category=면" class="btn btn-secondary">면</a>
+            </div>
+
+            <!-- 검색 -->
+            <form method="get" action="/recipe/list" class="d-flex align-items-center mb-4" style="gap: 8px;">
+                <!-- 카테고리 hidden 필드 추가 -->
+                <input type="hidden" name="category" th:value="${param.category}" />
+
+                <select name="searchType" class="form-select" style="width: 120px; height: 36px; font-size: 14px;">
+                    <option value="title">제목</option>
+                    <option value="writer">작성자</option>
+                </select>
+                <input type="text" name="keyword" class="form-control" placeholder="검색어 입력" style="height: 36px; font-size: 14px;">
+                <button type="submit" class="btn btn-primary" style="height: 36px; width: 80px; font-size: 14px;">검색</button>
+            </form>
+
+            <!-- 전체 레시피 리스트 -->
             <div class="row g-4">
-                <div class="col-6 col-md-4 col-lg-3 col-xl-2" th:each="recipe : ${recipeList}">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="recipe : ${recipeList}">
                     <div class="card h-100 shadow-sm border-0 bg-transparent text-white">
                         <img th:src="'/assets/uploads/' + ${recipe.mainImagePath}" class="card-img-top" alt="레시피 이미지"
                              style="height: 160px; object-fit: cover;" />

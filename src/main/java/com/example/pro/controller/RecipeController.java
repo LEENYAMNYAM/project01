@@ -80,13 +80,33 @@ public class RecipeController {
     }
 
     @GetMapping("/list")
-    public String recipeList(Model model){
-        List<RecipeDTO> recipeList = recipeService.getAllRecipe();
+    public String recipeList(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "searchType", defaultValue = "title") String searchType,
+            @RequestParam(value = "category", required = false) String category,
+            Model model){
+
+        List<RecipeDTO> recipeList;
+
+        if (category != null && !category.isEmpty()) {
+            if (searchType != null && keyword != null && !keyword.isEmpty()) {
+                recipeList = recipeService.searchByCategoryAndKeyword(category, searchType, keyword);
+            } else {
+                recipeList = recipeService.findByCategory(category);
+            }
+        } else {
+            if (searchType != null && keyword != null && !keyword.isEmpty()) {
+                recipeList = recipeService.searchRecipes(searchType, keyword);
+            } else {
+                recipeList = recipeService.getAllRecipe();
+            }
+        }
         model.addAttribute("recipeList", recipeList);
+        model.addAttribute("category", category);
         return "/recipe/list";
     }
 
-    @GetMapping({"/view", "/update"})
+    @GetMapping("/view")
     public void recipeRead(@RequestParam("id") Long recipe_id,
                             @RequestParam(value = "sort", required = false, defaultValue = "newest") String sortBy,
                             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
@@ -120,6 +140,22 @@ public class RecipeController {
         model.addAttribute("pageSize", size);
 
         }
+
+    @GetMapping("/update")
+    public String recipeUpdateview(@RequestParam("id") Long recipe_id, Model model) {
+        RecipeDTO recipe = recipeService.getRecipeById(recipe_id);
+        List<RecipeStepDTO> recipeSteps = recipeStepService.getRecipeStepByRecipeId(recipe.getId());
+        List<RecipeIngredientsDTO> recipeIngredientsDTOList = recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipe.getId());
+
+        model.addAttribute("recipe", recipe);
+        model.addAttribute("recipeSteps", recipeSteps);
+        model.addAttribute("recipeIngredientsDTOList", recipeIngredientsDTOList);
+        model.addAttribute("categories", List.of("밥", "국", "메인반찬", "밑반찬", "면"));
+        model.addAttribute("ingredients", ingredientService.findAllIngredient());
+
+        return "recipe/update"; // 이거면 자동으로 templates/recipe/update.html 찾아감
+    }
+
 
     @PostMapping("/update")
     public String recipeUpdate(@RequestParam("id") Long recipe_id, Model model) {

@@ -11,22 +11,23 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f6f9;
+            background-color: #f1f3f5;
         }
 
-        .notice-form-wrapper {
-            max-width: 720px;
-            margin: auto;
+        .notice-card {
+            width: 100%;
             background-color: #ffffff;
             padding: 3rem;
             border-radius: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease-in-out;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
         }
 
-        .notice-form-wrapper:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0d6efd;
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
         .form-label {
@@ -38,13 +39,16 @@
         textarea.form-control {
             border-radius: 0.75rem;
             border: 1px solid #ced4da;
-            transition: box-shadow 0.2s;
+            padding: 0.75rem 1rem;
+            transition: box-shadow 0.2s ease;
+            color: #212529;
         }
 
         .form-control:focus,
         textarea.form-control:focus {
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
             border-color: #86b7fe;
+            color: #212529;
         }
 
         .btn-rounded {
@@ -53,41 +57,52 @@
             font-weight: 600;
         }
 
+        .btn-dark-outline {
+            border: 1px solid #212529;
+            color: #212529;
+            background-color: transparent;
+        }
+
+        .btn-dark-outline:hover {
+            background-color: #212529;
+            color: white;
+        }
+
+        .input-black-on-fill::placeholder {
+            color: #6c757d;
+        }
+        .input-black-on-fill:focus,
+        .input-black-on-fill:not(:placeholder-shown) {
+            color: #212529;
+        }
+
         .form-check-input {
             transform: scale(1.2);
             margin-right: 10px;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #0d6efd;
         }
     </style>
 
     <section class="page-section">
         <div class="container">
-
-            <div class="notice-form-wrapper">
-                <h2 class="text-center mb-4 section-title">📄 공지사항 등록</h2>
+            <div class="notice-card">
+                <h2 class="section-title">📄 공지사항 등록</h2>
 
                 <form th:action="@{/notice}" method="post">
-
                     <div class="mb-4">
                         <label for="title" class="form-label">제목</label>
-                        <input type="text" id="title" name="title" class="form-control shadow-sm"
+                        <input type="text" id="title" name="title" class="form-control shadow-sm input-black-on-fill"
                                placeholder="예: 시스템 점검 안내" required>
                     </div>
 
                     <div class="mb-4">
                         <label for="writer" class="form-label">작성자</label>
-                        <input type="text" id="writer" name="writer" class="form-control shadow-sm"
-                               placeholder="예: 박영광킹왕짱" required>
+                        <input type="text" id="writer" name="writer" class="form-control shadow-sm input-black-on-fill"
+                               placeholder="예: 관리자" required>
                     </div>
 
                     <div class="mb-4">
                         <label for="content" class="form-label">내용</label>
-                        <textarea id="content" name="content" rows="6" class="form-control shadow-sm"
+                        <textarea id="content" name="content" rows="6" class="form-control shadow-sm input-black-on-fill"
                                   placeholder="공지 내용을 자세히 입력해 주세요." required></textarea>
                     </div>
 

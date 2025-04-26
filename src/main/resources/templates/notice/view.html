@@ -10,17 +10,15 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f2f4f8;
+            background-color: #f1f3f5;
         }
 
         .view-card {
-            max-width: 760px;
-            margin: auto;
-            background-color: #fff;
-            padding: 3.5rem 3rem;
+            width: 100%;
+            background-color: #ffffff;
+            padding: 3rem;
             border-radius: 1.5rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
-            transition: 0.3s ease;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
         }
 
         .section-title {
@@ -28,7 +26,7 @@
             font-weight: 700;
             color: #0d6efd;
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .view-field {
@@ -45,10 +43,11 @@
         .field-content {
             font-size: 1.1rem;
             padding: 1rem 1.25rem;
-            border-radius: 0.8rem;
+            border-radius: 0.75rem;
             background-color: #f8f9fa;
             color: #212529;
             word-break: break-word;
+            white-space: pre-wrap;
         }
 
         .tag {
@@ -72,13 +71,15 @@
             font-weight: 600;
         }
 
-        .view-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-            gap: 0.5rem;
+        .btn-dark-outline {
+            border: 1px solid #212529;
+            color: #212529;
+            background-color: transparent;
+        }
+
+        .btn-dark-outline:hover {
+            background-color: #212529;
+            color: white;
         }
 
         .btn-danger {
@@ -88,6 +89,15 @@
 
         .btn-danger:hover {
             background-color: #e03131;
+        }
+
+        .view-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
     </style>
 
@@ -116,7 +126,7 @@
 
                 <div class="view-field">
                     <div class="field-label">내용</div>
-                    <div class="field-content" th:text="${notice.content}" style="white-space: pre-wrap;">공지 내용</div>
+                    <div class="field-content" th:text="${notice.content}">공지 내용</div>
                 </div>
 
                 <input type="hidden" id="noticeId" th:value="${notice.id}" />
@@ -124,28 +134,28 @@
                 <div class="view-buttons">
                     <a href="/notice/list" class="btn btn-outline-secondary btn-rounded">← 목록으로</a>
                     <div>
-                        <a th:href="@{'/notice/update?id=' + ${notice.id}}" class="btn btn-outline-primary btn-rounded me-2">✏ 수정</a>
+                        <a th:href="@{'/notice/update?id=' + ${notice.id}}" class="btn btn-dark-outline btn-rounded me-2">✏ 수정</a>
                         <button type="button" class="btn btn-danger btn-rounded text-white" onclick="deleteNotice()">❌ 삭제</button>
                     </div>
                 </div>
             </div>
 
             <script>
-                function deleteNotice() {
-                    const id = document.getElementById("noticeId").value;
-                    if (confirm("정말 삭제하시겠습니까?")) {
-                        fetch("/notice/delete/" + id, {
-                            method: "DELETE"
-                        }).then(res => {
-                            if (res.ok) {
-                                alert("삭제되었습니다.");
-                                window.location.href = "/notice/list";
-                            } else {
-                                alert("삭제에 실패했습니다.");
-                            }
-                        });
-                    }
+            function deleteNotice() {
+                const id = document.getElementById("noticeId").value;
+                if (confirm("정말 삭제하시겠습니까?")) {
+                    fetch("/notice/delete/" + id, {
+                        method: "DELETE"
+                    }).then(res => {
+                        if (res.ok) {
+                            alert("삭제되었습니다.");
+                            window.location.href = "/notice/list";
+                        } else {
+                            alert("삭제에 실패했습니다.");
+                        }
+                    });
                 }
+            }
             </script>
         </div>
     </section>

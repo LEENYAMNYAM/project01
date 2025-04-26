@@ -14,12 +14,11 @@
         }
 
         .register-card {
+            width: 100%;
             background-color: #ffffff;
-            border-radius: 1.5rem;
             padding: 3rem;
+            border-radius: 1.5rem;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
-            max-width: 700px;
-            margin: auto;
         }
 
         .section-title {
@@ -41,12 +40,14 @@
             border: 1px solid #ced4da;
             padding: 0.75rem 1rem;
             transition: box-shadow 0.2s ease;
+            color: #212529;
         }
 
         .form-control:focus,
         textarea.form-control:focus {
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
             border-color: #86b7fe;
+            color: #212529;
         }
 
         .btn-rounded {
@@ -65,6 +66,14 @@
             background-color: #212529;
             color: white;
         }
+
+        .input-black-on-fill::placeholder {
+            color: #6c757d;
+        }
+        .input-black-on-fill:focus,
+        .input-black-on-fill:not(:placeholder-shown) {
+            color: #212529;
+        }
     </style>
 
     <section class="page-section">
@@ -73,28 +82,25 @@
                 <div class="section-title">✍ 새 질문 작성</div>
 
                 <form th:action="@{/qnaboard/register}" method="post">
-
                     <div class="mb-4">
                         <label for="title" class="form-label">제목</label>
-                        <input type="text" id="title" name="title" class="form-control shadow-sm" placeholder="질문 제목을 입력하세요" required>
+                        <input type="text" id="title" name="title" class="form-control shadow-sm input-black-on-fill" placeholder="질문 제목을 입력하세요" required>
                     </div>
 
                     <div class="mb-4">
                         <label for="writer" class="form-label">작성자</label>
-                        <input type="text" id="writer" name="writer" class="form-control shadow-sm" placeholder="작성자 이름을 입력하세요" required>
+                        <input type="text" id="writer" name="writer" class="form-control shadow-sm input-black-on-fill" placeholder="작성자 이름을 입력하세요" required>
                     </div>
 
                     <div class="mb-4">
                         <label for="content" class="form-label">내용</label>
-                        <textarea id="content" name="content" rows="6" class="form-control shadow-sm"
-                                  placeholder="질문 내용을 입력해주세요." required></textarea>
+                        <textarea id="content" name="content" rows="6" class="form-control shadow-sm input-black-on-fill" placeholder="질문 내용을 입력해주세요." required></textarea>
                     </div>
 
                     <div class="d-flex justify-content-between mt-4">
                         <a href="/qnaboard/list" class="btn btn-outline-secondary btn-rounded">← 목록으로</a>
                         <button type="submit" class="btn btn-dark-outline btn-rounded">질문 등록</button>
                     </div>
-
                 </form>
             </div>
         </div>
