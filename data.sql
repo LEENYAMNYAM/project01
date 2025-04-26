@@ -3,10 +3,10 @@
 -- Insert test users
 INSERT INTO user (username, password, email, phone, name, gender, role, address, point, regdate, updatedate)
 VALUES 
-('admin', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'admin@example.com', '010-1234-5678', 'Admin User', 'Male', 'ADMIN', '서울시 강남구', 1000, NOW(), NOW()),
-('user1', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'user1@example.com', '010-2345-6789', '홍길동', 'Male', 'USER', '서울시 서초구', 500, NOW(), NOW()),
-('user2', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'user2@example.com', '010-3456-7890', '김철수', 'Male', 'USER', '서울시 송파구', 300, NOW(), NOW()),
-('user3', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'user3@example.com', '010-4567-8901', '이영희', 'Female', 'USER', '서울시 마포구', 700, NOW(), NOW());
+('admin', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'admin@example.com', '010-1234-5678', 'Admin User', 'Male', 'ROLE_ADMIN', '서울시 강남구', 1000, NOW(), NOW()),
+('user1', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'user1@example.com', '010-2345-6789', '홍길동', 'Male', 'ROLE_USER', '서울시 서초구', 500, NOW(), NOW()),
+('user2', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'user2@example.com', '010-3456-7890', '김철수', 'Male', 'ROLE_USER', '서울시 송파구', 300, NOW(), NOW()),
+('user3', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'user3@example.com', '010-4567-8901', '이영희', 'Female', 'ROLE_USER', '서울시 마포구', 700, NOW(), NOW());
 
 -- Insert test ingredients
 INSERT INTO ingredient (ingredient_name, product_id, price, mall_link, mall_name, image_url)

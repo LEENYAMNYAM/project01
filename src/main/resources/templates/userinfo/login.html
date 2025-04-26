@@ -2,31 +2,35 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
+
 <div class="container-fluid text-white p-5" layout:fragment="content">
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card shadow-lg border-0 rounded-3">
-          <div class="card-body p-5">
-            <h3 class="card-title text-center mb-4">Login</h3>
-            <form action="/loginProcess" method="post">
-              <div class="form-group mb-3">
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required>
-              </div>
-              <div class="form-group mb-4">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
-              </div>
-              <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
-                <a th:href="@{/userinfo/join}" class="btn btn-outline-secondary btn-block">Join</a>
-              </div>
-            </form>
-          </div>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="text-center mt-0">🔒 로그인</h2>
+      <hr class="divider my-4"/>
+
+      <form action="/loginProcess" method="post">
+        <div class="form-group mb-4">
+          <label for="username" class="form-label">아이디</label>
+          <input type="text" id="username" name="username" class="form-control bg-transparent text-white"
+                 placeholder="아이디를 입력하세요" required>
         </div>
-        <p class="text-center text-white mt-4">Welcome back to 엄카집밥 🍱</p>
-      </div>
+
+        <div class="form-group mb-4">
+          <label for="password" class="form-label">비밀번호</label>
+          <input type="password" id="password" name="password" class="form-control bg-transparent text-white"
+                 placeholder="비밀번호를 입력하세요" required>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary btn-block">로그인</button>
+          <a th:href="@{/userinfo/join}" class="btn btn-outline-secondary btn-block">회원가입</a>
+        </div>
+      </form>
+
+      <p class="text-center text-white mt-4">Welcome back to 엄카집밥 🍱</p>
     </div>
-  </div>
+  </section>
+
 </div>

@@ -2,37 +2,33 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<div class="container-fluid text-white p-5"  layout:fragment="content">
-  <!-- 카드 컨테이너 -->
-  <div class="d-flex justify-content-center mt-5">
-  <div class="card p-4" style="max-width: 500px; width: 100%; background-color: #f9f9f9;">
-    <h2 class="text-center mb-4">회원 정보</h2>
-    <div class="card-body">
-      <p><strong>아이디:</strong> <span th:text="${user.username}"></span></p>
-      <p><strong>이메일:</strong> <span th:text="${user.email}"></span></p>
-      <p><strong>전화번호:</strong> <span th:text="${user.phone}"></span></p>
-      <p><strong>성별:</strong> <span th:text="${user.gender}"></span></p>
-      <p><strong>주소:</strong> <span th:text="${user.address}"></span></p>
-      <p><strong>포인트:</strong> <span th:text="${user.points}"></span></p>
-    </div>
 
-    <!-- 버튼들을 붙여서 배치 -->
-    <div class="d-flex justify-content-center mt-3">
-    <div class="d-flex mt-3">
-      <a th:href="@{/userinfo/userupdate}">
-        <button type="button" class="btn btn-warning me-0">회원정보 수정</button>
-      </a>
-      <a th:href="@{/}">
-        <button type="button" class="btn btn-secondary me-0">메인화면</button>
-      </a>
-      <a th:href="@{/userinfo/delete}">
-        <button type="button" class="btn btn-danger me-0" onclick="return confirm('정말 탈퇴하시겠습니까?');">회원 탈퇴</button>
-      </a>
-    </div>
-    </div>
-  </div>
-</div>
-</div>
+<div class="container-fluid text-white p-5" layout:fragment="content">
 
+  <section class="page-section">
+    <div class="container">
+      <h2 class="text-center mt-0">👤 회원 정보</h2>
+      <hr class="divider my-4"/>
+
+      <div class="card shadow-lg border-0 rounded-3 mb-4 bg-transparent text-white">
+        <div class="card-body p-5">
+          <p><strong>아이디:</strong> <span th:text="${user.username}" style="color: white;"></span></p>
+          <p><strong>이메일:</strong> <span th:text="${user.email}" style="color: white;"></span></p>
+          <p><strong>전화번호:</strong> <span th:text="${user.phone}" style="color: white;"></span></p>
+          <p><strong>성별:</strong> <span th:text="${user.gender}" style="color: white;"></span></p>
+          <p><strong>주소:</strong> <span th:text="${user.address}" style="color: white;"></span></p>
+          <p><strong>포인트:</strong> <span th:text="${user.points}" style="color: white;"></span></p>
+
+          <div class="d-grid gap-2 mt-4">
+            <a th:href="@{/userinfo/userupdate}" class="btn btn-primary btn-block">회원정보 수정</a>
+            <a th:href="@{/}" class="btn btn-outline-secondary btn-block">메인화면</a>
+            <a th:href="@{/userinfo/delete}" class="btn btn-danger btn-block" onclick="return confirm('정말 탈퇴하시겠습니까?');">회원 탈퇴</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
 
 </html>

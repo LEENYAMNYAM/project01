@@ -1,9 +1,6 @@
 package com.example.pro.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,9 +8,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class QnABoardDTO {
 
-    private Long qno;
+    private Long id;
     private String title;
     private String writer;
     private String content;

@@ -111,6 +111,13 @@ public class RecipeController {
         model.addAttribute("recipeIngredientsDTOList", recipeIngredientsDTOList);
         model.addAttribute("categories", List.of("밥", "국", "메인반찬", "밑반찬", "면"));
         model.addAttribute("ingredients", ingredientService.findAllIngredient());
+        model.addAttribute("reviewPage", reviewPage);
+        model.addAttribute("reviews", reviewPage.getContent());
+        model.addAttribute("averageRating", averageRating);
+        model.addAttribute("reviewCount", reviewCount);
+        model.addAttribute("currentSort", sortBy);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
 
         }
 

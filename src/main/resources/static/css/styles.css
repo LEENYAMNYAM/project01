@@ -3727,6 +3727,7 @@ textarea.form-control-lg {
 }
 
 .navbar {
+  transition: background-color 0.3s, color 0.3s;
   --bs-navbar-padding-x: 0;
   --bs-navbar-padding-y: 0.5rem;
   --bs-navbar-color: rgba(0, 0, 0, 0.55);

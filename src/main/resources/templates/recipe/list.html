@@ -2,8 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<div class="container-fluid text-white p-5" layout:fragment="content"
-     style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
+<div class="container-fluid text-white p-5" layout:fragment="content">
     <section class="page-section">
         <div class="container">
             <h2 class="text-center mt-0">🍱 전체 레시피 목록</h2>
@@ -11,27 +10,27 @@
 
             <div class="row g-4">
                 <div class="col-6 col-md-4 col-lg-3 col-xl-2" th:each="recipe : ${recipeList}">
-                    <div class="card h-100 shadow-sm border-0">
+                    <div class="card h-100 shadow-sm border-0 bg-transparent text-white">
                         <img th:src="'/assets/uploads/' + ${recipe.mainImagePath}" class="card-img-top" alt="레시피 이미지"
                              style="height: 160px; object-fit: cover;" />
                         <div class="card-body p-2">
                             <h6 class="card-title text-truncate mb-1" th:text="${recipe.title}">레시피 제목</h6>
                             <p class="text-muted mb-1" style="font-size: 0.85rem;">
-                                <span th:text="${recipe.username}">작성자</span>
-                                <span th:text="${recipe.category}">카테고리</span>
-                                <span th:text="${#temporals.format(recipe.createdAt, 'MM/dd')}">등록일</span>
-                                <span th:text="'❤️' + ${recipe.likeCount}">좋아요수</span>
+                                <span class="text-white" th:text="${recipe.username}">작성자</span>
+                                <span class="text-white" th:text="${recipe.category}">카테고리</span>
+                                <span class="text-white" th:text="${#temporals.format(recipe.createdAt, 'MM/dd')}">등록일</span>
+                                <span class="text-white" th:text="'❤️' + ${recipe.likeCount}">좋아요수</span>
                             </p>
                         </div>
-                        <div class="card-footer text-center bg-white border-0">
-                            <a th:href="@{/recipe/view(id=${recipe.id})}" class="btn btn-outline-secondary btn-sm w-100">자세히 보기</a>
+                        <div class="card-footer text-center bg-transparent border-0">
+                            <a th:href="@{/recipe/view(id=${recipe.id})}" class="btn btn-secondary btn-sm w-100" >자세히 보기</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="mt-4 text-center">
-                <a href="/recipe/register" class="btn btn-primary btn-lg">➕ 레시피 등록</a>
+                <a href="/recipe/register" class="btn btn-primary btn-lg">레시피 등록</a>
             </div>
         </div>
     </section>

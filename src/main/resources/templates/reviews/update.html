@@ -2,84 +2,86 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<div layout:fragment="content">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-warning">
-                        <h3 class="mb-0">리뷰 수정하기</h3>
-                    </div>
-                    <div class="card-body">
-                        <!-- 에러 메시지 표시 -->
-                        <div th:if="${error}" class="alert alert-danger" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            <span th:text="${error}">에러 메시지</span>
+<div class="container-fluid text-white p-5" layout:fragment="content">
+    <section class="page-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-warning">
+                            <h3 class="mb-0">리뷰 수정하기</h3>
                         </div>
-
-                        <form th:action="@{/reviews/update/{id}(id=${reviewDTO.id})}" method="post" enctype="multipart/form-data">
-                            <!-- 리뷰 ID (hidden) -->
-                            <input type="hidden" name="id" th:value="${reviewDTO.id}" />
-                            <input type="hidden" name="recipeId" th:value="${reviewDTO.recipeId}" />
-
-                            <!-- 레시피 정보 -->
-                            <div class="mb-3">
-                                <label class="form-label">레시피</label>
-                                <p class="form-control-plaintext" th:text="${review.recipe.title}">레시피 제목</p>
+                        <div class="card-body">
+                            <!-- 에러 메시지 표시 -->
+                            <div th:if="${error}" class="alert alert-danger" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span th:text="${error}">에러 메시지</span>
                             </div>
 
-                            <!-- 별점 -->
-                            <div class="form-group mb-3">
-                                <label for="rating">별점</label>
-                                <select id="rating" name="rating" class="form-control" required>
-                                    <option value="1" th:selected="${reviewDTO.rating == 1}">★☆☆☆☆ (1점)</option>
-                                    <option value="2" th:selected="${reviewDTO.rating == 2}">★★☆☆☆ (2점)</option>
-                                    <option value="3" th:selected="${reviewDTO.rating == 3}">★★★☆☆ (3점)</option>
-                                    <option value="4" th:selected="${reviewDTO.rating == 4}">★★★★☆ (4점)</option>
-                                    <option value="5" th:selected="${reviewDTO.rating == 5}">★★★★★ (5점)</option>
-                                </select>
-                            </div>
+                            <form th:action="@{/reviews/update/{id}(id=${reviewDTO.id})}" method="post" enctype="multipart/form-data">
+                                <!-- 리뷰 ID (hidden) -->
+                                <input type="hidden" name="id" th:value="${reviewDTO.id}" />
+                                <input type="hidden" name="recipeId" th:value="${reviewDTO.recipeId}" />
 
-                            <!-- 리뷰 내용 -->
-                            <div class="form-group mb-3">
-                                <label for="content">리뷰 내용</label>
-                                <textarea id="content" name="content" class="form-control" rows="5" 
-                                          placeholder="리뷰 내용을 입력하세요 (최대 1000자)" maxlength="1000" required
-                                          th:text="${reviewDTO.content}"></textarea>
-                            </div>
-
-                            <!-- 현재 이미지 -->
-                            <div class="mb-3" th:if="${reviewDTO.imagePath != null}">
-                                <label class="form-label">현재 이미지</label>
-                                <div>
-                                    <img th:src="@{${reviewDTO.imagePath}}" class="img-fluid rounded mb-2"
-                                         alt="현재 이미지" style="max-height: 200px;" />
+                                <!-- 레시피 정보 -->
+                                <div class="mb-3">
+                                    <label class="form-label">레시피</label>
+                                    <p class="form-control-plaintext" th:text="${review.recipe.title}">레시피 제목</p>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="deleteImage" name="deleteImage">
-                                    <label class="form-check-label" for="deleteImage">
-                                        이미지 삭제
-                                    </label>
+
+                                <!-- 별점 -->
+                                <div class="form-group mb-3">
+                                    <label for="rating">별점</label>
+                                    <select id="rating" name="rating" class="form-control" required>
+                                        <option value="1" th:selected="${reviewDTO.rating == 1}">★☆☆☆☆ (1점)</option>
+                                        <option value="2" th:selected="${reviewDTO.rating == 2}">★★☆☆☆ (2점)</option>
+                                        <option value="3" th:selected="${reviewDTO.rating == 3}">★★★☆☆ (3점)</option>
+                                        <option value="4" th:selected="${reviewDTO.rating == 4}">★★★★☆ (4점)</option>
+                                        <option value="5" th:selected="${reviewDTO.rating == 5}">★★★★★ (5점)</option>
+                                    </select>
                                 </div>
-                            </div>
 
-                            <!-- 새 이미지 업로드 -->
-                            <div class="form-group mb-3">
-                                <label for="image">새 이미지 첨부 (선택사항)</label>
-                                <input type="file" id="image" name="image" class="form-control" accept="image/*" />
-                                <small class="form-text text-muted">새 이미지를 업로드하면 기존 이미지는 대체됩니다.</small>
-                            </div>
+                                <!-- 리뷰 내용 -->
+                                <div class="form-group mb-3">
+                                    <label for="content">리뷰 내용</label>
+                                    <textarea id="content" name="content" class="form-control" rows="5"
+                                              placeholder="리뷰 내용을 입력하세요 (최대 1000자)" maxlength="1000" required
+                                              th:text="${reviewDTO.content}"></textarea>
+                                </div>
 
-                            <!-- 버튼 -->
-                            <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/reviews/view/{id}(id=${reviewDTO.id})}" class="btn btn-secondary">취소</a>
-                                <button type="submit" class="btn btn-warning">수정 완료</button>
-                            </div>
-                        </form>
+                                <!-- 현재 이미지 -->
+                                <div class="mb-3" th:if="${reviewDTO.imagePath != null}">
+                                    <label class="form-label">현재 이미지</label>
+                                    <div>
+                                        <img th:src="@{${reviewDTO.imagePath}}" class="img-fluid rounded mb-2"
+                                             alt="현재 이미지" style="max-height: 200px;" />
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="deleteImage" name="deleteImage">
+                                        <label class="form-check-label" for="deleteImage">
+                                            이미지 삭제
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- 새 이미지 업로드 -->
+                                <div class="form-group mb-3">
+                                    <label for="image">새 이미지 첨부 (선택사항)</label>
+                                    <input type="file" id="image" name="image" class="form-control" accept="image/*" />
+                                    <small class="form-text text-muted">새 이미지를 업로드하면 기존 이미지는 대체됩니다.</small>
+                                </div>
+
+                                <!-- 버튼 -->
+                                <div class="d-flex justify-content-between mt-4">
+                                    <a th:href="@{/reviews/view/{id}(id=${reviewDTO.id})}" class="btn btn-secondary">취소</a>
+                                    <button type="submit" class="btn btn-warning">수정 완료</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 </html>

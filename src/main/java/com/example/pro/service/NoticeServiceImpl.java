@@ -4,6 +4,8 @@ import com.example.pro.dto.NoticeDTO;
 import com.example.pro.entity.NoticeEntity;
 import com.example.pro.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,18 @@ public class NoticeServiceImpl implements NoticeService {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<NoticeDTO> getNoticePage(Pageable pageable) {
+        return noticeRepository.findAll(pageable)
+                .map(this::toDTO);
+    }
+
+    @Override
+    public Page<NoticeDTO> searchNoticesByTitle(String keyword, Pageable pageable) {
+        return noticeRepository.findByTitleContaining(keyword, pageable)
+                .map(this::toDTO);
     }
 
     @Override
@@ -48,6 +62,15 @@ public class NoticeServiceImpl implements NoticeService {
         noticeRepository.deleteById(id);
     }
 
+    @Override
+    public List<NoticeDTO> searchNoticesByTitle(String keyword) {
+        return noticeRepository.findByTitleContaining(keyword)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Entity → DTO 변환
     private NoticeDTO toDTO(NoticeEntity noticeEntity) {
         NoticeDTO dto = new NoticeDTO();
         dto.id = noticeEntity.getId();
