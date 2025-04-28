@@ -56,7 +56,7 @@ public class RecipeStepServiceImpl implements RecipeStepService{
     RecipeStepEntity dtoToEntity(RecipeStepDTO recipeStepDTO) {
         RecipeStepEntity recipeStepEntity = new RecipeStepEntity();
         recipeStepEntity.setId(recipeStepDTO.getId());
-        recipeStepEntity.setRecipe( recipeRepository.findById(recipeStepDTO.getRecipeId()).get());
+        recipeStepEntity.setRecipe(recipeRepository.findById(recipeStepDTO.getRecipeId()).get());
         recipeStepEntity.setStepNumber(recipeStepDTO.getStepNumber());
         recipeStepEntity.setContent(recipeStepDTO.getContent());
         recipeStepEntity.setImageName(recipeStepDTO.getImagePath());

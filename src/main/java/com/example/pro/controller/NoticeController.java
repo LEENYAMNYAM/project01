@@ -15,12 +15,12 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
-    @GetMapping
+    @GetMapping( "/list")
     public List<NoticeDTO> getAll() {
         return noticeService.getAllNotices();
     }
 
-    @PostMapping
+    @PostMapping( "/register")
     public NoticeDTO create(@RequestBody NoticeDTO dto) {
         return noticeService.createNotice(dto);
     }

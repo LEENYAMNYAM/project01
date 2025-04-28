@@ -81,8 +81,8 @@ public class RecipeController {
         return "/recipe/list";
     }
 
-    @GetMapping("/read/{recipe_id}")
-    public String recipeRead(@PathVariable Long recipe_id, Model model) {
+    @GetMapping("/view")
+    public String recipeRead(@RequestParam("id") Long recipe_id, Model model) {
         RecipeDTO recipe = recipeService.getRecipeById(recipe_id);
         List<RecipeStepDTO> recipeSteps = recipeStepService.getRecipeStepByRecipeId(recipe.getId());
         List<RecipeIngredientsDTO> recipeIngredientsDTOList = recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipe.getId());
@@ -95,6 +95,7 @@ public class RecipeController {
         model.addAttribute("recipeIngredientsDTOList", recipeIngredientsDTOList);
         return "recipe/view";
     }
+
 
     private int extractStepIndex(String key) {
         Matcher matcher = Pattern.compile("steps\\[(\\d+)]\\.stepImage").matcher(key);
