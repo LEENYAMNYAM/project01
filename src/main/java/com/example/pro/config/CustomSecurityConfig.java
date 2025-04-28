@@ -35,7 +35,7 @@ public class CustomSecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequestsConfigurer -> authorizeHttpRequestsConfigurer
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                         .requestMatchers( "/", "/login","/userinfo/**","/recipe/**","/qnaboard/**","/notice/**", "/review/**", "/userinfo/**").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/",
                                 "/home",
                                 "/assets/**",

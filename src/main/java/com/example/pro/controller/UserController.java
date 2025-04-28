@@ -109,10 +109,9 @@ public class UserController {
 
         userService.deleteUser(username);
 
-        // 로그아웃 처리할 수도 있음 (선택사항)
-        SecurityContextHolder.clearContext();
 
-        return "redirect:/logout"; // 혹은 메인 페이지로 리디렉트
+
+        return "redirect:/logout";
     }
 
 

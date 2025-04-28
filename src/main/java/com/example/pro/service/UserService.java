@@ -3,11 +3,14 @@ package com.example.pro.service;
 import com.example.pro.entity.UserEntity;
 import com.example.pro.dto.UserDTO;
 
+import java.util.List;
+
 public interface UserService {
     void registerUser(UserDTO userDTO);
     UserEntity readUser(String username);
     void updateUser(String username, UserDTO userDTO);
     void deleteUser(String username);
+    List<UserEntity> findAll();
 
     //    void changePassword(Long id, String newPassword);
     void dropUser(Long id);

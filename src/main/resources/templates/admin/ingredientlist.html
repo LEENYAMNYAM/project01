@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+<head>
+</head>
+<body class="bg-dark text-white">
+
+<div class="container-fluid text-white p-5" layout:fragment="content">
+    <div class="container mt-5">
+        <h2 class="text-center">🍳 재료 리스트</h2>
+        <hr class="divider my-4"/>
+
+        <!-- 레시피 작성 폼 -->
+        <form >
+            <!-- 재료 입력 (검색 버튼 + 추가 버튼 한 줄에 정렬) -->
+            <div class="form-group mb-4">
+
+                <div class="d-flex align-items-center gap-2">
+                    <input type="text" name="ingredients[0].ingredientName" placeholder="재료명 입력" class="form-control" style="max-width: 300px;" />
+
+                    <button type="button" class="btn btn-secondary open-ingredient-modal">재료 검색</button>
+
+                    <a th:href="@{/admin/ingredientinsert}">
+                        <button type="button" class="btn btn-primary">재료 추가</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 재료 카드 목록 -->
+            <div id="ingredientList" class="container">
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+                    <div class="col" th:each="ingredient : ${ingredients}">
+                        <div class="card ingredient-select" style="cursor: pointer;" data-name="${ingredient.ingredientName}">
+                            <img th:src="${ingredient.imageUrl}" class="card-img-top" alt="이미지" style="height: 130px; object-fit: cover;">
+                            <div class="card-body p-2 text-center" style="background-color: #f8f9fa; color: #000;">
+                                <p th:text="${ingredient.ingredientName != null and !ingredient.ingredientName.isEmpty() ? ingredient.ingredientName : '이름 없음'}">이름</p>
+                                <p th:text="${ingredient.detail}">상세 정보</p>
+                                <p th:text="${ingredient.price != null ? ingredient.price.toString() + '원' : '가격 없음'}">가격</p>
+
+                                <a th:href="@{/admin/ingredient/edit/{id}(id=${ingredient.id})}" class="btn btn-primary btn-sm mt-2">수정</a>
+                                <a th:href="@{/admin/ingredient/delete/{id}(id=${ingredient.id})}" class="btn btn-danger btn-sm mt-2 ms-1">삭제</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script th:inline="javascript">
+                const ingredients = [[${ingredients}]];  // 서버에서 전체 재료 목록 가져온 거
+
+                $(document).ready(function() {
+                    $('.open-ingredient-modal').click(function() {
+                        const searchName = $('input[name="ingredients[0].ingredientName"]').val().toLowerCase();
+                        const filteredIngredients = ingredients.filter(ing => ing.ingredientName.toLowerCase().includes(searchName));
+
+                        // 기존 재료 카드 삭제
+                        $('#ingredientList .row').empty();
+
+                        // 필터된 재료만 다시 추가
+                        filteredIngredients.forEach(ingredient => {
+                            const card = `
+                    <div class="col mb-4">
+                        <div class="card ingredient-select" style="cursor: pointer;" data-name="${ingredient.ingredientName}">
+                            <img src="${ingredient.imageUrl}" class="card-img-top" alt="이미지" style="height: 130px; object-fit: cover;">
+                            <div class="card-body p-2 text-center" style="background-color: #f8f9fa; color: #000;">
+                                <p>${ingredient.ingredientName}</p>
+                                <p>${ingredient.detail}</p>
+                                <p>${ingredient.price != null ? ingredient.price.toLocaleString() + '원' : '가격 없음'}</p>
+
+                                <!-- 수정 및 삭제 버튼 추가 -->
+                                <a href="/admin/ingredient/edit/${ingredient.id}" class="btn btn-primary btn-sm mt-2">수정</a>
+                                <a href="/admin/ingredient/delete/${ingredient.id}" class="btn btn-danger btn-sm mt-2 ms-1">삭제</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                            $('#ingredientList .row').append(card);
+                        });
+                    });
+                });
+            </script>
+
+
+        </form>
+
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const ingredients = [[${ingredients}]];  // 서버에서 재료 목록을 전달받음
+</script>
+
+<!-- Bootstrap 및 jQuery JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+</body>
+</html>
