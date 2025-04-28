@@ -9,18 +9,18 @@ VALUES
 ('user3', '$2a$10$8jBGVl3r1DCCHqQgv.9ILuHvvKNMsQdUgZ9C0HQWgNQXVJRUFbcgS', 'user3@example.com', '010-4567-8901', '이영희', 'Female', 'ROLE_USER', '서울시 마포구', 700, NOW(), NOW());
 
 -- Insert test ingredients
-INSERT INTO ingredient (ingredient_name, product_id, price, mall_link, mall_name, image_url)
+INSERT INTO ingredient (ingredient_name, price, detail, image_url)
 VALUES 
-('쌀', 'RICE001', 10000, 'https://example.com/rice', 'Food Mall', 'https://example.com/images/rice.jpg'),
-('소고기', 'BEEF001', 25000, 'https://example.com/beef', 'Meat Shop', 'https://example.com/images/beef.jpg'),
-('돼지고기', 'PORK001', 15000, 'https://example.com/pork', 'Meat Shop', 'https://example.com/images/pork.jpg'),
-('닭고기', 'CHICKEN001', 8000, 'https://example.com/chicken', 'Meat Shop', 'https://example.com/images/chicken.jpg'),
-('양파', 'ONION001', 3000, 'https://example.com/onion', 'Veggie Market', 'https://example.com/images/onion.jpg'),
-('마늘', 'GARLIC001', 2000, 'https://example.com/garlic', 'Veggie Market', 'https://example.com/images/garlic.jpg'),
-('당근', 'CARROT001', 2500, 'https://example.com/carrot', 'Veggie Market', 'https://example.com/images/carrot.jpg'),
-('감자', 'POTATO001', 4000, 'https://example.com/potato', 'Veggie Market', 'https://example.com/images/potato.jpg'),
-('고추장', 'GOCHUJANG001', 5000, 'https://example.com/gochujang', 'Sauce Shop', 'https://example.com/images/gochujang.jpg'),
-('간장', 'SOYSAUCE001', 4500, 'https://example.com/soysauce', 'Sauce Shop', 'https://example.com/images/soysauce.jpg');
+('쌀',  10000, 'Food Mall', 'https://example.com/images/rice.jpg'),
+('소고기', 25000, 'Meat Shop', 'https://example.com/images/beef.jpg'),
+('돼지고기', 15000, 'Meat Shop', 'https://example.com/images/pork.jpg'),
+('닭고기', 8000, 'Meat Shop', 'https://example.com/images/chicken.jpg'),
+('양파', 3000, 'Veggie Market', 'https://example.com/images/onion.jpg'),
+('마늘', 2000, 'Veggie Market', 'https://example.com/images/garlic.jpg'),
+('당근', 2500, 'Veggie Market', 'https://example.com/images/carrot.jpg'),
+('감자', 4000, 'Veggie Market', 'https://example.com/images/potato.jpg'),
+('고추장', 5000, 'Sauce Shop', 'https://example.com/images/gochujang.jpg'),
+('간장', 4500, 'Sauce Shop', 'https://example.com/images/soysauce.jpg');
 
 -- Insert test recipes
 INSERT INTO recipe (title, category, main_image, youtube_link, username, created_at, like_count)

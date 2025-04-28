@@ -15,10 +15,8 @@ public interface IngredientService {
         IngredientEntity ingredient = new IngredientEntity();
         ingredient.setId(ingredientDTO.getId());
         ingredient.setIngredientName(ingredientDTO.getIngredientName());
-        ingredient.setProductId(ingredientDTO.getProductId());
+        ingredient.setDetail(ingredientDTO.getDetail());
         ingredient.setPrice(ingredientDTO.getPrice());
-        ingredient.setMallLink(ingredientDTO.getMallLink());
-        ingredient.setMallName(ingredientDTO.getMallName());
         ingredient.setImageUrl(ingredientDTO.getImageUrl());
         return ingredient;
     }
@@ -28,10 +26,8 @@ public interface IngredientService {
         IngredientDTO ingredientDTO = new IngredientDTO();
         ingredientDTO.setId(ingredientEntity.getId());
         ingredientDTO.setIngredientName(ingredientEntity.getIngredientName());
-        ingredientDTO.setProductId(ingredientEntity.getProductId());
+        ingredientDTO.setDetail(ingredientEntity.getDetail());
         ingredientDTO.setPrice(ingredientEntity.getPrice());
-        ingredientDTO.setMallLink(ingredientEntity.getMallLink());
-        ingredientDTO.setMallName(ingredientEntity.getMallName());
         ingredientDTO.setImageUrl(ingredientEntity.getImageUrl());
 
         return ingredientDTO;

@@ -7,6 +7,7 @@ import com.example.pro.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Log4j2
+@Transactional
 @RequiredArgsConstructor
 public class RecipeServiceImpl implements RecipeService {
 
@@ -45,8 +47,8 @@ public class RecipeServiceImpl implements RecipeService {
         // 2. 재료 저장
         int ingredientIndex = 0;
         while (true) {
-            String nameKey = "ingredients[" + ingredientIndex + "].ingredientName";
-            String qtyKey = "ingredients[" + ingredientIndex + "].quantity";
+            String nameKey = "recipeIngredients[" + ingredientIndex + "].ingredient.ingredientName";
+            String qtyKey = "recipeIngredients[" + ingredientIndex + "].quantity";
             if (!paramMap.containsKey(nameKey)) break;
 
             String name = paramMap.get(nameKey);
@@ -69,7 +71,7 @@ public class RecipeServiceImpl implements RecipeService {
         // 3. 요리 순서 저장
         int stepIndex = 1; // steps[0]은 대표 이미지니까
         for (MultipartFile stepImage : recipeStepImages) {
-            String contentKey = "steps[" + stepIndex + "].stepContent";
+            String contentKey = "steps[" + stepIndex + "].content";
             if (!paramMap.containsKey(contentKey)) break;
 
             String content = paramMap.get(contentKey);
