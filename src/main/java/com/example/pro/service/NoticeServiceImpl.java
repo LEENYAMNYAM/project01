@@ -38,9 +38,21 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    public NoticeDTO getNoticeById(Long id, boolean increaseHitcount) {
+        NoticeEntity entity = noticeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notice not found with id: " + id));
+
+        if (increaseHitcount) {
+            entity.updateHitcount();
+            noticeRepository.save(entity);
+        }
+
+        return toDTO(entity);
+    }
+
+    @Override
     public NoticeDTO getNoticeById(Long id) {
-        NoticeEntity noticeEntity = noticeRepository.findById(id).orElseThrow();
-        return toDTO(noticeEntity);
+        return getNoticeById(id, true); // 기본 조회는 조회수 증가
     }
 
     @Override
@@ -78,6 +90,7 @@ public class NoticeServiceImpl implements NoticeService {
         dto.writer = noticeEntity.getWriter();
         dto.content = noticeEntity.getContent();
         dto.important = noticeEntity.isImportant();
+        dto.hitcount = noticeEntity.getHitcount();
         return dto;
     }
 }

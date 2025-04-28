@@ -38,7 +38,7 @@
             <!-- 메인 이미지 및 유튜브 링크 -->
             <div class="row mb-5">
                 <div class="col-md-8">
-                    <img th:if="${recipe.mainImagePath}" th:src="@{'/assets/uploads/' + ${recipe.mainImagePath}}"
+                    <img th:if="${recipe.mainImagePath}" th:src="@{${recipe.mainImagePath}}"
                          class="img-fluid rounded" alt="레시피 이미지" style="max-height: 400px; width: 100%; object-fit: cover;">
                 </div>
                 <div class="col-md-4">
@@ -89,7 +89,7 @@
                             <p th:text="${step.content}">요리 설명</p>
                         </div>
                         <div class="col-md-4">
-                            <img th:if="${step.imagePath}" th:src="@{'/assets/uploads/' + ${step.imagePath}}"
+                            <img th:if="${step.imagePath}" th:src="@{${step.imagePath}}"
                                  class="img-fluid rounded" alt="요리 단계 이미지">
                         </div>
                     </div>

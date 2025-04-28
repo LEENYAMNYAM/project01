@@ -35,7 +35,7 @@
             <div class="row g-4">
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="recipe : ${recipeList}">
                     <div class="card h-100 shadow-sm border-0 bg-transparent text-white">
-                        <img th:src="'/assets/uploads/' + ${recipe.mainImagePath}" class="card-img-top" alt="레시피 이미지"
+                        <img th:src="${recipe.mainImagePath}" class="card-img-top" alt="레시피 이미지"
                              style="height: 160px; object-fit: cover;" />
                         <div class="card-body p-2">
                             <h6 class="card-title text-truncate mb-1" th:text="${recipe.title}">레시피 제목</h6>

@@ -45,4 +45,6 @@ public class RecipeDTO {
     /* 좋아요갯수 */
     private Long likeCount;
 
+    private String description;
+
 }

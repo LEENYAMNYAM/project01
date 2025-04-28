@@ -19,10 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -159,14 +158,61 @@ public class RecipeController {
     }
 
 
-    @Transactional
     @PostMapping("/update")
-    public String recipeUpdate(@RequestParam("id") Long recipe_id, Model model) {
-        return "/recipe/list";
+    public String recipeUpdate(@ModelAttribute RecipeDTO recipeDTO,
+                               @AuthenticationPrincipal PrincipalDetail principalDetail,
+                               @RequestParam Map<String, String> paramMap,
+                               MultipartHttpServletRequest request,
+                               Model model) throws IOException {
+
+        // 1. 기존 대표 이미지 경로 가져오기
+        String currentMainImage = paramMap.get("currentMainImage");
+
+        // 2. 대표 이미지 파일 처리
+        MultipartFile mainImageFile = request.getFile("mainImageFile");
+        if (mainImageFile != null && !mainImageFile.isEmpty()) {
+            // 새 파일 업로드 했으면 저장
+            String newMainImagePath = saveFile(mainImageFile);
+            recipeDTO.setMainImagePath(newMainImagePath);
+        } else {
+            // 새 파일 없으면 기존 파일 유지
+            recipeDTO.setMainImagePath(currentMainImage);
+        }
+
+        // 3. 요리 순서 이미지들 처리
+        List<RecipeStepDTO> updatedSteps = new ArrayList<>();
+
+        int stepIndex = 0;
+        while (true) {
+            String contentKey = "steps[" + stepIndex + "].stepContent";
+            String currentImageKey = "steps[" + stepIndex + "].currentImage";
+            MultipartFile stepImageFile = request.getFile("steps[" + stepIndex + "].stepImage");
+
+            if (!paramMap.containsKey(contentKey)) {
+                break;
+            }
+
+            RecipeStepDTO stepDTO = new RecipeStepDTO();
+            stepDTO.setContent(paramMap.get(contentKey));
+
+            if (stepImageFile != null && !stepImageFile.isEmpty()) {
+                String stepImagePath = saveFile(stepImageFile);
+                stepDTO.setImagePath(stepImagePath);
+            } else {
+                stepDTO.setImagePath(paramMap.get(currentImageKey));
+            }
+
+            updatedSteps.add(stepDTO);
+            stepIndex++;
+        }
+
+        recipeDTO.setSteps(updatedSteps);
+
+        // 4. Service 호출
+        recipeService.updateRecipe(recipeDTO, principalDetail);
+
+        return "redirect:/recipe/view?id=" + recipeDTO.getId();
     }
-
-
-
 
 
     private int extractStepIndex(String key) {
@@ -175,6 +221,18 @@ public class RecipeController {
             return Integer.parseInt(matcher.group(1));
         }
         return Integer.MAX_VALUE;
+    }
+
+    private String saveFile(MultipartFile file) throws IOException {
+        String uploadDir = "D:/JMT/Project01/project01/src/main/resources/static/assets/uploads/"; // 경로 맞춰줘야 함
+        String originalFilename = file.getOriginalFilename();
+        String uuid = UUID.randomUUID().toString();
+        String newFilename = uuid + "_" + originalFilename;
+
+        File saveFile = new File(uploadDir + newFilename);
+        file.transferTo(saveFile);
+
+        return newFilename;
     }
 
 

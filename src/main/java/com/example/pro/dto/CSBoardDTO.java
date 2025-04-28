@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class QnABoardDTO {
+public class CSBoardDTO {
 
     private Long id;
     private String title;
