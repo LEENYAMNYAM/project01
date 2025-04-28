@@ -25,7 +25,7 @@ public class QnABoardServiceImpl implements QnABoardService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 페이징 메서드 추가
+    // 페이징 메서드 추가
     @Override
     public Page<QnABoardDTO> getQnaPage(Pageable pageable) {
         return qnaBoardRepository.findAll(pageable)
@@ -33,18 +33,29 @@ public class QnABoardServiceImpl implements QnABoardService {
     }
 
     @Override
+    public Page<QnABoardDTO> searchQnAByTitle(String keyword, Pageable pageable) {
+        return qnaBoardRepository
+                .findByTitleContaining(keyword, pageable)
+                .map(this::toDTO);
+    }
+
+    // 기본 getBoard: 조회수 증가 true로 기본 처리
+    @Override
     public QnABoardDTO getBoard(Long id) {
+        return getBoard(id, true);
+    }
+
+    // 조회수 증가 여부를 제어하는 getBoard
+    public QnABoardDTO getBoard(Long id, boolean increaseHitcount) {
         QnABoardEntity entity = qnaBoardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("QnABoard not found with id: " + id));
 
-        return QnABoardDTO.builder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .content(entity.getContent())
-                .writer(entity.getWriter())
-                .createdAt(entity.getCreatedAt())
-                .hitcount(entity.getHitcount())
-                .build();
+        if (increaseHitcount) {
+            entity.updateHitcount();
+            qnaBoardRepository.save(entity);
+        }
+
+        return toDTO(entity);
     }
 
     @Override

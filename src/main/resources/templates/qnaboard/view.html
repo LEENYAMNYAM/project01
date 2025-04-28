@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="ko">
 
-<div class="container-fluid text-white p-5" layout:fragment="content">
+<div class="container py-5" layout:fragment="content">
     <link rel="stylesheet" href="/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -14,11 +14,12 @@
         }
 
         .view-card {
-            width: 100%;
             background-color: #ffffff;
-            padding: 3rem;
             border-radius: 1.5rem;
+            padding: 3rem;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+            max-width: 760px;
+            margin: auto;
         }
 
         .section-title {
@@ -76,60 +77,56 @@
         }
     </style>
 
-    <section class="page-section">
-        <div class="container">
-            <div class="view-card">
-                <div class="section-title">📄 질문 상세보기</div>
+    <div class="view-card">
+        <div class="section-title">📄 질문 상세보기</div>
 
-                <div class="view-field">
-                    <div class="field-label">제목</div>
-                    <div class="field-content" th:text="${qna.title}">제목</div>
-                </div>
+        <div class="view-field">
+            <div class="field-label">제목</div>
+            <div class="field-content" th:text="${qna.title}">제목</div>
+        </div>
 
-                <div class="view-field">
-                    <div class="field-label">작성자</div>
-                    <div class="field-content" th:text="${qna.writer}">작성자</div>
-                </div>
+        <div class="view-field">
+            <div class="field-label">작성자</div>
+            <div class="field-content" th:text="${qna.writer}">작성자</div>
+        </div>
 
-                <div class="view-field">
-                    <div class="field-label">작성일</div>
-                    <div class="field-content" th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</div>
-                </div>
+        <div class="view-field">
+            <div class="field-label">작성일</div>
+            <div class="field-content" th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd HH:mm')}">2025-04-24</div>
+        </div>
 
-                <div class="view-field">
-                    <div class="field-label">내용</div>
-                    <div class="field-content" th:text="${qna.content}">내용</div>
-                </div>
+        <div class="view-field">
+            <div class="field-label">내용</div>
+            <div class="field-content" th:text="${qna.content}">질문 내용입니다.</div>
+        </div>
 
-                <input type="hidden" class="qna-id" th:value="${qna.id}" />
+        <input type="hidden" id="qnaId" th:value="${qna.id}" />
 
-                <div class="view-buttons">
-                    <a href="/qnaboard/list" class="btn btn-outline-secondary btn-rounded">← 목록으로</a>
-                    <div>
-                        <a th:href="@{/qnaboard/update(id=${qna.id})}" class="btn btn-dark-outline btn-rounded me-2">✏ 수정</a>
-                        <button class="btn btn-danger btn-rounded delete-qna-btn">🗑 삭제</button>
-                    </div>
-                </div>
+        <div class="view-buttons">
+            <a href="/qnaboard/list" class="btn btn-outline-secondary btn-rounded">← 목록으로</a>
+            <div>
+                <a th:href="@{/qnaboard/update(id=${qna.id})}" class="btn btn-dark-outline btn-rounded me-2">✏ 수정</a>
+                <button class="btn btn-danger btn-rounded" onclick="deleteQna()">🗑 삭제</button>
             </div>
+        </div>
+    </div>
 
-            <script>
-                document.querySelector('.delete-qna-btn').addEventListener('click', function() {
-                    const id = document.querySelector('.qna-id').value;
-                    if (confirm("정말 삭제하시겠습니까?")) {
-                        fetch("/qnaboard/delete/" + id, {
-                            method: "DELETE"
-                        }).then(res => {
-                            if (res.ok) {
-                                alert("삭제되었습니다.");
-                                window.location.href = "/qnaboard/list";
-                            } else {
-                                alert("삭제 실패 😥");
-                            }
-                        });
+    <script>
+        function deleteQna() {
+            const id = document.getElementById("qnaId").value;
+            if (confirm("정말 삭제하시겠습니까?")) {
+                fetch("/qnaboard/delete/" + id, {
+                    method: "DELETE"
+                }).then(res => {
+                    if (res.ok) {
+                        alert("삭제되었습니다.");
+                        window.location.href = "/qnaboard/list";
+                    } else {
+                        alert("삭제 실패 😥");
                     }
                 });
-            </script>
-        </div>
-    </section>
+            }
+        }
+    </script>
 </div>
 </html>

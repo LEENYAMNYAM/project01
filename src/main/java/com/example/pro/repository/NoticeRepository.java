@@ -15,3 +15,4 @@ public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
     // 추가: 페이징 가능한 제목 검색
     Page<NoticeEntity> findByTitleContaining(String keyword, Pageable pageable);
 }
+

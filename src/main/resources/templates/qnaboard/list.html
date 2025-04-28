@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="ko">
 
-<div class="container-fluid text-white p-5" layout:fragment="content">
+<div class="container py-5" layout:fragment="content">
     <link rel="stylesheet" href="/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -12,148 +12,122 @@
             font-family: 'Inter', sans-serif;
             background-color: #f1f3f5;
         }
-
         .qna-card {
-            width: 100%;
             background-color: #ffffff;
-            padding: 2.5rem;
             border-radius: 1.5rem;
+            padding: 2.5rem;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+            max-width: 960px;
+            margin: auto;
         }
-
         .qna-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
-
         .qna-title {
             font-size: 2rem;
             font-weight: 700;
             color: #0d6efd;
         }
-
         .btn-rounded {
             border-radius: 50px;
             padding: 0.5rem 1.8rem;
             font-weight: 600;
         }
-
-        .btn-dark-outline {
-            border: 1px solid #212529;
-            color: #212529;
-            background-color: transparent;
-        }
-
-        .btn-dark-outline:hover {
-            background-color: #212529;
-            color: white;
-        }
-
         .table th {
             color: #6c757d;
             font-size: 0.85rem;
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
-
         .table-hover tbody tr:hover {
             background-color: #f8f9fa;
         }
-
         .search-form {
             display: flex;
             justify-content: center;
             margin-top: 2rem;
-            gap: 0.5rem;
         }
-
         .search-input {
             border-radius: 999px;
             padding: 0.6rem 1.2rem;
             width: 50%;
             border: 1px solid #ced4da;
-            color: #212529;
-        }
-
-        .search-input::placeholder {
-            color: #adb5bd;
-        }
-
-        .pagination .page-link {
-            border-radius: 999px;
-            margin: 0 4px;
         }
     </style>
 
     <section class="page-section">
         <div class="container">
-            <div class="qna-card">
-                <!-- Header -->
-                <div class="qna-header">
-                    <div class="qna-title">💬 Q&A 게시판</div>
-                    <a href="/qnaboard/register" class="btn btn-primary btn-rounded">+ 새 질문 등록</a>
-                </div>
+    <div class="qna-card">
+        <!-- Header -->
+        <div class="qna-header">
+            <div class="qna-title">💬 Q&A 게시판</div>
+            <a href="/qnaboard/register" class="btn btn-primary btn-rounded">+ 새 질문 등록</a>
+        </div>
 
-                <!-- 테이블 -->
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle text-center">
-                        <thead class="table-light">
-                        <tr>
-                            <th style="width: 10%;">번호</th>
-                            <th style="width: 50%;" class="text-start ps-4">제목</th>
-                            <th style="width: 20%;">작성자</th>
-                            <th style="width: 20%;">작성일</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="qna : ${qnaPage.content}">
-                            <td th:text="${qna.id}">1</td>
-                            <td class="text-start ps-4">
-                                <a th:href="@{/qnaboard/view(id=${qna.id})}" th:text="${qna.title}"
-                                   class="text-decoration-none fw-semibold text-dark d-block text-truncate"></a>
-                            </td>
-                            <td th:text="${qna.writer}">작성자</td>
-                            <td th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd')}">날짜</td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(qnaPage.content)}">
-                            <td colspan="4" class="text-muted py-4 text-center">📭 등록된 질문이 없습니다.</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <!-- 테이블 -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-light">
+                <tr>
+                    <th style="width: 8%;">번호</th>
+                    <th style="width: 40%;" class="text-start ps-4">제목</th>
+                    <th style="width: 15%;">작성자</th>
+                    <th style="width: 20%;">작성일</th>
+                    <th style="width: 10%;">조회수</th> <!-- 조회수 컬럼 추가 -->
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="qna, qnaStat : ${qnaPage.content}">
+                    <td th:text="${(qnaPage.number * qnaPage.size) + qnaStat.index + 1}">번호</td>
+                    <td class="text-start ps-4">
+                        <a th:href="@{/qnaboard/view(id=${qna.id})}"
+                           th:text="${qna.title}"
+                           class="text-decoration-none fw-semibold text-dark d-block text-truncate"></a>
+                    </td>
+                    <td th:text="${qna.writer}">작성자</td>
+                    <td th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd')}">작성일</td>
+                    <td th:text="${qna.hitcount != null ? qna.hitcount : 0}">조회수</td> <!-- 조회수 표시 -->
+                </tr>
+                <tr th:if="${#lists.isEmpty(qnaPage.content)}">
+                    <td colspan="5" class="text-muted py-4 text-center">📭 등록된 질문이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-                <!-- 검색창 -->
-                <form th:action="@{/qnaboard/list}" method="get" class="search-form">
-                    <input type="text" name="keyword" placeholder="🔍 제목으로 검색해보세요"
-                           th:value="${keyword}" class="form-control search-input shadow-sm">
-                    <button type="submit" class="btn btn-dark-outline btn-rounded">검색</button>
-                </form>
+        <!-- 검색창 -->
+        <form th:action="@{/qnaboard/list}" method="get" class="search-form">
+            <input type="text" name="keyword" placeholder="🔍 제목으로 검색해보세요"
+                   th:value="${keyword}" class="form-control search-input shadow-sm">
+            <button type="submit" class="btn btn-outline-dark btn-rounded ms-2">검색</button>
+        </form>
 
-                <!-- 페이징 -->
-                <nav th:if="${totalPages > 1}" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                            <a class="page-link"
-                               th:href="@{/qnaboard/list(page=${currentPage - 1}, keyword=${keyword})}">이전</a>
-                        </li>
+        <!-- 페이징 -->
+        <nav th:if="${totalPages > 0}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/qnaboard/list(page=${currentPage - 1}, keyword=${keyword})}">이전</a>
+                </li>
 
-                        <li class="page-item"
-                            th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                            th:classappend="${i == currentPage} ? 'active'">
-                            <a class="page-link"
-                               th:href="@{/qnaboard/list(page=${i}, keyword=${keyword})}"
-                               th:text="${i + 1}">1</a>
-                        </li>
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/qnaboard/list(page=${i}, keyword=${keyword})}"
+                       th:text="${i + 1}">1</a>
+                </li>
 
-                        <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                            <a class="page-link"
-                               th:href="@{/qnaboard/list(page=${currentPage + 1}, keyword=${keyword})}">다음</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/qnaboard/list(page=${currentPage + 1}, keyword=${keyword})}">다음</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
         </div>
     </section>
 </div>

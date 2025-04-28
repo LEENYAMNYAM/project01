@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="ko">
 
-<div class="container-fluid text-white p-5" layout:fragment="content">
+<div class="container py-5" layout:fragment="content">
     <link rel="stylesheet" href="/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -14,11 +14,12 @@
         }
 
         .update-card {
-            width: 100%;
             background-color: #ffffff;
-            padding: 3rem;
             border-radius: 1.5rem;
+            padding: 3rem;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+            max-width: 720px;
+            margin: auto;
         }
 
         .section-title {
@@ -40,14 +41,12 @@
             border: 1px solid #ced4da;
             padding: 0.75rem 1rem;
             transition: box-shadow 0.2s ease;
-            color: #212529;
         }
 
         .form-control:focus,
         textarea.form-control:focus {
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
             border-color: #86b7fe;
-            color: #212529;
         }
 
         .btn-rounded {
@@ -66,46 +65,37 @@
             background-color: #212529;
             color: white;
         }
-
-        .input-black-on-fill::placeholder {
-            color: #6c757d;
-        }
-        .input-black-on-fill:focus,
-        .input-black-on-fill:not(:placeholder-shown) {
-            color: #212529;
-        }
     </style>
 
-    <section class="page-section">
-        <div class="container">
-            <div class="update-card">
-                <div class="section-title">🛠 질문 수정</div>
+    <div class="update-card">
+        <div class="section-title">🛠 질문 수정</div>
 
-                <form th:action="@{/qnaboard/update/submit}" method="post">
-                    <input type="hidden" name="id" th:value="${qna.id}" class="qna-id">
+        <form th:action="@{/qnaboard/update/submit}" method="post">
+            <input type="hidden" name="id" th:value="${qna.id}" />
 
-                    <div class="mb-4">
-                        <label for="title" class="form-label">제목</label>
-                        <input type="text" id="title" name="title" class="form-control shadow-sm input-black-on-fill" th:value="${qna.title}" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="writer" class="form-label">작성자</label>
-                        <input type="text" id="writer" name="writer" class="form-control shadow-sm input-black-on-fill" th:value="${qna.writer}" readonly>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="content" class="form-label">내용</label>
-                        <textarea id="content" name="content" rows="6" class="form-control shadow-sm input-black-on-fill" th:text="${qna.content}" required></textarea>
-                    </div>
-
-                    <div class="d-flex justify-content-between mt-4">
-                        <a th:href="@{'/qnaboard/view?id=' + ${qna.id}}" class="btn btn-outline-secondary btn-rounded">← 돌아가기</a>
-                        <button type="submit" class="btn btn-dark-outline btn-rounded">수정 완료</button>
-                    </div>
-                </form>
+            <div class="mb-4">
+                <label for="title" class="form-label">제목</label>
+                <input type="text" id="title" name="title" class="form-control shadow-sm"
+                       th:value="${qna.title}" required>
             </div>
-        </div>
-    </section>
+
+            <div class="mb-4">
+                <label for="writer" class="form-label">작성자</label>
+                <input type="text" id="writer" name="writer" class="form-control shadow-sm"
+                       th:value="${qna.writer}" readonly>
+            </div>
+
+            <div class="mb-4">
+                <label for="content" class="form-label">내용</label>
+                <textarea id="content" name="content" rows="6" class="form-control shadow-sm"
+                          th:text="${qna.content}" required></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a th:href="@{'/qnaboard/view?id=' + ${qna.id}}" class="btn btn-outline-secondary btn-rounded">← 돌아가기</a>
+                <button type="submit" class="btn btn-dark-outline btn-rounded">수정 완료</button>
+            </div>
+        </form>
+    </div>
 </div>
 </html>

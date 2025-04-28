@@ -38,14 +38,14 @@ public class NoticeController {
 
     @GetMapping("/view")
     public String view(@RequestParam Long id, Model model) {
-        NoticeDTO notice = noticeService.getNoticeById(id);
+        NoticeDTO notice = noticeService.getNoticeById(id, true); // 조회수 증가
         model.addAttribute("notice", notice);
         return "notice/view";
     }
 
     @GetMapping("/update")
     public String updateForm(@RequestParam Long id, Model model) {
-        NoticeDTO notice = noticeService.getNoticeById(id);
+        NoticeDTO notice = noticeService.getNoticeById(id, false); // 조회수 증가 안 함
         model.addAttribute("notice", notice);
         return "notice/update";
     }
@@ -53,7 +53,7 @@ public class NoticeController {
     @PostMapping("/update")
     public String update(@ModelAttribute NoticeDTO dto) {
         noticeService.updateNotice(dto.id, dto);
-        return "redirect:/notice/view?id=" + dto.id;
+        return "redirect:/notice/list";
     }
 
     @DeleteMapping("/delete/{id}")

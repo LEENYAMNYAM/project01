@@ -35,23 +35,33 @@ public class QnABoardController {
     }
 
     @GetMapping("/list")
-    public String showList(@RequestParam(value = "page", defaultValue = "0") int page,
-                           Model model) {
-        Pageable pageable = PageRequest.of(page, 5); // 한 페이지당 10개
-        Page<QnABoardDTO> qnaPage = qnaBoardService.getQnaPage(pageable);
+    public String showList(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            Model model) {
 
-        model.addAttribute("qnaPage", qnaPage);           // 페이징된 리스트
-        model.addAttribute("currentPage", page);          // 현재 페이지 번호
-        model.addAttribute("totalPages", qnaPage.getTotalPages()); // 전체 페이지 수
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<QnABoardDTO> qnaPage;
 
-        return "/qnaboard/list";
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            qnaPage = qnaBoardService.searchQnAByTitle(keyword, pageable); // 검색
+            model.addAttribute("keyword", keyword); // 검색어 다시 입력창에 유지
+        } else {
+            qnaPage = qnaBoardService.getQnaPage(pageable); // 전체 조회
+        }
+
+        model.addAttribute("qnaPage", qnaPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", qnaPage.getTotalPages());
+
+        return "qnaboard/list";
     }
 
     @GetMapping("/view")
     public String view(@RequestParam Long id, Model model) {
-        QnABoardDTO dto = QnABoardService.getBoard(id);
+        QnABoardDTO dto = qnaBoardService.getBoard(id, true); // 조회수 증가 O
         model.addAttribute("qna", dto);
-        return "/qnaboard/view";
+        return "qnaboard/view";
     }
 
 
@@ -62,9 +72,9 @@ public class QnABoardController {
 
     @GetMapping("/update")
     public String updateForm(@RequestParam Long id, Model model) {
-        QnABoardDTO dto = qnaBoardService.getBoard(id);
+        QnABoardDTO dto = qnaBoardService.getBoard(id, false); // ✅ 조회수 증가 X
         model.addAttribute("qna", dto);
-        return "/qnaboard/update"; // update.html
+        return "qnaboard/update"; // update.html
     }
 
     @PostMapping("/update/submit")

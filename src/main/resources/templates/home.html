@@ -1,12 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout.html}" lang="en">
+      layout:decorate="~{layout/layout.html}" lang="ko">
+
 <div class="container-fluid text-white p-5" layout:fragment="content">
-    <section class="page-section">
-        <div class="container">
-            <h2 class="text-center mt-0"> 메인화면 작성하면 됩니다.</h2>
-            <hr class="divider my-4"/>
+
+    <!-- 1. 메인 슬라이드 배너 -->
+    <section class="main-banner">
+        <div class="banner-slide">
+            <img src="" alt="따뜻한 집밥" class="banner-img">
+            <div class="banner-text">오늘은 집밥 어때요?</div>
         </div>
     </section>
+
+    <!-- 2. 주요 카테고리 바로가기 -->
+    <section class="category-shortcuts">
+        <div class="category-grid">
+            <a href="/cart/list" class="category-btn">장바구니</a>
+            <a href="/recipe/list" class="category-btn">레시피</a>
+            <a href="/notice/list" class="category-btn">공지사항</a>
+            <a href="/qnaboard/list" class="category-btn">Q&A</a>
+        </div>
+    </section>
+
+    <!-- 3. 이달의 레시피 (슬라이드형) -->
+    <section class="monthly-recipes">
+        <h2>이달의 레시피</h2>
+        <div class="recipe-slider">
+            <div class="recipe-item" th:each="recipe : ${monthlyRecipes}">
+                <img th:src="@{${recipe.mainImagePath}}" alt="레시피 이미지">
+                <h3 th:text="${recipe.title}"></h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 최신 공지사항 -->
+    <section class="latest-notices">
+        <h2>최신 공지사항</h2>
+        <ul>
+            <li th:each="notice : ${latestNotices}">
+                <a th:href="@{/notice/view(id=${notice.id})}" th:text="${notice.title}"></a>
+            </li>
+        </ul>
+    </section>
+
+    <!-- 5. 오늘의 추천 레시피 -->
+    <section class="today-recipe">
+        <h2>오늘의 추천 레시피</h2>
+        <div class="today-recipe-card">
+            <img th:src="@{${todayRecipe.mainImagePath}}" alt="추천 레시피">
+            <h3 th:text="${todayRecipe.title}"></h3>
+            <p th:text="${todayRecipe.description}"></p>
+        </div>
+    </section>
+
+    <!-- 6. 후기 작성 유도 -->
+    <section class="review-invite">
+        <h2>나만의 레시피를 공유해보세요!</h2>
+        <a href="/reviews/list" class="review-btn">후기 작성하기</a>
+    </section>
+
+    <!-- 7. 하단 홍보 문구 -->
+    <footer class="footer">
+        <p>우리는 거리가 멀어도 마음은 가까이</p>
+    </footer>
+
 </div>
+
+</html>

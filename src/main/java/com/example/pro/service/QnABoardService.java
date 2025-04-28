@@ -12,7 +12,9 @@ public interface QnABoardService {
     QnABoardDTO createQBoard(QnABoardDTO dto);
     void updateQBoard(Long id, QnABoardDTO dto);
     void deleteQBoard(Long id);
+    QnABoardDTO getBoard(Long id, boolean increaseHitcount);
 
-    // ✅ 페이징 추가
+    // 페이징 추가
     Page<QnABoardDTO> getQnaPage(Pageable pageable);
+    Page<QnABoardDTO> searchQnAByTitle(String keyword, Pageable pageable);
 }
