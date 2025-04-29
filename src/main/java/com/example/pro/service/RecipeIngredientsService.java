@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface RecipeIngredientsService {
     List<RecipeIngredientsDTO> getRecipeIngredientsbyRecipeId(Long recipeId);
+    void deleteRecipeIngredient(Long id);
 }

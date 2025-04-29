@@ -1,6 +1,7 @@
 package com.example.pro.controller;
 
 import com.example.pro.config.auth.PrincipalDetail;
+import com.example.pro.dto.IngredientDTO;
 import com.example.pro.dto.RecipeDTO;
 import com.example.pro.dto.RecipeIngredientsDTO;
 import com.example.pro.dto.RecipeStepDTO;
@@ -182,32 +183,65 @@ public class RecipeController {
             // 새 파일 업로드 했으면 저장
             String newMainImagePath = fileService.saveFile(mainImageFile);
             recipeDTO.setMainImagePath(newMainImagePath);
+/* to do : 기존 메인 이미지는 삭제해야함. */
         } else {
             // 새 파일 없으면 기존 파일 유지
             recipeDTO.setMainImagePath(currentMainImage);
         }
         // 3. 재료 처리
-        List<RecipeIngredientsDTO> updatedIngredients = recipeDTO.getRecipeIngredients();
-        List<RecipeIngredientsDTO> ingredientsDTOList = new ArrayList<>();
-        for (int i = 0 ; i < updatedIngredients.size() ; i++) {
-            String ingredientNameKey = "ingredients[" + i + "].ingredientName";
-            String ingredientQuantityKey = "ingredients[" + i + "].ingredientQuantity";
+        long ingredientCount = paramMap.keySet().stream()
+                .filter(key -> key.matches("ingredients\\[\\d+\\]\\.ingredientName"))
+                .count();
+        log.info("ingredientCount : " + ingredientCount);
 
-            RecipeIngredientsDTO recipeIngredientsDTO = recipeDTO.getRecipeIngredients().get(i);
-            recipeIngredientsDTO.setIngredient(
-                    ingredientService.entityToDto(ingredientRepository.findByIngredientName(paramMap.get(ingredientNameKey)).get())
-            );
-            recipeIngredientsDTO.setQuantity( Long.parseLong(paramMap.get(ingredientQuantityKey)));
-            ingredientsDTOList.add(recipeIngredientsDTO);
+        List<RecipeIngredientsDTO> ingredientsDTOList = recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId());
+        // 새로 만들어질 리스트
+        List<RecipeIngredientsDTO> updatedIngredients = new ArrayList<>();
+
+        int i = 0 ;
+        for (; i < Math.min(ingredientCount, ingredientsDTOList.size()); i++){
+            String ingredientNameKey = "ingredients[" + i + "].ingredientName";
+            String ingredientQuantityKey = "ingredients[" + i + "].quantity";
+
+            ingredientsDTOList.get(i).setIngredient(ingredientService.entityToDto(ingredientRepository.findByIngredientName(paramMap.get(ingredientNameKey)).get()));
+            ingredientsDTOList.get(i).setQuantity(Long.parseLong(paramMap.get(ingredientQuantityKey)));
+
+            updatedIngredients.add(ingredientsDTOList.get(i));
+
         }
 
-        recipeDTO.setRecipeIngredients(ingredientsDTOList);
+// ingredientCount가 더 크면 추가
+        if (ingredientCount > ingredientsDTOList.size()) {
+            for (; i < ingredientCount; i++) {
+                String ingredientNameKey = "ingredients[" + i + "].ingredientName";
+                String ingredientQuantityKey = "ingredients[" + i + "].quantity";
+
+                    RecipeIngredientsDTO newIngredients = new RecipeIngredientsDTO();
+                    newIngredients.setRecipeId( recipeDTO.getId());
+                    newIngredients.setIngredient(ingredientService.entityToDto(ingredientRepository.findByIngredientName(paramMap.get(ingredientNameKey)).get()));
+                    newIngredients.setQuantity(Long.parseLong(paramMap.get(ingredientQuantityKey)));
+
+                    updatedIngredients.add(newIngredients);
+                }
+        }
+
+// ingredientCount가 더 작으면 DB 삭제 처리해야 함
+        if (ingredientCount < ingredientsDTOList.size()) {
+            for (int j = (int) ingredientCount; j < ingredientsDTOList.size(); j++) {
+                recipeIngredientsService.deleteRecipeIngredient(ingredientsDTOList.get(j).getId());
+            }
+        }
+
+// 업데이트된 리스트를 DTO에 세팅
+        recipeDTO.setRecipeIngredients(updatedIngredients);
 
         // 4. 요리 순서 이미지들 처리
-        List<RecipeStepDTO> updatedSteps = recipeDTO.getSteps();
-        log.info("updatedSteps.size : " + updatedSteps.size());
+        long stepCount = paramMap.keySet().stream()
+                .filter(key -> key.matches("steps\\[\\d+\\]\\.stepContent"))
+                .count();
+        log.info("stepCount : " + stepCount);
         List<RecipeStepDTO> stepDTOList = new ArrayList<>();
-        for (int i = 0 ; i < updatedSteps.size() ; i++) {
+        for (i = 0 ; i < stepCount ; i++) {
 //            log.info("stepIndex : " + (stepIndex+1));
 //            log.info("updatedSteps.size : " + updatedSteps.size());
             String contentKey = "steps[" + i + "].stepContent";

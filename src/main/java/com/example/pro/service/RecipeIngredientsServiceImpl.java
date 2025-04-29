@@ -34,6 +34,12 @@ public class RecipeIngredientsServiceImpl implements RecipeIngredientsService {
         return recipeIngredientsDTOList;
     }
 
+    @Override
+    public void deleteRecipeIngredient(Long id) {
+        recipeIngredientsRepository.deleteById(id);
+    }
+
+
 
     RecipeIngredientsEntity dtoToEntity(RecipeIngredientsDTO recipeIngredientsDTO) {
         RecipeIngredientsEntity recipeIngredientsEntity = new RecipeIngredientsEntity();
