@@ -12,9 +12,6 @@
             <form th:action="@{/recipe/update}" method="post" enctype="multipart/form-data">
                 <!-- 레시피 ID (hidden) -->
                 <input type="hidden" name="id" th:value="${recipe.id}" />
-                <!-- 현재 메인 이미지 hidden input 추가 -->
-                <input type="hidden" name="currentMainImage" th:value="${recipe.mainImagePath}" />
-
 
                 <!-- 제목 -->
                 <div class="form-group mb-3">
@@ -48,8 +45,9 @@
                     </div>
                 </div>
 
-
                 <!-- 메인 이미지 업로드 -->
+                    <!-- 현재 메인 이미지 hidden input 추가 -->
+                <input type="hidden" name="currentMainImage" th:value="${recipe.mainImagePath}" />
                 <div class="form-group mb-3">
                     <label>대표 이미지 변경 (선택사항)</label>
                     <div>
@@ -59,6 +57,7 @@
                         <small class="form-text text-white-50">새 이미지를 업로드하지 않으면 기존 이미지가 유지됩니다.</small>
                     </div>
                 </div>
+
                 <!-- 재료 목록 -->
                 <div class="form-group mb-4" id="ingredients-section">
                     <label>재료</label>
@@ -72,7 +71,8 @@
                         </div>
                         <input type="number" th:name="'ingredients[' + ${iterStat.index} + '].quantity'"
                                th:value="${ingredient.quantity}" placeholder="수량" class="form-control w-auto" min="1" />
-                        <button type="button" class="btn btn-danger btn-sm remove-ingredient" style="min-width: 70px;">삭제</button>
+                        <button type="button" class="btn btn-danger btn-sm remove-ingredient" style="min-width: 70px;"
+                                th:if="${iterStat.index > 0}">삭제</button>
                     </div>
                     
                     <!-- 새 재료 추가 템플릿 (JavaScript로 추가됨) -->
@@ -96,7 +96,8 @@
                         
                         <input type="file" th:name="'steps[' + ${step.stepNumber} + '].stepImage'"
                                class="form-control w-auto" accept="image/*" />
-                        <button type="button" class="btn btn-danger btn-sm remove-step" style="min-width: 70px;">삭제</button>
+                        <button type="button" class="btn btn-danger btn-sm remove-step" style="min-width: 70px;"
+                                th:if="${step.stepNumber > 1}">삭제</button>
                     </div>
                     
                     <!-- 새 단계 추가 템플릿 (JavaScript로 추가됨) -->
@@ -127,15 +128,14 @@
         </div>
     </div>
 
-    <script th:inline="javascript">
-        const ingredients = /*[[${ingredients}]]*/ [];
-        let ingredientIndex = /*[[${recipe.recipeIngredients.size()}]]*/ 0; // 기존 재료 개수부터 시작
-        let stepIndex = /*[[${recipe.steps.size()}]]*/ 0; // 기존 단계 개수부터 시작
-    </script>
-
 </div>
 
-<script layout:fragment="script">
+<script layout:fragment="script" th:inline="javascript">
+
+    const ingredients = [[${ingredients}]];
+    let ingredientIndex = [[${recipeIngredientsDTOList != null ? #lists.size(recipeIngredientsDTOList) : 0}]]; // 기존 재료 개수부터 시작
+    let stepIndex = [[${recipeSteps != null ? #lists.size(recipeSteps) : 0}]]; // 기존 단계 개수부터 시작
+
     let selectedInput = null;
 
     /* Ingredient 추가 */
@@ -200,6 +200,7 @@
         ingredients
             .filter(ing => ing.ingredientName.toLowerCase().includes(keyword))
             .forEach(ing => {
+                console.log(ing);
                 list.append(`
                     <div class="col-6 col-md-4 mb-3">
                         <div class="card ingredient-select" style="cursor: pointer;" data-name="${ing.ingredientName}">

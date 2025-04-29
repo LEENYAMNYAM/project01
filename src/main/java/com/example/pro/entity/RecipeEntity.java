@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@ToString(exclude = {"steps", "reviews"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecipeEntity {

@@ -185,6 +185,8 @@ public class RecipeServiceImpl implements RecipeService {
         // 1. 기존 레시피 찾아오기
         RecipeEntity recipe = recipeRepository.findById(recipeDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("레시피를 찾을 수 없습니다."));
+        log.info("recipeDTO : " + recipeDTO);
+        log.info("recipe : " + recipe);
 
         // 2. 기본 정보 업데이트
         recipe.setTitle(recipeDTO.getTitle());

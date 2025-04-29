@@ -77,6 +77,12 @@ public class RecipeController {
         // 4. 레시피 저장 서비스 호출
         recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap);
 
+        log.info(recipeDTO.getSteps().toString() );
+        log.info(recipeDTO.getRecipeIngredients().toString() );
+
+        recipeDTO.setSteps(recipeStepService.getRecipeStepByRecipeId(recipeDTO.getId()));
+        recipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId()));
+
             return "redirect:/recipe/list";
     }
 
@@ -164,6 +170,7 @@ public class RecipeController {
                                @RequestParam Map<String, String> paramMap,
                                MultipartHttpServletRequest request,
                                Model model) throws IOException {
+//        log.info("recipeDTO : " + recipeDTO);
 
         // 1. 기존 대표 이미지 경로 가져오기
         String currentMainImage = paramMap.get("currentMainImage");
@@ -172,7 +179,7 @@ public class RecipeController {
         MultipartFile mainImageFile = request.getFile("mainImageFile");
         if (mainImageFile != null && !mainImageFile.isEmpty()) {
             // 새 파일 업로드 했으면 저장
-            String newMainImagePath = saveFile(mainImageFile);
+            String newMainImagePath = fileService.saveFile(mainImageFile);
             recipeDTO.setMainImagePath(newMainImagePath);
         } else {
             // 새 파일 없으면 기존 파일 유지
@@ -180,33 +187,38 @@ public class RecipeController {
         }
 
         // 3. 요리 순서 이미지들 처리
-        List<RecipeStepDTO> updatedSteps = new ArrayList<>();
-
-        int stepIndex = 0;
-        while (true) {
+        List<RecipeStepDTO> updatedSteps = recipeDTO.getSteps();
+        List<RecipeStepDTO> stepDTOList = new ArrayList<>();
+        int stepIndex = 1;
+        while (stepIndex < updatedSteps.size()) {
+            log.info("stepIndex : " + stepIndex);
+            log.info("updatedSteps.size : " + updatedSteps.size());
             String contentKey = "steps[" + stepIndex + "].stepContent";
-            String currentImageKey = "steps[" + stepIndex + "].currentImage";
-            MultipartFile stepImageFile = request.getFile("steps[" + stepIndex + "].stepImage");
 
             if (!paramMap.containsKey(contentKey)) {
                 break;
             }
+            String currentImageKey = "steps[" + stepIndex + "].currentImage";
+            MultipartFile stepImageFile = request.getFile("steps[" + stepIndex + "].stepImage");
+            log.info("contentKey : " + contentKey);
+//            log.info("currentImageKey : " + currentImageKey);
+//            log.info("stepImageFile : " + stepImageFile);
 
-            RecipeStepDTO stepDTO = new RecipeStepDTO();
+            RecipeStepDTO stepDTO = recipeDTO.getSteps().get(stepIndex-1);
+            log.info("stepDTO : " + recipeDTO.getSteps().size());
             stepDTO.setContent(paramMap.get(contentKey));
 
             if (stepImageFile != null && !stepImageFile.isEmpty()) {
-                String stepImagePath = saveFile(stepImageFile);
+                String stepImagePath = fileService.saveFile(stepImageFile);
                 stepDTO.setImagePath(stepImagePath);
             } else {
                 stepDTO.setImagePath(paramMap.get(currentImageKey));
             }
-
-            updatedSteps.add(stepDTO);
+            stepDTOList.add(stepDTO);
             stepIndex++;
         }
 
-        recipeDTO.setSteps(updatedSteps);
+        recipeDTO.setSteps(stepDTOList);
 
         // 4. Service 호출
         recipeService.updateRecipe(recipeDTO, principalDetail);
