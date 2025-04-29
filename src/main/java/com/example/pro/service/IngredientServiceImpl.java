@@ -23,4 +23,5 @@ public class IngredientServiceImpl implements IngredientService {
                 .collect(Collectors.toList());
         return ingredientDTOs;
     }
+
 }

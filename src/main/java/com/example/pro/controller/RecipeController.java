@@ -5,6 +5,7 @@ import com.example.pro.dto.RecipeDTO;
 import com.example.pro.dto.RecipeIngredientsDTO;
 import com.example.pro.dto.RecipeStepDTO;
 import com.example.pro.entity.ReviewEntity;
+import com.example.pro.repository.IngredientRepository;
 import com.example.pro.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,6 +38,7 @@ public class RecipeController {
     private final RecipeStepService recipeStepService;
     private final RecipeIngredientsServiceImpl recipeIngredientsService;
     private final ReviewService reviewService;
+    private final IngredientRepository ingredientRepository;
 
     @GetMapping("/register")
     public void recipeRegister(Model model) {
@@ -59,26 +61,25 @@ public class RecipeController {
         }
 //        recipeDTO.setUsername("hong");
 
-        // 2. steps[0].imagePath → 대표 이미지
-        MultipartFile mainImage = request.getFile("steps[0].imageFile");
+        // 2. mainImageFile → 대표 이미지
+        MultipartFile mainImage = request.getFile("mainImageFile");
         if (mainImage != null && !mainImage.isEmpty()) {
             String mainImageUrl = fileService.saveFile(mainImage);
             recipeDTO.setMainImagePath(mainImageUrl); // RecipeDTO에 setter 있어야 함
         }
 
-        // 3. steps[1..].stepImage → 요리 순서 이미지
+        // 3. steps[0..].stepImage → 요리 순서 이미지
         List<MultipartFile> recipeStepImages = request.getFileMap().entrySet().stream()
                 .filter(entry -> entry.getKey().matches("steps\\[\\d+\\]\\.imageFile"))
                 .sorted(Comparator.comparing(e -> extractStepIndex(e.getKey()))) // 순서 정렬
-                .skip(1) // steps[0]은 대표 이미지니까 제외
                 .map(Map.Entry::getValue)
                 .toList();
 
         // 4. 레시피 저장 서비스 호출
         recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap);
 
-        log.info(recipeDTO.getSteps().toString() );
-        log.info(recipeDTO.getRecipeIngredients().toString() );
+//        log.info(recipeDTO.getSteps().toString() );
+//        log.info(recipeDTO.getRecipeIngredients().toString() );
 
         recipeDTO.setSteps(recipeStepService.getRecipeStepByRecipeId(recipeDTO.getId()));
         recipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId()));
@@ -170,8 +171,8 @@ public class RecipeController {
                                @RequestParam Map<String, String> paramMap,
                                MultipartHttpServletRequest request,
                                Model model) throws IOException {
-//        log.info("recipeDTO : " + recipeDTO);
-
+        log.info("recipeDTO : " + recipeDTO);
+        log.info("paramMap.toString()" + paramMap.toString() );
         // 1. 기존 대표 이미지 경로 가져오기
         String currentMainImage = paramMap.get("currentMainImage");
 
@@ -185,26 +186,38 @@ public class RecipeController {
             // 새 파일 없으면 기존 파일 유지
             recipeDTO.setMainImagePath(currentMainImage);
         }
+        // 3. 재료 처리
+        List<RecipeIngredientsDTO> updatedIngredients = recipeDTO.getRecipeIngredients();
+        List<RecipeIngredientsDTO> ingredientsDTOList = new ArrayList<>();
+        for (int i = 0 ; i < updatedIngredients.size() ; i++) {
+            String ingredientNameKey = "ingredients[" + i + "].ingredientName";
+            String ingredientQuantityKey = "ingredients[" + i + "].ingredientQuantity";
 
-        // 3. 요리 순서 이미지들 처리
+            RecipeIngredientsDTO recipeIngredientsDTO = recipeDTO.getRecipeIngredients().get(i);
+            recipeIngredientsDTO.setIngredient(
+                    ingredientService.entityToDto(ingredientRepository.findByIngredientName(paramMap.get(ingredientNameKey)).get())
+            );
+            recipeIngredientsDTO.setQuantity( Long.parseLong(paramMap.get(ingredientQuantityKey)));
+            ingredientsDTOList.add(recipeIngredientsDTO);
+        }
+
+        recipeDTO.setRecipeIngredients(ingredientsDTOList);
+
+        // 4. 요리 순서 이미지들 처리
         List<RecipeStepDTO> updatedSteps = recipeDTO.getSteps();
+        log.info("updatedSteps.size : " + updatedSteps.size());
         List<RecipeStepDTO> stepDTOList = new ArrayList<>();
-        int stepIndex = 1;
-        while (stepIndex < updatedSteps.size()) {
-            log.info("stepIndex : " + stepIndex);
-            log.info("updatedSteps.size : " + updatedSteps.size());
-            String contentKey = "steps[" + stepIndex + "].stepContent";
-
-            if (!paramMap.containsKey(contentKey)) {
-                break;
-            }
-            String currentImageKey = "steps[" + stepIndex + "].currentImage";
-            MultipartFile stepImageFile = request.getFile("steps[" + stepIndex + "].stepImage");
+        for (int i = 0 ; i < updatedSteps.size() ; i++) {
+//            log.info("stepIndex : " + (stepIndex+1));
+//            log.info("updatedSteps.size : " + updatedSteps.size());
+            String contentKey = "steps[" + i + "].stepContent";
+            String currentImageKey = "steps[" + i + "].currentImage";
+            MultipartFile stepImageFile = request.getFile("steps[" + i + "].stepImage");
             log.info("contentKey : " + contentKey);
 //            log.info("currentImageKey : " + currentImageKey);
 //            log.info("stepImageFile : " + stepImageFile);
 
-            RecipeStepDTO stepDTO = recipeDTO.getSteps().get(stepIndex-1);
+            RecipeStepDTO stepDTO = recipeDTO.getSteps().get(i);
             log.info("stepDTO : " + recipeDTO.getSteps().size());
             stepDTO.setContent(paramMap.get(contentKey));
 
@@ -214,8 +227,9 @@ public class RecipeController {
             } else {
                 stepDTO.setImagePath(paramMap.get(currentImageKey));
             }
+            log.info("stepDTO : " + stepDTO);
             stepDTOList.add(stepDTO);
-            stepIndex++;
+
         }
 
         recipeDTO.setSteps(stepDTOList);

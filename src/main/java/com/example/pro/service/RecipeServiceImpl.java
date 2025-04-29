@@ -71,7 +71,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         // 3. 요리 순서 저장
-        int stepIndex = 1; // steps[0]은 대표 이미지니까
+        int stepIndex = 0;
         for (MultipartFile stepImage : recipeStepImages) {
             String contentKey = "steps[" + stepIndex + "].content";
             if (!paramMap.containsKey(contentKey)) break;

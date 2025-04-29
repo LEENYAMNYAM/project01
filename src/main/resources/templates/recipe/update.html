@@ -134,7 +134,7 @@
 
     const ingredients = [[${ingredients}]];
     let ingredientIndex = [[${recipeIngredientsDTOList != null ? #lists.size(recipeIngredientsDTOList) : 0}]]; // 기존 재료 개수부터 시작
-    let stepIndex = [[${recipeSteps != null ? #lists.size(recipeSteps) : 0}]]; // 기존 단계 개수부터 시작
+    let stepIndex = [[${recipeSteps != null ? #lists.size(recipeSteps)+1 : 0}]]; // 기존 단계 개수부터 시작
 
     let selectedInput = null;
 
