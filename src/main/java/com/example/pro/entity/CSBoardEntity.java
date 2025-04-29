@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity(name="qna_board")
-public class QnABoardEntity {
+@Entity(name="cs_board")
+public class CSBoardEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -19,26 +19,21 @@ public class QnABoardEntity {
     private String title;
     private String writer;
     private String content;
+    private Long hitcount;
+    private boolean secret;
 
     @CreationTimestamp
     @Column(name = "regdate", updatable = false)
     @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
-    private Long hitcount;
 
     public void change(String title, String content) {
         this.title = title;
         this.content = content;
     }
 
-    @PrePersist
-    public void prePersist() {
-        this.hitcount = this.hitcount == null ? 0 : this.hitcount;
-    }
-
     public void updateHitcount() {
-        this.hitcount += 1;
+        this.hitcount = (this.hitcount == null ? 0 : this.hitcount) + 1;
     }
-
 }
 

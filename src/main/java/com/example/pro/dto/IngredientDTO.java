@@ -14,6 +14,5 @@ public class IngredientDTO {
     private String ingredientName;
     private String detail;
     private Long price;
-
     private String imageUrl;
 }

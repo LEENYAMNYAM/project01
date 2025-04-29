@@ -19,6 +19,7 @@ public class NoticeEntity {
     private String title;
     private String writer;
     private String content;
+    private Long hitcount;
 
     private boolean important; // 중요 여부 표시, true면 중요 공지, false면 일반 공지
 
@@ -33,4 +34,7 @@ public class NoticeEntity {
         return important ? "중요 공지사항" : "일반 공지사항";
     }
 
+    public void updateHitcount() {
+        this.hitcount = (this.hitcount == null ? 0 : this.hitcount) + 1;
+    }
 }

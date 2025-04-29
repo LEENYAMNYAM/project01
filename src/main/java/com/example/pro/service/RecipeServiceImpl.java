@@ -1,12 +1,15 @@
 package com.example.pro.service;
 
+import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.RecipeDTO;
+import com.example.pro.dto.RecipeStepDTO;
 import com.example.pro.dto.UserDTO;
 import com.example.pro.entity.*;
 import com.example.pro.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Log4j2
+@Transactional
 @RequiredArgsConstructor
 public class RecipeServiceImpl implements RecipeService {
 
@@ -45,8 +49,8 @@ public class RecipeServiceImpl implements RecipeService {
         // 2. 재료 저장
         int ingredientIndex = 0;
         while (true) {
-            String nameKey = "ingredients[" + ingredientIndex + "].ingredientName";
-            String qtyKey = "ingredients[" + ingredientIndex + "].quantity";
+            String nameKey = "recipeIngredients[" + ingredientIndex + "].ingredient.ingredientName";
+            String qtyKey = "recipeIngredients[" + ingredientIndex + "].quantity";
             if (!paramMap.containsKey(nameKey)) break;
 
             String name = paramMap.get(nameKey);
@@ -69,7 +73,7 @@ public class RecipeServiceImpl implements RecipeService {
         // 3. 요리 순서 저장
         int stepIndex = 1; // steps[0]은 대표 이미지니까
         for (MultipartFile stepImage : recipeStepImages) {
-            String contentKey = "steps[" + stepIndex + "].stepContent";
+            String contentKey = "steps[" + stepIndex + "].content";
             if (!paramMap.containsKey(contentKey)) break;
 
             String content = paramMap.get(contentKey);
@@ -177,8 +181,32 @@ public class RecipeServiceImpl implements RecipeService {
 
 
     @Override
-    public void updateRecipe(RecipeDTO recipeDTO, UserDTO userDTO) {
+    public void updateRecipe(RecipeDTO recipeDTO, PrincipalDetail principalDetail) {
+        // 1. 기존 레시피 찾아오기
+        RecipeEntity recipe = recipeRepository.findById(recipeDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("레시피를 찾을 수 없습니다."));
 
+        // 2. 기본 정보 업데이트
+        recipe.setTitle(recipeDTO.getTitle());
+        recipe.setCategory(recipeDTO.getCategory());
+        recipe.setYoutubeLink(recipeDTO.getYoutubeLink());
+        recipe.setMainImage(recipeDTO.getMainImagePath());
+
+        // 3. 요리 순서 업데이트 (간단하게 기존 데이터 싹 지우고 새로 저장하는 방식으로)
+        recipe.getSteps().clear();
+        int stepNumber = 1;
+        for (RecipeStepDTO stepDTO : recipeDTO.getSteps()) {
+            RecipeStepEntity step = new RecipeStepEntity();
+            step.setStepNumber(stepNumber++);
+            step.setContent(stepDTO.getContent());
+            step.setImageName(stepDTO.getImagePath());
+            step.setRecipe(recipe); // 양방향 매핑
+
+            recipe.getSteps().add(step);
+        }
+
+        // 4. 레시피 저장
+        recipeRepository.save(recipe);
     }
 
     @Override
@@ -203,7 +231,7 @@ public class RecipeServiceImpl implements RecipeService {
         recipeDTO.setId(recipeEntity.getId());
         recipeDTO.setTitle(recipeEntity.getTitle());
         recipeDTO.setCategory(recipeEntity.getCategory());
-//        recipeDTO.setMainImage(recipeEntity.getMainImage());
+        recipeDTO.setMainImagePath(recipeEntity.getMainImage());
         recipeDTO.setYoutubeLink(recipeEntity.getYoutubeLink());
         recipeDTO.setUsername(recipeEntity.getUser().getUsername());
         recipeDTO.setCreatedAt(recipeEntity.getCreatedAt());

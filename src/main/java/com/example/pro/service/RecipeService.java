@@ -1,5 +1,6 @@
 package com.example.pro.service;
 
+import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.RecipeDTO;
 import com.example.pro.dto.UserDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,7 @@ public interface RecipeService {
     List<RecipeDTO> searchRecipes(String searchType, String keyword);
     List<RecipeDTO> searchByCategoryAndKeyword(String category, String searchType, String keyword);
     RecipeDTO getRecipeById(Long id);
-    void updateRecipe(RecipeDTO recipeDTO, UserDTO userDTO);
+    void updateRecipe(RecipeDTO recipeDTO, PrincipalDetail principalDetail);
     void deleteRecipe(Long id);
 
 

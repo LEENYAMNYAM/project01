@@ -9,6 +9,10 @@ import java.util.List;
 
 public interface IngredientService {
     List<IngredientDTO> findAllIngredient();
+    void saveIngredient(IngredientDTO ingredientDTO);
+    void updateIngredient(Long id ,IngredientDTO ingredientDTO);
+    void deleteIngredient(Long id);
+    IngredientDTO findIngredientById(Long id);
 
     default IngredientEntity dtoToEntity(IngredientDTO ingredientDTO) {
 

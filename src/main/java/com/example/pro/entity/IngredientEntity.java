@@ -17,12 +17,10 @@ public class IngredientEntity {
     private Long id;
     @Column(nullable = false)
     private String ingredientName;
-    @Column(unique = true, nullable = false)
-    private String productId;
     @Column(nullable = false)
     private Long price;
-    private String mallLink;
-    private String mallName;
+    private String detail;
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @PrePersist

@@ -33,17 +33,17 @@
 
                 <div class="form-group mb-3">
                     <label>대표 이미지 업로드</label>
-                    <input type="file" name="steps[0].stepImage" class="form-control  bg-transparent text-white">
+                    <input type="file" name="steps[0].imageFile" class="form-control  bg-transparent text-white">
                 </div>
 
                 <div class="form-group mb-4" id="ingredients-section">
                     <label>재료</label>
                     <div class="ingredient-entry mb-2 d-flex align-items-center gap-2">
                         <div class="input-group flex-grow-1">
-                            <input type="text" name="ingredients[0].ingredientName" placeholder="재료명" class="form-control ingredient-name  bg-transparent text-white" readonly/>
+                            <input type="text" name="recipeIngredients[0].ingredient.ingredientName" placeholder="재료명" class="form-control ingredient-name  bg-transparent text-white" readonly/>
                             <button type="button" class="btn btn-secondary btn-sm open-ingredient-modal">검색</button>
                         </div>
-                        <input type="number" name="ingredients[0].quantity" placeholder="수량" class="form-control w-auto  bg-transparent text-white" min="1"/>
+                        <input type="number" name="recipeIngredients[0].quantity" placeholder="수량" class="form-control w-auto  bg-transparent text-white" min="1"/>
                     </div>
                     <button type="button" class="btn btn-primary btn-sm mt-2" id="add-ingredient">➕ 재료 추가</button>
                 </div>
@@ -51,8 +51,8 @@
                 <div class="form-group mb-4" id="steps-section">
                     <label>요리 순서</label>
                     <div class="step-entry mb-3 d-flex align-items-start gap-2">
-                        <textarea name="steps[1].stepContent" placeholder="요리 설명" class="form-control bg-transparent text-white" style=" min-height: 90px;"></textarea>
-                        <input type="file" name="steps[1].stepImage" class="form-control w-auto bg-transparent text-white" accept="image/*"/>
+                        <textarea name="steps[1].content" placeholder="요리 설명" class="form-control bg-transparent text-white" style=" min-height: 90px;"></textarea>
+                        <input type="file" name="steps[1].imageFile" class="form-control w-auto bg-transparent text-white" accept="image/*"/>
                     </div>
                     <button type="button" class="btn btn-success btn-sm" id="add-step">➕ 순서 추가</button>
                 </div>
@@ -95,10 +95,10 @@
         $('#add-ingredient').before(`
             <div class="ingredient-entry mb-2 d-flex align-items-center gap-2">
                 <div class="input-group flex-grow-1">
-                    <input type="text" name="ingredients[${ingredientIndex}].ingredientName" placeholder="재료명" class="form-control ingredient-name" readonly/>
+                    <input type="text" name="recipeIngredients[${ingredientIndex}].ingredient.ingredientName" placeholder="재료명" class="form-control ingredient-name" readonly/>
                     <button type="button" class="btn btn-outline-secondary btn-sm open-ingredient-modal">검색</button>
                 </div>
-                <input type="number" name="ingredients[${ingredientIndex}].quantity" placeholder="수량" class="form-control w-auto" min="1"/>
+                <input type="number" name="recipeIngredients[${ingredientIndex}].quantity" placeholder="수량" class="form-control w-auto" min="1"/>
                 <button type="button" class="btn btn-danger btn-sm remove-ingredient" style="min-width: 70px;">삭제</button>
             </div>
         `);
@@ -114,8 +114,8 @@
     $('#add-step').click(() => {
         $('#add-step').before(`
             <div class="step-entry mb-3 d-flex align-items-start gap-2">
-                <textarea name="steps[${stepIndex}].stepContent" placeholder="요리 설명" class="form-control" style="min-height: 90px;"></textarea>
-                <input type="file" name="steps[${stepIndex}].stepImage" class="form-control w-auto" accept="image/*"/>
+                <textarea name="steps[${stepIndex}].content" placeholder="요리 설명" class="form-control" style="min-height: 90px;"></textarea>
+                <input type="file" name="steps[${stepIndex}].imageFile" class="form-control w-auto" accept="image/*"/>
                 <button type="button" class="btn btn-danger btn-sm remove-step" style="min-width: 70px;">삭제</button>
             </div>
         `);

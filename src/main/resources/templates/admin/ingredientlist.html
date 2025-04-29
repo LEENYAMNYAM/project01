@@ -38,8 +38,13 @@
                                 <p th:text="${ingredient.detail}">상세 정보</p>
                                 <p th:text="${ingredient.price != null ? ingredient.price.toString() + '원' : '가격 없음'}">가격</p>
 
-                                <a th:href="@{/admin/ingredient/edit/{id}(id=${ingredient.id})}" class="btn btn-primary btn-sm mt-2">수정</a>
-                                <a th:href="@{/admin/ingredient/delete/{id}(id=${ingredient.id})}" class="btn btn-danger btn-sm mt-2 ms-1">삭제</a>
+                                <a th:href="@{/admin/updateIngredient/{id}(id=${ingredient.id})}" class="btn btn-primary btn-sm mt-2">수정</a>
+
+
+
+
+
+                                <a th:href="@{/admin/deleteIngredient/${ingredient.id}}" class="btn btn-danger btn-sm mt-2 ms-1">삭제</a>
                             </div>
                         </div>
                     </div>
@@ -69,8 +74,8 @@
                                 <p>${ingredient.price != null ? ingredient.price.toLocaleString() + '원' : '가격 없음'}</p>
 
                                 <!-- 수정 및 삭제 버튼 추가 -->
-                                <a href="/admin/ingredient/edit/${ingredient.id}" class="btn btn-primary btn-sm mt-2">수정</a>
-                                <a href="/admin/ingredient/delete/${ingredient.id}" class="btn btn-danger btn-sm mt-2 ms-1">삭제</a>
+                                <a href="/admin/updateIngredient/${ingredient.id}" class="btn btn-primary btn-sm mt-2">수정</a>
+                                <a href="/admin/deleteIngredient/${ingredient.id}" class="btn btn-danger btn-sm mt-2 ms-1">삭제</a>
                             </div>
                         </div>
                     </div>

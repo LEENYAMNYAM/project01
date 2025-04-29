@@ -9,10 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,6 +50,27 @@ public class AdminController {
     @GetMapping("/ingredientinsert")
     public String ingredientinsert(Model model) {
         return "admin/ingredientinsert";
+    }
+    @PostMapping("/ingredientinsert")
+    public String ingredientinsert(IngredientDTO ingredientDTO) {
+        ingredientService.saveIngredient(ingredientDTO);
+        return "redirect:/admin/ingredientlist";
+    }
+    @GetMapping("/deleteIngredient/{id}")
+    public String deleteIngredient(@PathVariable Long id) {
+        ingredientService.deleteIngredient(id);
+        return "redirect:/admin/ingredientlist";
+    }
+    @GetMapping("/updateIngredient/{id}")
+    public String updateIngredient(@PathVariable Long id, Model model) {
+        IngredientDTO ingredientDTO = ingredientService.findIngredientById(id);
+        model.addAttribute("ingredient", ingredientDTO);
+        return "admin/updateIngredient";
+    }
+    @PostMapping("/updateIngredient/{id}")
+    public String updateIngredient(@PathVariable Long id, IngredientDTO ingredientDTO) {
+        ingredientService.updateIngredient(id, ingredientDTO);
+        return "redirect:/admin/ingredientlist";
     }
 
 

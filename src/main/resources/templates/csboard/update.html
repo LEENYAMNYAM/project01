@@ -10,22 +10,24 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f6f9;
+            background-color: #f1f3f5;
         }
 
-        .notice-form-wrapper {
+        .update-card {
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
             max-width: 720px;
             margin: auto;
-            background-color: #ffffff;
-            padding: 3rem;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease-in-out;
         }
 
-        .notice-form-wrapper:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0d6efd;
+            margin-bottom: 2.5rem;
+            text-align: center;
         }
 
         .form-label {
@@ -37,7 +39,8 @@
         textarea.form-control {
             border-radius: 0.75rem;
             border: 1px solid #ced4da;
-            transition: box-shadow 0.2s;
+            padding: 0.75rem 1rem;
+            transition: box-shadow 0.2s ease;
         }
 
         .form-control:focus,
@@ -52,49 +55,45 @@
             font-weight: 600;
         }
 
-        .form-check-input {
-            transform: scale(1.2);
-            margin-right: 10px;
+        .btn-dark-outline {
+            border: 1px solid #212529;
+            color: #212529;
+            background-color: transparent;
         }
 
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #0d6efd;
+        .btn-dark-outline:hover {
+            background-color: #212529;
+            color: white;
         }
     </style>
 
-    <div class="notice-form-wrapper">
-        <h2 class="text-center mb-4 section-title">📄 공지사항 등록</h2>
+    <div class="update-card">
+        <div class="section-title">🛠 질문 수정</div>
 
-        <form th:action="@{/notice}" method="post">
+        <form th:action="@{/templates/csboard/update/submit}" method="post">
+            <input type="hidden" name="id" th:value="${cs.id}" />
 
             <div class="mb-4">
                 <label for="title" class="form-label">제목</label>
                 <input type="text" id="title" name="title" class="form-control shadow-sm"
-                       placeholder="예: 시스템 점검 안내" required>
+                       th:value="${cs.title}" required>
             </div>
 
             <div class="mb-4">
                 <label for="writer" class="form-label">작성자</label>
                 <input type="text" id="writer" name="writer" class="form-control shadow-sm"
-                       placeholder="예: 박영광킹왕짱" required>
+                       th:value="${cs.writer}" readonly>
             </div>
 
             <div class="mb-4">
                 <label for="content" class="form-label">내용</label>
                 <textarea id="content" name="content" rows="6" class="form-control shadow-sm"
-                          placeholder="공지 내용을 자세히 입력해 주세요." required></textarea>
+                          th:text="${cs.content}" required></textarea>
             </div>
 
-            <div class="form-check form-switch mb-5 d-flex align-items-center">
-                <input class="form-check-input" type="checkbox" id="important" name="important">
-                <label class="form-check-label fw-semibold" for="important">중요 공지로 표시</label>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <a href="/notice/list" class="btn btn-outline-secondary btn-rounded">← 목록으로</a>
-                <button type="submit" class="btn btn-primary btn-rounded shadow-sm">등록하기</button>
+            <div class="d-flex justify-content-between mt-4">
+                <a th:href="@{'/csboard/view?id=' + ${cs.id}}" class="btn btn-outline-secondary btn-rounded">← 돌아가기</a>
+                <button type="submit" class="btn btn-dark-outline btn-rounded">수정 완료</button>
             </div>
         </form>
     </div>

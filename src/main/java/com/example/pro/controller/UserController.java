@@ -107,8 +107,7 @@ public class UserController {
         userService.deleteUser(username);
 
 
-
-        return "redirect:/logout";
+        return "redirect:/logout"; // 혹은 메인 페이지로 리디렉트
     }
 
 
