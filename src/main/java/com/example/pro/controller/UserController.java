@@ -52,15 +52,12 @@ public class UserController {
 
     }
 
-    @GetMapping("/userlist")
+    @GetMapping("/userinfo")
     public String userInfo(Model model) {
-        log.info("Starting user info retrieval...");
-
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         log.info("Logged-in username: {}", username);
-
 
         UserEntity userEntity = userService.readUser(username);
         if (userEntity == null) {
@@ -78,7 +75,7 @@ public class UserController {
         log.info("User DTO added to model");
 
 
-        return "userinfo/userlist";
+        return "/userinfo/userinfo";
     }
     @GetMapping("/userupdate")
     public String userUpdate(@AuthenticationPrincipal PrincipalDetail principal, Model model) {
@@ -96,7 +93,7 @@ public class UserController {
         // 기존 시그니처에 맞게 호출
         userService.updateUser(username, userDTO);
 
-        return "redirect:/userinfo/userlist";
+        return "redirect:/userinfo/userinfo";
     }
 
 

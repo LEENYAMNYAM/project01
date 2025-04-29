@@ -15,13 +15,13 @@ public class QnABoardEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long qno;
+    private Long id;
     private String title;
     private String writer;
     private String content;
 
     @CreationTimestamp
-    @Column(name="regdate")
+    @Column(name = "regdate", updatable = false)
     @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
     private Long hitcount;

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -16,9 +18,9 @@ public class ReviewEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @ManyToOne
-//    @JoinColumn(name = "recipe_id")
-//    private RecipeEntity recipe; 레시피 클래스 몰라서 임의로 적었음
+    @ManyToOne
+    @JoinColumn(name = "recipe_id")
+    private RecipeEntity recipe;
     // 구매자
     @ManyToOne
     @JoinColumn(name = "buyer_id", nullable = false)
@@ -40,9 +42,21 @@ public class ReviewEntity extends BaseEntity {
     // 이미지 경로
     private String imagePath;
 
+    // 레시피 작성자의 답변
+    @Column(length = 1000)
+    private String reply;
+
+    // 답변 작성 시간
+    private LocalDateTime replyDate;
+
     public void change1(String content, int rating) {
         this.content = content;
         this.rating = rating;
+    }
+
+    public void addReply(String reply) {
+        this.reply = reply;
+        this.replyDate = LocalDateTime.now();
     }
 
 

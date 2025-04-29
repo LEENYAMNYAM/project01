@@ -2,144 +2,171 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<div class="container-fluid text-white p-5" layout:fragment="content">
-  <div class="d-flex justify-content-center mt-5">
-    <div class="card p-4 shadow" style="max-width: 500px; width: 100%; background-color: #f9f9f9;">
 
-    <h2 class="text-center mb-4">회원가입</h2>
-    <form action="/userinfo/register"  method="post" id="signupForm" onsubmit="return validateForm()">
-      <div class="form-group mb-3">
-        <label for="username">Id</label>
-        <input type="text" id="username" name="username" class="form-control" required>
-      </div>
-      <div class="form-group mb-3">
-        <label for="name">이름</label>
-        <input type="text" id="name" name="name" class="form-control" required>
-      </div>
-      <div class="form-group mb-3">
-        <label for="email">이메일</label>
-        <input type="email" id="email" name="email" class="form-control" required>
-      </div>
-      <div class="form-group mb-3">
-        <label for="password">비밀번호</label>
-        <input type="password" id="password" name="password" class="form-control" required>
-      </div>
-      <div class="form-group mb-3">
-        <label for="confirm_password">비밀번호 확인</label>
-        <input type="password" id="confirm_password" name="passwordConfirmation" class="form-control" required>
-      </div>
-      <div class="form-group mb-3">
-        <label>성별</label>
-        <div>
-          <label><input type="radio" name="gender" value="male" required> 남자</label>
-          <label><input type="radio" name="gender" value="female" required> 여자</label>
-        </div>
-      </div>
-      <div class="form-group mb-3">
-        <label for="address">주소</label>
-        <input type="text" id="address" name="address" class="form-control" placeholder="시/도" required>
-      </div>
+<div class="container-fluid p-5" layout:fragment="content">
 
-      <div class="form-group mb-3">
-        <label for="phone">전화번호</label>
-        <input type="tel" id="phone" name="phone" class="form-control" placeholder="전화번호" required>
-      </div>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-      <br/>
-      <div class="form-group text-center">
-        <button type="submit" class="btn btn-primary">회원가입</button>
-
-        <button type="reset" class="btn btn-secondary">취소</button>
-      </div>
-    </form>
-  </div>
-</div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<style>
-  .container {
-    max-width: 500px; /* 폼의 최대 너비를 500px로 제한 */
-    padding: 20px;
-    background-color: #f9f9f9;
-
-  }
-
-  .form-group {
-    margin-bottom: 15px; /* 폼 요소들 사이의 간격 */
-  }
-
-  .form-control {
-    padding: 12px; /* 입력창 여백 */
-    font-size: 14px; /* 글자 크기 */
-    border-radius: 5px; /* 입력창 둥글게 */
-  }
-
-  label {
-    font-weight: bold; /* 레이블을 굵게 */
-    font-size: 16px; /* 레이블 글자 크기 */
-  }
-
-  .btn {
-    padding: 12px; /* 버튼 여백 */
-    font-size: 16px; /* 버튼 글자 크기 */
-    margin-bottom: 10px; /* 버튼 간격 */
-    border-radius: 5px; /* 버튼 둥글게 */
-  }
-
-  .text-center {
-    margin-top: 20px; /* 폼 하단 여백 */
-  }
-
-  .btn-primary {
-    background-color: #007bff; /* 버튼 배경색 */
-    border: none;
-  }
-
-  .btn-secondary {
-    background-color: #6c757d; /* 취소 버튼 배경색 */
-    border: none;
-  }
-
-  /* 반응형 디자인 */
-  @media (max-width: 576px) {
-    .container {
-      padding: 10px;
-      width: 100%; /* 모바일에서는 100% 너비 */
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f3f5;
     }
-  }
-</style>
+
+    .join-card {
+      width: 50%;
+      background-color: #ffffff;
+      padding: 80px;
+      border-radius: 1.5rem;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+      color: #212529;
+      margin: auto;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0d6efd;
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .form-control {
+      border-radius: 0.75rem;
+      border: 1px solid #ced4da;
+      padding: 0.75rem 1rem;
+      color: #212529 !important;
+      background-color: #ffffff;
+    }
+
+    .form-control::placeholder {
+      color: #6c757d;
+    }
+
+    .form-control:focus {
+      color: #212529 !important;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+      border-color: #86b7fe;
+    }
+
+    .btn-rounded {
+      border-radius: 50px;
+      padding: 0.6rem 2rem;
+      font-weight: 600;
+    }
+
+    .btn-dark-outline {
+      border: 1px solid #212529;
+      color: #212529;
+      background-color: transparent;
+    }
+
+    .btn-dark-outline:hover {
+      background-color: #212529;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .join-card {
+        width: 90%;
+      }
+    }
+  </style>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="join-card">
+        <h2 class="section-title">📝 회원가입</h2>
+
+        <form action="/userinfo/register" method="post" id="signupForm" onsubmit="return validateForm()">
+
+          <div class="mb-4">
+            <label for="username" class="form-label">아이디</label>
+            <input type="text" id="username" name="username" class="form-control shadow-sm"
+                   placeholder="아이디를 입력하세요" required>
+          </div>
+
+          <div class="mb-4">
+            <label for="name" class="form-label">이름</label>
+            <input type="text" id="name" name="name" class="form-control shadow-sm"
+                   placeholder="이름을 입력하세요" required>
+          </div>
+
+          <div class="mb-4">
+            <label for="email" class="form-label">이메일</label>
+            <input type="email" id="email" name="email" class="form-control shadow-sm"
+                   placeholder="이메일을 입력하세요" required>
+          </div>
+
+          <div class="mb-4">
+            <label for="password" class="form-label">비밀번호</label>
+            <input type="password" id="password" name="password" class="form-control shadow-sm"
+                   placeholder="비밀번호를 입력하세요" required>
+          </div>
+
+          <div class="mb-4">
+            <label for="confirm_password" class="form-label">비밀번호 확인</label>
+            <input type="password" id="confirm_password" name="passwordConfirmation" class="form-control shadow-sm"
+                   placeholder="비밀번호를 다시 입력하세요" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">성별</label><br>
+            <label class="me-3"><input type="radio" name="gender" value="male" required> 남자</label>
+            <label><input type="radio" name="gender" value="female" required> 여자</label>
+          </div>
+
+          <div class="mb-4">
+            <label for="address" class="form-label">주소</label>
+            <input type="text" id="address" name="address" class="form-control shadow-sm"
+                   placeholder="주소를 입력하세요" required>
+          </div>
+
+          <div class="mb-5">
+            <label for="phone" class="form-label">전화번호</label>
+            <input type="tel" id="phone" name="phone" class="form-control shadow-sm"
+                   placeholder="전화번호를 입력하세요" required>
+          </div>
+
+          <div class="d-grid gap-3 mt-4">
+            <button type="submit" class="btn btn-primary btn-rounded shadow-sm">회원가입</button>
+            <button type="reset" class="btn btn-dark-outline btn-rounded">취소</button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+</div>
 
 <script>
   function validateForm() {
-    // 모든 필드가 제대로 입력되었는지 확인
-    let name = document.getElementById("name").value;
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
-    let confirmPassword = document.getElementById("confirm_password").value;
-    let phone = document.getElementById("phone").value;
-    let address = document.getElementById("address").value;
-    let district = document.getElementById("district").value;
-    let detailedAddress = document.getElementById("detailed_address").value;
+    let name = document.getElementById("name").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value.trim();
+    let confirmPassword = document.getElementById("confirm_password").value.trim();
+    let phone = document.getElementById("phone").value.trim();
+    let address = document.getElementById("address").value.trim();
 
-    // 필수 입력 필드들이 비어 있지 않은지 확인
-    if (!name || !email || !password || !confirmPassword || !phone || !address || !district || !detailedAddress) {
+    if (!name || !email || !password || !confirmPassword || !phone || !address) {
       alert("모든 필드를 작성해주세요.");
-      return false; // 폼 제출을 막음
+      return false;
     }
 
-    // 비밀번호와 확인 비밀번호가 일치하는지 확인
     if (password !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
-      return false; // 폼 제출을 막음
+      return false;
     }
 
-    return true; // 모든 검증을 통과하면 폼 제출
+    return true;
   }
 </script>
-</div>
-
-</body>
-</html>

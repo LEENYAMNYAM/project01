@@ -113,6 +113,70 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    public List<RecipeDTO> searchRecipeByTitle(String keyword) {
+        List<RecipeEntity> entityList = recipeRepository.findByTitleContainingIgnoreCase(keyword);
+        return entityList.stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RecipeDTO> findByUsername(String username) {
+        List<RecipeEntity> recipeEntityList = recipeRepository.findByUser_UsernameContainingIgnoreCase(username);
+        List<RecipeDTO> recipeListDTOs = recipeEntityList.stream()
+                .map( recipeEntity -> {
+                    RecipeDTO recipeDTO = entityToDto(recipeEntity);
+//                    log.info("recipeDTO.getUsername(): " + recipeDTO.getUsername());
+                    return recipeDTO;
+                })
+                .collect(Collectors.toList());
+        return recipeListDTOs;
+    }
+
+    @Override
+    public List<RecipeDTO> searchRecipes(String searchType, String keyword) {
+        List<RecipeEntity> entityList;
+
+        if ("title".equals(searchType)) {
+            entityList = recipeRepository.findByTitleContainingIgnoreCase(keyword);
+        } else if ("writer".equals(searchType)) {
+            entityList = recipeRepository.findByUser_UsernameContainingIgnoreCase(keyword);
+        } else {
+            entityList = List.of(); // 빈 리스트 반환
+        }
+
+        return entityList.stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RecipeDTO> findByCategory(String category) {
+        List<RecipeEntity> entityList = recipeRepository.findByCategory(category);
+        return entityList.stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RecipeDTO> searchByCategoryAndKeyword(String category, String searchType, String keyword) {
+        List<RecipeEntity> entityList;
+
+        if ("title".equals(searchType)) {
+            entityList = recipeRepository.findByCategoryAndTitleContaining(category, keyword);
+        } else if ("writer".equals(searchType)) {
+            entityList = recipeRepository.findByCategoryAndUser_UsernameContaining(category, keyword);
+        } else {
+            entityList = List.of(); // 빈 리스트
+        }
+
+        return entityList.stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
     public void updateRecipe(RecipeDTO recipeDTO, UserDTO userDTO) {
 
     }
