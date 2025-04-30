@@ -1,12 +1,119 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout.html}" lang="en">
+      layout:decorate="~{layout/layout.html}" lang="ko">
+<head>
+
+
+    <meta charset="UTF-8">
+    <title>슬기로운 엄카집밥</title>
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <!-- 추가 스타일 -->
+    <style>
+        .category-card, .recipe-card, .recommend-card {
+            background: #ddd;
+            border-radius: 10px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #555;
+        }
+        .notice-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
 <div class="container-fluid text-white p-5" layout:fragment="content">
-    <section class="page-section">
-        <div class="container">
-            <h2 class="text-center mt-0"> 메인화면 작성하면 됩니다.</h2>
-            <hr class="divider my-4"/>
+<!-- 상단 헤더 -->
+<header class="d-flex justify-content-between align-items-center mb-4">
+    <h1>슬기로운 엄카집밥</h1>
+    <div class="login-box" style="background:#f0f0f0; padding: 15px; border-radius:10px; width:250px;">
+        <form action="/login" method="post">
+            <input type="text" class="form-control mb-2" placeholder="아이디" name="username">
+            <input type="password" class="form-control mb-2" placeholder="비밀번호" name="password">
+            <button type="submit" class="btn btn-primary w-100">로그인</button>
+        </form>
+    </div>
+</header>
+
+
+
+<main>
+    <div class="row">
+        <!-- 메인 콘텐츠 -->
+        <div class="col-md-9">
+            <!-- 주요 카테고리 -->
+            <section class="category-section mb-5">
+                <h3 class="mb-4">카테고리</h3>
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <div class="category-card">장바구니</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="category-card">레시피</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="category-card">공지사항</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="category-card">Q&A</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 이달의 레시피 -->
+            <section class="monthly-recipes mb-5">
+                <h3 class="mb-4">이달의 레시피</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="recipe-card">레시피1</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="recipe-card">레시피2</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="recipe-card">레시피3</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 추천 레시피 -->
+            <section class="today-recipe mb-5">
+                <h3 class="mb-4">오늘의 추천 레시피</h3>
+                <div class="recommend-card">추천 레시피 준비중</div>
+            </section>
         </div>
+
+        <!-- 사이드바 -->
+        <div class="col-md-3">
+            <aside class="notice-box mb-4">
+                <h5 class="mb-3">최신 공지사항</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">공지사항1</li>
+                    <li class="list-group-item">공지사항2</li>
+                    <li class="list-group-item">공지사항3</li>
+                </ul>
+            </aside>
+        </div>
+    </div> <!-- row 닫기 -->
+
+    <!-- 후기 작성 -->
+    <section class="review-invite text-center my-5">
+        <h2>나만의 레시피를 공유해보세요!</h2>
+        <a href="/reviews/list" class="btn btn-outline-primary mt-3">후기 작성하기</a>
     </section>
+</main>
+
+
 </div>
+
+ </body>
+
+</html>

@@ -33,6 +33,7 @@ public interface IngredientService {
         ingredientDTO.setIngredientName(ingredientEntity.getIngredientName());
         ingredientDTO.setDetail(ingredientEntity.getDetail());
         ingredientDTO.setPrice(ingredientEntity.getPrice());
+
         ingredientDTO.setImageUrl(ingredientEntity.getImageUrl());
 
         return ingredientDTO;
