@@ -29,6 +29,10 @@ public class CartEntity {
     @OneToMany(mappedBy = "cartEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeIngredientsEntity> recipeIngredients;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
+    private RecipeEntity recipe;
+
     @CreationTimestamp
     @Column(name="createdAt")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")

@@ -69,7 +69,7 @@ public class ReviewServiceImpl implements ReviewService {
             reviewEntity.setRecipe(recipe);
         }
 
-        reviewEntity.change1(reviewDTO.getContent(), reviewDTO.getRating());
+        reviewEntity.change1(reviewDTO.getViewer().getUsername(), reviewDTO.getContent(), reviewDTO.getRating());
         reviewRepository.save(reviewEntity);
     }
 

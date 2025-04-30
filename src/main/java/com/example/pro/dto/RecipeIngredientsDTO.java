@@ -18,5 +18,7 @@ public class RecipeIngredientsDTO {
     private IngredientDTO ingredient;
     @NotEmpty
     private Long quantity;
+    @NotEmpty
+    private Long cartId;
 
 }

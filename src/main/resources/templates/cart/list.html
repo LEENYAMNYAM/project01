@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout.html}" lang="en">
+      layout:decorate="~{layout/layout.html}" lang="ko">
 <div class="container-fluid text-white p-5" layout:fragment="content"
      style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
     <section class="page-section">
@@ -10,68 +10,59 @@
             <hr class="divider my-4" />
 
             <!-- 장바구니가 비어있을 경우 -->
-            <div th:if="${#lists.isEmpty(cartItems)}" class="text-center py-5">
+            <div th:if="${groupedByRecipe.isEmpty()}" class="text-center py-5">
                 <h4>장바구니가 비어있습니다.</h4>
                 <p class="mb-4">레시피를 선택하고 재료를 장바구니에 담아보세요!</p>
                 <a href="/recipe/list" class="btn btn-primary btn-lg">레시피 둘러보기</a>
             </div>
 
             <!-- 장바구니 목록 -->
-            <div th:unless="${#lists.isEmpty(cartItems)}" class="card bg-dark text-white mb-4">
-                <div class="card-header">
-                    <h3>장바구니 목록</h3>
+            <div th:each="entry : ${groupedByRecipe}" class="card bg-dark text-white mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 th:text="${entry.key}">레시피 제목</h4>
+                    <!-- 레시피 전체 삭제 -->
+                    <form th:action="@{'/cart/delete/recipe/' + ${recipeIdMap[entry.key]}}" method="post" onsubmit="return confirm('이 레시피의 재료를 모두 삭제할까요?');">
+                        <button type="submit" class="btn btn-danger btn-sm">레시피 전체 삭제</button>
+                    </form>
                 </div>
                 <div class="card-body">
+                    <p>
+                        재료 개수: <strong th:text="${#lists.size(entry.value)}"></strong>개 /
+                        총 가격: <strong th:text="${#numbers.formatInteger(recipeTotalPrice[entry.key], 0, 'COMMA')} + '원'"></strong>
+                    </p>
+
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover">
+                        <table class="table table-dark table-hover align-middle">
                             <thead>
-                                <tr>
-                                    <th>상품명</th>
-                                    <th>수량</th>
-                                    <th>가격</th>
-                                    <th>합계</th>
-                                    <th>관리</th>
-                                </tr>
+                            <tr>
+                                <th>재료명</th>
+                                <th>수량</th>
+                                <th>단가</th>
+                                <th>합계</th>
+                                <th>삭제</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="item : ${cartItems}">
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img th:if="${item.ingredient.imageUrl}" th:src="${item.ingredient.imageUrl}"
-                                                 class="me-2" style="width: 50px; height: 50px; object-fit: cover;">
-                                            <span th:text="${item.ingredient.ingredientName}">재료명</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="input-group" style="width: 120px;">
-                                            <button class="btn btn-outline-secondary btn-sm decrease-quantity"
-                                                    th:data-id="${item.id}">-</button>
-                                            <input type="number" class="form-control text-center"
-                                                   th:value="${item.quantity}" readonly>
-                                            <button class="btn btn-outline-secondary btn-sm increase-quantity"
-                                                    th:data-id="${item.id}">+</button>
-                                        </div>
-                                    </td>
-                                    <td th:text="${#numbers.formatInteger(item.ingredient.price, 0, 'COMMA')} + '원'">가격</td>
-                                    <td th:text="${#numbers.formatInteger(item.ingredient.price * item.quantity, 0, 'COMMA')} + '원'">합계</td>
-                                    <td>
-                                        <button class="btn btn-danger btn-sm remove-item" th:data-id="${item.id}">삭제</button>
-                                    </td>
-                                </tr>
+                            <tr th:each="ingredient : ${entry.value}">
+                                <td th:text="${ingredient.ingredient.name}">재료명</td>
+                                <td th:text="${ingredient.quantity}"></td>
+                                <td th:text="${ingredient.ingredient.price} + '원'"></td>
+                                <td th:text="${ingredient.quantity * ingredient.ingredient.price} + '원'"></td>
+                                <td>
+                                    <!-- 개별 재료 삭제 -->
+                                    <form th:action="@{'/cart/delete/item/' + ${ingredient.id}}" method="post"
+                                          onsubmit="return confirm('이 재료를 삭제할까요?');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+                                    </form>
+                                </td>
+                            </tr>
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" class="text-end"><strong>총 합계:</strong></td>
-                                    <td th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">총 합계</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
-                </div>
-                <div class="card-footer text-end">
-                    <a href="/recipe/list" class="btn btn-secondary">계속 쇼핑하기</a>
-                    <a href="/cart/checkout" class="btn btn-primary">결제하기</a>
+                    <div class="card-footer text-end">
+                        <a href="/recipe/list" class="btn btn-secondary">계속 쇼핑하기</a>
+                        <a href="/cart/checkout" class="btn btn-primary">결제하기</a>
+                    </div>
                 </div>
             </div>
         </div>

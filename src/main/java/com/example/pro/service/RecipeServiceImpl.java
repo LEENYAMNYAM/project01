@@ -232,6 +232,15 @@ public class RecipeServiceImpl implements RecipeService {
         recipeRepository.deleteById(id);
     }
 
+    @Override
+    public String getRecipeTitleById(Long id) {
+        return recipeRepository.findTitleById(id);
+    }
+
+
+
+
+
 
     RecipeEntity dtoToEntity(RecipeDTO recipeDTO) {
         RecipeEntity recipeEntity = new RecipeEntity();

@@ -3,6 +3,7 @@ package com.example.pro.controller;
 import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.*;
 import com.example.pro.entity.ReviewEntity;
+import com.example.pro.repository.CartRepository;
 import com.example.pro.repository.IngredientRepository;
 import com.example.pro.service.*;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class RecipeController {
     private final ReviewService reviewService;
     private final IngredientRepository ingredientRepository;
     private final CartService cartService;
+    private final CartRepository cartRepository;
 
     @GetMapping("/register")
     public void recipeRegister(Model model) {
@@ -84,13 +86,25 @@ public class RecipeController {
         recipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId()));
 
         // 5.Cart에 레시피재료 저장
-        cartService.createCart(recipeDTO);
+        CartDTO savedCartDTO = cartService.createCart(recipeDTO);
+        log.info("Saved Cart ID: {}", savedCartDTO.getId());
 
-        // 6. 추가한 재료가 있으면 장바구니리스트로, 없으면 레시피리스트로
+        // 6. CartID를 recipeIngredientDTO에 추가하기
+        Long cartId = savedCartDTO.getId();
+        List<RecipeIngredientsDTO> recipeIngredientsDTOList = recipeDTO.getRecipeIngredients();
+        List<RecipeIngredientsDTO> updatedRecipeIngredientsDTOList = new ArrayList<>();
+        for (RecipeIngredientsDTO dto : recipeIngredientsDTOList) {
+            dto.setCartId(cartId);
+            updatedRecipeIngredientsDTOList.add(dto);
+        }
+        recipeDTO.setRecipeIngredients(updatedRecipeIngredientsDTOList);
+
+        log.info("recipeDTO : " + recipeDTO);
+        // 7. 추가한 재료가 있으면 장바구니리스트로, 없으면 레시피리스트로
         if (recipeDTO.getRecipeIngredients() == null || recipeDTO.getRecipeIngredients().isEmpty()) {
             return "redirect:/recipe/list";
         } else {
-            return "rediect:/cart/list";
+            return "redirect:/cart/list";
         }
 
     }

@@ -19,7 +19,7 @@ public interface RecipeService {
     RecipeDTO getRecipeById(Long id);
     void updateRecipe(RecipeDTO recipeDTO);
     void deleteRecipe(Long id);
-
+    public String getRecipeTitleById(Long id);
 
 
 }

@@ -4,6 +4,7 @@ import com.example.pro.dto.RecipeDTO;
 import com.example.pro.dto.RecipeIngredientsDTO;
 import com.example.pro.entity.RecipeEntity;
 import com.example.pro.entity.RecipeIngredientsEntity;
+import com.example.pro.repository.CartRepository;
 import com.example.pro.repository.IngredientRepository;
 import com.example.pro.repository.RecipeIngredientsRepository;
 import com.example.pro.repository.RecipeRepository;
@@ -23,6 +24,7 @@ public class RecipeIngredientsServiceImpl implements RecipeIngredientsService {
     private final RecipeRepository recipeRepository;
     private final RecipeIngredientsRepository recipeIngredientsRepository;
     private final IngredientServiceImpl ingredientServiceImpl;
+    private final CartRepository cartRepository;
 
     @Override
     public List<RecipeIngredientsDTO> getRecipeIngredientsbyRecipeId(Long recipeId) {
@@ -47,6 +49,7 @@ public class RecipeIngredientsServiceImpl implements RecipeIngredientsService {
         recipeIngredientsEntity.setRecipeEntity(recipeRepository.findById(recipeIngredientsDTO.getRecipeId()).get());
         recipeIngredientsEntity.setIngredientEntity(ingredientServiceImpl.dtoToEntity(recipeIngredientsDTO.getIngredient()));
         recipeIngredientsEntity.setQuantity(recipeIngredientsDTO.getQuantity());
+        recipeIngredientsEntity.setCartEntity(cartRepository.findById(recipeIngredientsDTO.getCartId()).get());
         return recipeIngredientsEntity;
     }
 
@@ -56,6 +59,7 @@ public class RecipeIngredientsServiceImpl implements RecipeIngredientsService {
         recipeIngredientsDTO.setRecipeId(recipeIngredientsEntity.getRecipeEntity().getId());
         recipeIngredientsDTO.setIngredient(ingredientServiceImpl.entityToDto(recipeIngredientsEntity.getIngredientEntity()));
         recipeIngredientsDTO.setQuantity(recipeIngredientsEntity.getQuantity());
+        recipeIngredientsDTO.setCartId(recipeIngredientsEntity.getCartEntity().getId());
         return recipeIngredientsDTO;
     }
 

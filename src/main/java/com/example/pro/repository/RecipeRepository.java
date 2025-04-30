@@ -13,4 +13,6 @@ public interface RecipeRepository extends JpaRepository<RecipeEntity, Long> {
     List<RecipeEntity> findByCategory(String category);
     List<RecipeEntity> findByCategoryAndTitleContaining(String category, String keyword);
     List<RecipeEntity> findByCategoryAndUser_UsernameContaining(String category, String keyword);
+    RecipeEntity findByTitle(String title);
+    String findTitleById(Long id);
 }

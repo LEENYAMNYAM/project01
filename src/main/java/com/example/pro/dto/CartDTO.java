@@ -20,8 +20,9 @@ public class CartDTO {
 
     private Long totalPrice;
 
-    private LocalDateTime createdAt;
-
     private List<RecipeIngredientsDTO> recipeIngredients;
 
+    private String recipeTitle;
+
+    private LocalDateTime createdAt;
 }
