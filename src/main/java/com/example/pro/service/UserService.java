@@ -3,11 +3,14 @@ package com.example.pro.service;
 import com.example.pro.entity.UserEntity;
 import com.example.pro.dto.UserDTO;
 
+import java.util.List;
+
 public interface UserService {
     void registerUser(UserDTO userDTO);
     UserEntity readUser(String username);
     void updateUser(String username, UserDTO userDTO);
     void deleteUser(String username);
+    List<UserEntity> findAll();
 
     //    void changePassword(Long id, String newPassword);
     void dropUser(Long id);
@@ -22,6 +25,7 @@ public interface UserService {
         user.setPhone(userDTO.getPhone());
         user.setGender(userDTO.getGender()); // String 타입 그대로 설정
         user.setAddress(userDTO.getAddress());
+        user.setPoint(userDTO.getPoint());
 
 
         return user;
@@ -37,6 +41,7 @@ public interface UserService {
         userDTO.setPhone(userEntity.getPhone());
         userDTO.setGender(userEntity.getGender());
         userDTO.setAddress(userEntity.getAddress());
+        userDTO.setPoint(userEntity.getPoint());
 
 
 

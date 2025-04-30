@@ -17,6 +17,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import java.util.List;
 
 @Controller
@@ -105,6 +108,22 @@ public class ReviewController {
         if (reviewDTO.getRating() < 1 || reviewDTO.getRating() > 5) {
             log.warn("Invalid rating value: " + reviewDTO.getRating());
             model.addAttribute("error", "별점은 1~5 사이의 값이어야 합니다.");
+            model.addAttribute("reviewDTO", reviewDTO);
+            model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
+            return "reviews/reviewregister";
+        }
+
+        if (reviewDTO.getTitle() == null || reviewDTO.getTitle().trim().isEmpty()) {
+            log.warn("Empty review title");
+            model.addAttribute("error", "리뷰 제목을 입력해주세요.");
+            model.addAttribute("reviewDTO", reviewDTO);
+            model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
+            return "reviews/reviewregister";
+        }
+
+        if (reviewDTO.getTitle().length() > 100) {
+            log.warn("Review title too long: " + reviewDTO.getTitle().length());
+            model.addAttribute("error", "리뷰 제목은 100자 이내로 작성해주세요.");
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
             return "reviews/reviewregister";
@@ -232,6 +251,24 @@ public class ReviewController {
             return "reviews/update";
         }
 
+        if (reviewDTO.getTitle() == null || reviewDTO.getTitle().trim().isEmpty()) {
+            log.warn("Empty review title");
+            model.addAttribute("error", "리뷰 제목을 입력해주세요.");
+            model.addAttribute("reviewDTO", reviewDTO);
+            model.addAttribute("recipe", recipeService.getRecipeById(existingReview.getRecipe().getId()));
+            model.addAttribute("review", existingReview);
+            return "reviews/update";
+        }
+
+        if (reviewDTO.getTitle().length() > 100) {
+            log.warn("Review title too long: " + reviewDTO.getTitle().length());
+            model.addAttribute("error", "리뷰 제목은 100자 이내로 작성해주세요.");
+            model.addAttribute("reviewDTO", reviewDTO);
+            model.addAttribute("recipe", recipeService.getRecipeById(existingReview.getRecipe().getId()));
+            model.addAttribute("review", existingReview);
+            return "reviews/update";
+        }
+
         if (reviewDTO.getContent() == null || reviewDTO.getContent().trim().isEmpty()) {
             log.warn("Empty review content");
             model.addAttribute("error", "리뷰 내용을 입력해주세요.");
@@ -329,5 +366,37 @@ public class ReviewController {
             log.error("Error adding reply to review: " + e.getMessage());
             return "redirect:/recipe/list";
         }
+    }
+
+    // 리뷰 좋아요 토글
+    @PostMapping("/like/{id}")
+    @ResponseBody
+    public Map<String, Object> toggleReviewLike(@PathVariable Long id, 
+                                               @AuthenticationPrincipal PrincipalDetail principalDetail) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 로그인 확인
+            if (principalDetail == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return response;
+            }
+
+            // 좋아요 토글 처리
+            boolean isLiked = reviewService.toggleReviewLike(id, principalDetail.getUsername());
+            int likesCount = reviewService.getReviewLikesCount(id);
+
+            response.put("success", true);
+            response.put("isLiked", isLiked);
+            response.put("likesCount", likesCount);
+
+        } catch (Exception e) {
+            log.error("Error toggling review like: " + e.getMessage());
+            response.put("success", false);
+            response.put("message", "오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return response;
     }
 }

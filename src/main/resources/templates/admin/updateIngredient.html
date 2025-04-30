@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>재료 수정</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    input.form-control, textarea.form-control {
+      background-color: #f8f9fa;
+      border: 2px solid #ced4da;
+      color: black;
+    }
+    input.form-control:focus, textarea.form-control:focus {
+      background-color: #ffffff;
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-light">
+<div class="container-fluid text-white p-5" layout:fragment="content">
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="p-4 bg-white rounded-4 shadow-lg">
+          <h2 class="text-center mb-4" style="color: black;">🍳 재료 수정</h2>
+          <hr class="divider my-4" />
+
+          <form th:action="@{/admin/updateIngredient/{id}(id=${ingredient.id})}" method="post" id="ingredientForm">
+
+          <input type="hidden" name="id" th:value="${ingredient.id}" />
+
+            <div class="form-group mb-4">
+              <label for="ingredientName" class="form-label" style="color: black;">재료명</label>
+              <input type="text" id="ingredientName" name="ingredientName"
+                     class="form-control" required
+                     th:value="${ingredient.ingredientName}" />
+            </div>
+
+            <div class="form-group mb-4">
+              <label for="price" class="form-label" style="color: black;">가격</label>
+              <input type="number" id="price" name="price"
+                     class="form-control" required
+                     th:value="${ingredient.price}" />
+            </div>
+
+            <div class="form-group mb-4">
+              <label for="detail" class="form-label" style="color: black;">상세 정보</label>
+              <textarea id="detail" name="detail"
+                        class="form-control" required
+                        th:text="${ingredient.detail}"></textarea>
+            </div>
+
+            <div class="form-group mb-4">
+              <label for="imageUrl" class="form-label" style="color: black;">이미지 URL</label>
+              <textarea id="imageUrl" name="imageUrl"
+                        class="form-control" rows="3" required
+                        th:text="${ingredient.imageUrl}" oninput="previewImage()"></textarea>
+              <small class="form-text text-muted">이미지 URL을 입력하면 미리보기가 가능합니다.</small>
+            </div>
+
+            <div class="form-group mb-4">
+              <label class="form-label" style="color: black;">이미지 미리보기</label>
+              <div id="imagePreview" class="border rounded d-flex justify-content-center align-items-center"
+                   style="height: 200px; background-color: #f8f9fa;">
+                <img th:if="${ingredient.imageUrl}" th:src="${ingredient.imageUrl}" alt="미리보기 이미지" />
+                <span th:unless="${ingredient.imageUrl}">이미지 미리보기</span>
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <button type="submit" class="btn btn-success btn-lg">수정 완료</button>
+              <button type="reset" class="btn btn-secondary btn-lg ms-3">리셋</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script layout:fragment="script" th:inline="javascript">
+  function previewImage() {
+    var imageUrl = document.getElementById('imageUrl').value;
+    var imagePreview = document.getElementById('imagePreview');
+    if (imageUrl) {
+      imagePreview.innerHTML = '<img src="' + imageUrl + '" alt="미리보기 이미지" />';
+    } else {
+      imagePreview.innerHTML = '<span>이미지 미리보기</span>';
+    }
+  }
+</script>
+
+</body>
+</html>

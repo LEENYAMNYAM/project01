@@ -3,15 +3,21 @@ package com.example.pro.service;
 import com.example.pro.dto.ReviewDTO;
 import com.example.pro.entity.RecipeEntity;
 import com.example.pro.entity.ReviewEntity;
+import com.example.pro.entity.ReviewLikeEntity;
+import com.example.pro.entity.UserEntity;
 import com.example.pro.repository.RecipeRepository;
+import com.example.pro.repository.ReviewLikeRepository;
 import com.example.pro.repository.ReviewRepository;
+import com.example.pro.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,11 +30,26 @@ public class ReviewServiceImpl implements ReviewService {
     @Autowired
     private RecipeRepository recipeRepository;
 
+    @Autowired
+    private ReviewLikeRepository reviewLikeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public void registerReview(ReviewDTO reviewDTO) {
         RecipeEntity recipe = getRecipeEntityById(reviewDTO.getRecipeId());
         ReviewEntity review = dtoToEntity(reviewDTO, recipe);
         reviewRepository.save(review);
+
+        ///포인트 추가
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        userEntity.addPoints(100);
+        userRepository.save(userEntity);
     }
 
     @Override
@@ -55,7 +76,7 @@ public class ReviewServiceImpl implements ReviewService {
             reviewEntity.setRecipe(recipe);
         }
 
-        reviewEntity.change1(reviewDTO.getContent(), reviewDTO.getRating());
+        reviewEntity.change1(reviewDTO.getTitle(), reviewDTO.getContent(), reviewDTO.getRating());
         reviewRepository.save(reviewEntity);
     }
 
@@ -101,9 +122,15 @@ public class ReviewServiceImpl implements ReviewService {
             case "lowest_rating":
                 reviews.sort((r1, r2) -> Integer.compare(r1.getRating(), r2.getRating()));
                 break;
+            case "most_likes":
+                reviews.sort((r1, r2) -> Integer.compare(r2.getLikesCount(), r1.getLikesCount()));
+                break;
             default:
-                // Default to newest
-                reviews.sort((r1, r2) -> r2.getRegDate().compareTo(r1.getRegDate()));
+                // Default to most likes, then newest
+                reviews.sort((r1, r2) -> {
+                    int likesCompare = Integer.compare(r2.getLikesCount(), r1.getLikesCount());
+                    return likesCompare != 0 ? likesCompare : r2.getRegDate().compareTo(r1.getRegDate());
+                });
                 break;
         }
 
@@ -138,5 +165,65 @@ public class ReviewServiceImpl implements ReviewService {
                 .sum();
 
         return Math.round((sum / reviews.size()) * 10.0) / 10.0; // Round to 1 decimal place
+    }
+
+    @Override
+    @Transactional
+    public boolean toggleReviewLike(Long reviewId, String username) {
+        ReviewEntity review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("리뷰가 존재하지 않습니다."));
+
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
+
+        // Check if the user has already liked this review
+        boolean hasLiked = reviewLikeRepository.existsByReviewAndUser(review, user);
+
+        if (hasLiked) {
+            // User has already liked the review, so unlike it
+            reviewLikeRepository.deleteByReviewAndUser(review, user);
+            // Update likes count
+            updateReviewLikesCount(reviewId);
+            return false; // Returned false to indicate the review is now unliked
+        } else {
+            // User hasn't liked the review yet, so like it
+            ReviewLikeEntity reviewLike = new ReviewLikeEntity();
+            reviewLike.setReview(review);
+            reviewLike.setUser(user);
+            reviewLikeRepository.save(reviewLike);
+            // Update likes count
+            updateReviewLikesCount(reviewId);
+            return true; // Returned true to indicate the review is now liked
+        }
+    }
+
+    @Override
+    public boolean hasUserLikedReview(Long reviewId, String username) {
+        ReviewEntity review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("리뷰가 존재하지 않습니다."));
+
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
+
+        return reviewLikeRepository.existsByReviewAndUser(review, user);
+    }
+
+    @Override
+    public int getReviewLikesCount(Long reviewId) {
+        ReviewEntity review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("리뷰가 존재하지 않습니다."));
+
+        return reviewLikeRepository.countByReview(review);
+    }
+
+    @Override
+    @Transactional
+    public void updateReviewLikesCount(Long reviewId) {
+        ReviewEntity review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("리뷰가 존재하지 않습니다."));
+
+        int likesCount = reviewLikeRepository.countByReview(review);
+        review.setLikesCount(likesCount);
+        reviewRepository.save(review);
     }
 }

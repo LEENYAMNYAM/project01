@@ -9,6 +9,10 @@ import java.util.List;
 
 public interface IngredientService {
     List<IngredientDTO> findAllIngredient();
+    void saveIngredient(IngredientDTO ingredientDTO);
+    void updateIngredient(Long id ,IngredientDTO ingredientDTO);
+    void deleteIngredient(Long id);
+    IngredientDTO findIngredientById(Long id);
 
     default IngredientEntity dtoToEntity(IngredientDTO ingredientDTO) {
 
@@ -17,6 +21,7 @@ public interface IngredientService {
         ingredient.setIngredientName(ingredientDTO.getIngredientName());
         ingredient.setDetail(ingredientDTO.getDetail());
         ingredient.setPrice(ingredientDTO.getPrice());
+
         ingredient.setImageUrl(ingredientDTO.getImageUrl());
         return ingredient;
     }

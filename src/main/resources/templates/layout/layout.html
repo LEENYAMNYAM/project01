@@ -97,8 +97,16 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/csboard/list">Q&A</a>
                 </li>
-                <li sec:authorize="isAuthenticated()" class="nav-item">
-                    <a class="nav-link" href="/userinfo/userinfo">회원정보</a>
+                <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem;">
+                        회원정보
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-2 mt-2" aria-labelledby="userDropdown"
+                        style="min-width: 80px; font-size: 0.85rem;">
+                        <li><a class="dropdown-item" href="/userinfo/userinfo" style="padding: 4px 8px;">내 정보</a></li>
+                        <li><a class="dropdown-item" href="/cart/checkout" style="padding: 4px 8px;">장바구니</a></li>
+                    </ul>
                 </li>
                 <li sec:authorize="hasRole('ADMIN')" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
@@ -107,8 +115,8 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-2 mt-2" aria-labelledby="adminDropdown"
                         style="min-width: 80px; font-size: 0.85rem;">
-                        <li><a class="dropdown-item" href="/admin/userlist" style="padding: 4px 8px;">회원 관리</a></li>
-                        <li><a class="dropdown-item" href="/admin/materials" style="padding: 4px 8px;">재료 관리</a></li>
+                        <li><a class="dropdown-item" href="/admin/adminlist" style="padding: 4px 8px;">회원 관리</a></li>
+                        <li><a class="dropdown-item" href="/admin/ingredientlist" style="padding: 4px 8px;">재료 관리</a></li>
                     </ul>
                 </li>
                 <li sec:authorize="isAnonymous()" class="nav-item">
