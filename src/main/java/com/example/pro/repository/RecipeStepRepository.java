@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RecipeStepRepository extends JpaRepository<RecipeStepEntity, Long> {
-    List<RecipeStepEntity> findByRecipe_Id(Long recipeId);
+    List<RecipeStepEntity> findByRecipeEntity_Id(Long recipeId);
+    void deleteByRecipeEntity_id(Long recipeId);
 }

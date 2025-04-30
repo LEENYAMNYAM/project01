@@ -17,7 +17,7 @@ public interface RecipeService {
     List<RecipeDTO> searchRecipes(String searchType, String keyword);
     List<RecipeDTO> searchByCategoryAndKeyword(String category, String searchType, String keyword);
     RecipeDTO getRecipeById(Long id);
-    void updateRecipe(RecipeDTO recipeDTO, PrincipalDetail principalDetail);
+    void updateRecipe(RecipeDTO recipeDTO);
     void deleteRecipe(Long id);
 
 

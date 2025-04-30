@@ -52,7 +52,7 @@ public class RecipeEntity {
         this.likeCount = this.likeCount == null ? 0 : this.likeCount;
     }
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "recipeEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeStepEntity> steps = new ArrayList<>();
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)

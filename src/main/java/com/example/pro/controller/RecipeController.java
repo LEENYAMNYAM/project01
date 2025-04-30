@@ -10,6 +10,8 @@ import com.example.pro.repository.IngredientRepository;
 import com.example.pro.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,9 +81,6 @@ public class RecipeController {
 
         // 4. 레시피 저장 서비스 호출
         recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap);
-
-//        log.info(recipeDTO.getSteps().toString() );
-//        log.info(recipeDTO.getRecipeIngredients().toString() );
 
         recipeDTO.setSteps(recipeStepService.getRecipeStepByRecipeId(recipeDTO.getId()));
         recipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId()));
@@ -183,7 +183,7 @@ public class RecipeController {
             // 새 파일 업로드 했으면 저장
             String newMainImagePath = fileService.saveFile(mainImageFile);
             recipeDTO.setMainImagePath(newMainImagePath);
-/* to do : 기존 메인 이미지는 삭제해야함. */
+            removeFile(currentMainImage);
         } else {
             // 새 파일 없으면 기존 파일 유지
             recipeDTO.setMainImagePath(currentMainImage);
@@ -194,45 +194,25 @@ public class RecipeController {
                 .count();
         log.info("ingredientCount : " + ingredientCount);
 
-        List<RecipeIngredientsDTO> ingredientsDTOList = recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId());
         // 새로 만들어질 리스트
         List<RecipeIngredientsDTO> updatedIngredients = new ArrayList<>();
 
-        int i = 0 ;
-        for (; i < Math.min(ingredientCount, ingredientsDTOList.size()); i++){
+
+        for (int i = 0; i < ingredientCount; i++){
             String ingredientNameKey = "ingredients[" + i + "].ingredientName";
             String ingredientQuantityKey = "ingredients[" + i + "].quantity";
 
-            ingredientsDTOList.get(i).setIngredient(ingredientService.entityToDto(ingredientRepository.findByIngredientName(paramMap.get(ingredientNameKey)).get()));
-            ingredientsDTOList.get(i).setQuantity(Long.parseLong(paramMap.get(ingredientQuantityKey)));
+            RecipeIngredientsDTO ingredientsDTO = new RecipeIngredientsDTO();
 
-            updatedIngredients.add(ingredientsDTOList.get(i));
+            ingredientsDTO.setIngredient(ingredientService.entityToDto(ingredientRepository.findByIngredientName(paramMap.get(ingredientNameKey)).get()));
+            ingredientsDTO.setQuantity(Long.parseLong(paramMap.get(ingredientQuantityKey)));
+            ingredientsDTO.setRecipeId(recipeDTO.getId());
+
+            updatedIngredients.add(ingredientsDTO);
 
         }
 
-// ingredientCount가 더 크면 추가
-        if (ingredientCount > ingredientsDTOList.size()) {
-            for (; i < ingredientCount; i++) {
-                String ingredientNameKey = "ingredients[" + i + "].ingredientName";
-                String ingredientQuantityKey = "ingredients[" + i + "].quantity";
-
-                    RecipeIngredientsDTO newIngredients = new RecipeIngredientsDTO();
-                    newIngredients.setRecipeId( recipeDTO.getId());
-                    newIngredients.setIngredient(ingredientService.entityToDto(ingredientRepository.findByIngredientName(paramMap.get(ingredientNameKey)).get()));
-                    newIngredients.setQuantity(Long.parseLong(paramMap.get(ingredientQuantityKey)));
-
-                    updatedIngredients.add(newIngredients);
-                }
-        }
-
-// ingredientCount가 더 작으면 DB 삭제 처리해야 함
-        if (ingredientCount < ingredientsDTOList.size()) {
-            for (int j = (int) ingredientCount; j < ingredientsDTOList.size(); j++) {
-                recipeIngredientsService.deleteRecipeIngredient(ingredientsDTOList.get(j).getId());
-            }
-        }
-
-// 업데이트된 리스트를 DTO에 세팅
+        // 업데이트된 리스트를 DTO에 세팅
         recipeDTO.setRecipeIngredients(updatedIngredients);
 
         // 4. 요리 순서 이미지들 처리
@@ -240,38 +220,62 @@ public class RecipeController {
                 .filter(key -> key.matches("steps\\[\\d+\\]\\.stepContent"))
                 .count();
         log.info("stepCount : " + stepCount);
-        List<RecipeStepDTO> stepDTOList = new ArrayList<>();
-        for (i = 0 ; i < stepCount ; i++) {
-//            log.info("stepIndex : " + (stepIndex+1));
-//            log.info("updatedSteps.size : " + updatedSteps.size());
+        List<RecipeStepDTO> updatedSteps = new ArrayList<>();
+
+
+        for (int i = 0 ; i < stepCount ; i++) {
             String contentKey = "steps[" + i + "].stepContent";
             String currentImageKey = "steps[" + i + "].currentImage";
             MultipartFile stepImageFile = request.getFile("steps[" + i + "].stepImage");
+
+            RecipeStepDTO stepDTO = new RecipeStepDTO();
+
             log.info("contentKey : " + contentKey);
-//            log.info("currentImageKey : " + currentImageKey);
-//            log.info("stepImageFile : " + stepImageFile);
+            log.info("currentImageKey : " + currentImageKey);
+            log.info("stepImageFile : " + stepImageFile);
 
-            RecipeStepDTO stepDTO = recipeDTO.getSteps().get(i);
-            log.info("stepDTO : " + recipeDTO.getSteps().size());
+
+            // stepDTO 셋팅
+            stepDTO.setRecipeId(recipeDTO.getId());
+            log.info("stepDTO.getRecipeId() : " + stepDTO.getRecipeId());
+            stepDTO.setStepNumber(i + 1);
+            log.info("stepDTO.getStepNumber() : " + stepDTO.getStepNumber());
             stepDTO.setContent(paramMap.get(contentKey));
+            log.info("stepDTO.getContent() : " + stepDTO.getContent());
 
+                // 이미지 주소 설정
             if (stepImageFile != null && !stepImageFile.isEmpty()) {
                 String stepImagePath = fileService.saveFile(stepImageFile);
                 stepDTO.setImagePath(stepImagePath);
+                removeFile(paramMap.get(currentImageKey));
             } else {
                 stepDTO.setImagePath(paramMap.get(currentImageKey));
             }
-            log.info("stepDTO : " + stepDTO);
-            stepDTOList.add(stepDTO);
+
+            updatedSteps.add(stepDTO);
 
         }
 
-        recipeDTO.setSteps(stepDTOList);
+        // 작성자 설정
+        recipeDTO.setUsername(principalDetail.getUsername());
+
+        recipeDTO.setSteps(updatedSteps);
 
         // 4. Service 호출
-        recipeService.updateRecipe(recipeDTO, principalDetail);
+        recipeService.updateRecipe(recipeDTO);
 
         return "redirect:/recipe/view?id=" + recipeDTO.getId();
+    }
+
+    @GetMapping("/delete")
+    public String recipeDelete(@RequestParam("id") Long recipe_id, Model model) {
+        // 대표이미지&요리순서이미지 모두 파일 삭제
+        removeFile(recipeService.getRecipeById(recipe_id).getMainImagePath());
+        for(int i = 0; i < recipeStepService.getRecipeStepByRecipeId(recipe_id).size(); i++) {
+            removeFile(recipeStepService.getRecipeStepByRecipeId(recipe_id).get(i).getImagePath());
+        }
+        recipeService.deleteRecipe(recipe_id);
+        return "redirect:/recipe/list";
     }
 
 
@@ -293,6 +297,22 @@ public class RecipeController {
         file.transferTo(saveFile);
 
         return newFilename;
+    }
+
+    private String removeFile(String filepath){
+        String uploadDir = "D:/JMT/Project01/project01/src/main/resources/static";
+        Resource resource = new FileSystemResource(uploadDir + filepath);
+        Map<String, Boolean> resultMap = new HashMap<>();
+        boolean removed = false;
+        try{
+            String contentType = Files.probeContentType(resource.getFile().toPath());
+            removed=resource.getFile().delete();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        resultMap.put("result",removed);
+        return "/upload/uploadForm";
+
     }
 
 

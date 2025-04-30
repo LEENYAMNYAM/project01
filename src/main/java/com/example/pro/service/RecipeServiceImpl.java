@@ -2,6 +2,7 @@ package com.example.pro.service;
 
 import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.RecipeDTO;
+import com.example.pro.dto.RecipeIngredientsDTO;
 import com.example.pro.dto.RecipeStepDTO;
 import com.example.pro.dto.UserDTO;
 import com.example.pro.entity.*;
@@ -29,6 +30,7 @@ public class RecipeServiceImpl implements RecipeService {
     private final RecipeStepRepository recipeStepRepository;
     private final FileService fileService;
     private final UserRepository userRepository;
+    private final RecipeIngredientsServiceImpl recipeIngredientsServiceImpl;
 
     @Override
     public void registerRecipe(RecipeDTO recipeDTO, List<MultipartFile> recipeStepImages, Map<String, String> paramMap) {
@@ -84,7 +86,7 @@ public class RecipeServiceImpl implements RecipeService {
             }
 
             RecipeStepEntity step = RecipeStepEntity.builder()
-                    .recipe(recipeEntity)
+                    .recipeEntity(recipeEntity)
                     .stepNumber(stepIndex)
                     .content(content)
                     .imageName(imageName)
@@ -181,28 +183,39 @@ public class RecipeServiceImpl implements RecipeService {
 
 
     @Override
-    public void updateRecipe(RecipeDTO recipeDTO, PrincipalDetail principalDetail) {
+    public void updateRecipe(RecipeDTO updatedrecipeDTO) {
+
+        // DB삭제
+        recipeStepRepository.deleteByRecipeEntity_id(updatedrecipeDTO.getId());
+        recipeIngredientsRepository.deleteByRecipeEntity_Id(updatedrecipeDTO.getId());
+
         // 1. 기존 레시피 찾아오기
-        RecipeEntity recipe = recipeRepository.findById(recipeDTO.getId())
+        RecipeEntity recipe = recipeRepository.findById(updatedrecipeDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("레시피를 찾을 수 없습니다."));
-        log.info("recipeDTO : " + recipeDTO);
+        log.info("updatedrecipeDTO : " + updatedrecipeDTO);
         log.info("recipe : " + recipe);
 
         // 2. 기본 정보 업데이트
-        recipe.setTitle(recipeDTO.getTitle());
-        recipe.setCategory(recipeDTO.getCategory());
-        recipe.setYoutubeLink(recipeDTO.getYoutubeLink());
-        recipe.setMainImage(recipeDTO.getMainImagePath());
+        recipe.setTitle(updatedrecipeDTO.getTitle());
+        recipe.setCategory(updatedrecipeDTO.getCategory());
+        recipe.setYoutubeLink(updatedrecipeDTO.getYoutubeLink());
+        recipe.setMainImage(updatedrecipeDTO.getMainImagePath());
 
-        // 3. 요리 순서 업데이트 (간단하게 기존 데이터 싹 지우고 새로 저장하는 방식으로)
+        // 3. 재료 순서 업데이트
+        List<RecipeIngredientsDTO> updatedRecipeIngredientList = updatedrecipeDTO.getRecipeIngredients();
+        for( RecipeIngredientsDTO updatedRecipeIngredient : updatedRecipeIngredientList ) {
+            recipeIngredientsRepository.save(recipeIngredientsServiceImpl.dtoToEntity(updatedRecipeIngredient));
+        }
+
+        // 4. 요리 순서 업데이트
         recipe.getSteps().clear();
         int stepNumber = 1;
-        for (RecipeStepDTO stepDTO : recipeDTO.getSteps()) {
+        for (RecipeStepDTO stepDTO : updatedrecipeDTO.getSteps()) {
             RecipeStepEntity step = new RecipeStepEntity();
             step.setStepNumber(stepNumber++);
             step.setContent(stepDTO.getContent());
             step.setImageName(stepDTO.getImagePath());
-            step.setRecipe(recipe); // 양방향 매핑
+            step.setRecipeEntity(recipe); // 양방향 매핑
 
             recipe.getSteps().add(step);
         }
@@ -213,7 +226,10 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public void deleteRecipe(Long id) {
-
+        /* DB 내용 삭제 */
+        recipeStepRepository.deleteByRecipeEntity_id(id);
+        recipeIngredientsRepository.deleteByRecipeEntity_Id(id);
+        recipeRepository.deleteById(id);
     }
 
 

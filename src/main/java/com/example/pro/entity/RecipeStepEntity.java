@@ -18,7 +18,7 @@ public class RecipeStepEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id") // 외래키 컬럼명 (DB 테이블에 실제로 들어갈 이름)
-    private RecipeEntity recipe;
+    private RecipeEntity recipeEntity;
 
     private int stepNumber;
 

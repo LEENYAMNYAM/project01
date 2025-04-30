@@ -33,7 +33,7 @@ public class RecipeStepServiceImpl implements RecipeStepService{
 
     @Override
     public List<RecipeStepDTO> getRecipeStepByRecipeId(Long recipeId) {
-        List<RecipeStepEntity> recipeStepEntityList = recipeStepRepository.findByRecipe_Id(recipeId);
+        List<RecipeStepEntity> recipeStepEntityList = recipeStepRepository.findByRecipeEntity_Id(recipeId);
 
         List<RecipeStepDTO> recipeStepDTOList = recipeStepEntityList.stream()
                 .map(recipeStepEntity -> entityToDto(recipeStepEntity))
@@ -56,7 +56,7 @@ public class RecipeStepServiceImpl implements RecipeStepService{
     RecipeStepEntity dtoToEntity(RecipeStepDTO recipeStepDTO) {
         RecipeStepEntity recipeStepEntity = new RecipeStepEntity();
         recipeStepEntity.setId(recipeStepDTO.getId());
-        recipeStepEntity.setRecipe(recipeRepository.findById(recipeStepDTO.getRecipeId()).get());
+        recipeStepEntity.setRecipeEntity(recipeRepository.findById(recipeStepDTO.getRecipeId()).get());
         recipeStepEntity.setStepNumber(recipeStepDTO.getStepNumber());
         recipeStepEntity.setContent(recipeStepDTO.getContent());
         recipeStepEntity.setImageName(recipeStepDTO.getImagePath());
@@ -66,7 +66,7 @@ public class RecipeStepServiceImpl implements RecipeStepService{
     RecipeStepDTO entityToDto(RecipeStepEntity recipeStepEntity) {
         RecipeStepDTO recipeStepDTO = new RecipeStepDTO();
         recipeStepDTO.setId(recipeStepEntity.getId());
-        recipeStepDTO.setRecipeId(recipeStepEntity.getRecipe().getId());
+        recipeStepDTO.setRecipeId(recipeStepEntity.getRecipeEntity().getId());
         recipeStepDTO.setStepNumber(recipeStepEntity.getStepNumber());
         recipeStepDTO.setContent(recipeStepEntity.getContent());
         recipeStepDTO.setImagePath(recipeStepEntity.getImageName());
