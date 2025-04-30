@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/layout.html}" lang="ko">
 
 <div class="container py-5" layout:fragment="content">
@@ -50,7 +51,8 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold text-dark mb-0 display-6">📢 공지사항</h2>
-            <a href="/notice/create" class="btn btn-primary btn-rounded shadow-sm">+ 새 공지 작성</a>
+            <a sec:authorize="hasRole('ADMIN')" href="/notice/create" class="btn btn-primary btn-rounded shadow-sm">+ 새 공지 작성</a>
+
         </div>
 
         <!-- Table -->

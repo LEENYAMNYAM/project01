@@ -3,14 +3,17 @@ package com.example.pro.service;
 import com.example.pro.dto.ReviewDTO;
 import com.example.pro.entity.RecipeEntity;
 import com.example.pro.entity.ReviewEntity;
+import com.example.pro.entity.UserEntity;
 import com.example.pro.repository.RecipeRepository;
 import com.example.pro.repository.ReviewRepository;
+import com.example.pro.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,12 +26,23 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Autowired
     private RecipeRepository recipeRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public void registerReview(ReviewDTO reviewDTO) {
         RecipeEntity recipe = getRecipeEntityById(reviewDTO.getRecipeId());
         ReviewEntity review = dtoToEntity(reviewDTO, recipe);
         reviewRepository.save(review);
+
+        ///포인트 추가
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        userEntity.addPoints(100);
+        userRepository.save(userEntity);
     }
 
     @Override
