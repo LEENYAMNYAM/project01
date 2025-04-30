@@ -11,6 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/cart")
 public class CartController {
 
+    @GetMapping("/list")
+    public String list(Model model) {
+
+    }
+
+
+
     @GetMapping("/checkout")
     public String checkout(Model model) {
         // 임시로 빈 카트 객체 추가

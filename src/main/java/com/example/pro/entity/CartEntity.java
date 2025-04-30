@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,9 +22,12 @@ public class CartEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username")
-    private UserEntity user;
+    private UserEntity userEntity;
 
     private Long totalPrice;
+
+    @OneToMany(mappedBy = "cartEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecipeIngredientsEntity> recipeIngredients;
 
     @CreationTimestamp
     @Column(name="createdAt")

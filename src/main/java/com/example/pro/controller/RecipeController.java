@@ -1,10 +1,7 @@
 package com.example.pro.controller;
 
 import com.example.pro.config.auth.PrincipalDetail;
-import com.example.pro.dto.IngredientDTO;
-import com.example.pro.dto.RecipeDTO;
-import com.example.pro.dto.RecipeIngredientsDTO;
-import com.example.pro.dto.RecipeStepDTO;
+import com.example.pro.dto.*;
 import com.example.pro.entity.ReviewEntity;
 import com.example.pro.repository.IngredientRepository;
 import com.example.pro.service.*;
@@ -43,6 +40,7 @@ public class RecipeController {
     private final RecipeIngredientsServiceImpl recipeIngredientsService;
     private final ReviewService reviewService;
     private final IngredientRepository ingredientRepository;
+    private final CartService cartService;
 
     @GetMapping("/register")
     public void recipeRegister(Model model) {
@@ -85,7 +83,16 @@ public class RecipeController {
         recipeDTO.setSteps(recipeStepService.getRecipeStepByRecipeId(recipeDTO.getId()));
         recipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId()));
 
+        // 5.Cart에 레시피재료 저장
+        cartService.createCart(recipeDTO);
+
+        // 6. 추가한 재료가 있으면 장바구니리스트로, 없으면 레시피리스트로
+        if (recipeDTO.getRecipeIngredients() == null || recipeDTO.getRecipeIngredients().isEmpty()) {
             return "redirect:/recipe/list";
+        } else {
+            return "rediect:/cart/list";
+        }
+
     }
 
     @GetMapping("/list")

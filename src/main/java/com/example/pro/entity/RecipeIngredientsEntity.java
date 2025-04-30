@@ -22,6 +22,10 @@ public class RecipeIngredientsEntity {
     @JoinColumn(name = "ingredientId")
     private IngredientEntity ingredientEntity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cartId")
+    private CartEntity cartEntity;
+
     private Long quantity;
 
 }
