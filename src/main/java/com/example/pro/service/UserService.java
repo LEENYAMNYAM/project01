@@ -25,6 +25,7 @@ public interface UserService {
         user.setPhone(userDTO.getPhone());
         user.setGender(userDTO.getGender()); // String 타입 그대로 설정
         user.setAddress(userDTO.getAddress());
+        user.setPoint(userDTO.getPoint());
 
 
         return user;
@@ -40,6 +41,7 @@ public interface UserService {
         userDTO.setPhone(userEntity.getPhone());
         userDTO.setGender(userEntity.getGender());
         userDTO.setAddress(userEntity.getAddress());
+        userDTO.setPoint(userEntity.getPoint());
 
 
 

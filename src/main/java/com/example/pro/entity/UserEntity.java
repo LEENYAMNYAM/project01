@@ -38,11 +38,7 @@ public class UserEntity  extends BaseEntity{
     public void addPoints(int amount) {
         point += amount;
     }
-    public void change(String email, String phone,String address) {
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-    }
+
 
 
 

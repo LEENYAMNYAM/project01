@@ -24,12 +24,5 @@ public class UserDTO {
     private int point;
     private LocalDateTime joinDate;
 
-    public int getPoints() {
-        return point;
-    }
-
-    public void setPoints(int points) {
-        this.point = points;
-    }
 
 }

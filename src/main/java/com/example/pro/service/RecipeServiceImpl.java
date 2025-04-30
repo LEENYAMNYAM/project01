@@ -94,6 +94,9 @@ public class RecipeServiceImpl implements RecipeService {
             stepIndex++;
         }
 
+        userEntity.addPoints(100);
+        userRepository.save(userEntity);
+
     }
 
     @Override

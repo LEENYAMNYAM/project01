@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -46,6 +47,13 @@ public class CustomSecurityConfig {
                                 "/favicon.ico",
                                 "/error").permitAll()
                         .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .maximumSessions(1) // 동시에 하나의 세션만 허용
+                        .maxSessionsPreventsLogin(false) // 기존 세션 만료 후 새 로그인 허용
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 요청 시 세션 생성
+                )
                 .formLogin(formLoginConfigurer -> formLoginConfigurer
                         .loginPage("/user/login")
                         .loginProcessingUrl("/loginProcess")
