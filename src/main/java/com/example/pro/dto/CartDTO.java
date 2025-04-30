@@ -18,6 +18,6 @@ public class CartDTO {
     private String username;
 
     private Long totalPrice;
-    111
+
     private LocalDateTime createdAt;
 }
