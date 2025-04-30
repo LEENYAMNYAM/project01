@@ -31,6 +31,10 @@ public class ReviewEntity extends BaseEntity {
     @JoinColumn(name = "viewer_id")
     private UserEntity viewer;
 
+    // 리뷰 제목
+    @Column(nullable = false, length = 100)
+    private String title;
+
     // 리뷰 내용
     @Column(nullable = false, length = 1000)
     private String content;
@@ -49,7 +53,12 @@ public class ReviewEntity extends BaseEntity {
     // 답변 작성 시간
     private LocalDateTime replyDate;
 
-    public void change1(String content, int rating) {
+    // 좋아요 수
+    @Column(nullable = false)
+    private int likesCount;
+
+    public void change1(String title, String content, int rating) {
+        this.title = title;
         this.content = content;
         this.rating = rating;
     }
