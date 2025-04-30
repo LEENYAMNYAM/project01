@@ -43,7 +43,7 @@
                                 <span class="text-white" th:text="${recipe.username}">작성자</span>
                                 <span class="text-white" th:text="${recipe.category}">카테고리</span>
                                 <span class="text-white" th:text="${#temporals.format(recipe.createdAt, 'MM/dd')}">등록일</span>
-                                <span class="text-white" th:text="'❤️' + ${recipe.likeCount}">좋아요수</span>
+                                <span class="text-white" th:text="'★ ' + ${recipe.averageRating}">평균 별점</span>
                             </p>
                         </div>
                         <div class="card-footer text-center bg-transparent border-0">

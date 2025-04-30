@@ -226,4 +226,26 @@ public class ReviewServiceImpl implements ReviewService {
         review.setLikesCount(likesCount);
         reviewRepository.save(review);
     }
+
+    @Override
+    public List<ReviewEntity> getReviewsByRecipeAndWriter(Long recipeId, String writer) {
+        List<ReviewEntity> allReviews = reviewRepository.findByRecipeId(recipeId);
+
+        // Filter reviews by writer username (case-insensitive)
+        return allReviews.stream()
+                .filter(review -> review.getBuyer() != null && 
+                        review.getBuyer().getUsername().toLowerCase().contains(writer.toLowerCase()))
+                .toList();
+    }
+
+    @Override
+    public List<ReviewEntity> getReviewsByRecipeAndContent(Long recipeId, String content) {
+        List<ReviewEntity> allReviews = reviewRepository.findByRecipeId(recipeId);
+
+        // Filter reviews by content (case-insensitive)
+        return allReviews.stream()
+                .filter(review -> review.getContent() != null && 
+                        review.getContent().toLowerCase().contains(content.toLowerCase()))
+                .toList();
+    }
 }

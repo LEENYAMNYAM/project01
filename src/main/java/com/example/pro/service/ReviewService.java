@@ -20,6 +20,10 @@ public interface ReviewService {
     RecipeEntity getRecipeEntityById(Long recipeId);
     double calculateAverageRating(Long recipeId);
 
+    // Search functionality
+    List<ReviewEntity> getReviewsByRecipeAndWriter(Long recipeId, String writer);
+    List<ReviewEntity> getReviewsByRecipeAndContent(Long recipeId, String content);
+
     // Review like functionality
     boolean toggleReviewLike(Long reviewId, String username);
     boolean hasUserLikedReview(Long reviewId, String username);

@@ -37,7 +37,10 @@ public class ReviewController {
 
     // 리뷰 목록 페이지
     @GetMapping("/list/{recipeId}")
-    public String listReviews(@PathVariable Long recipeId, Model model) {
+    public String listReviews(@PathVariable Long recipeId, 
+                             @RequestParam(required = false) String searchType,
+                             @RequestParam(required = false) String keyword,
+                             Model model) {
         try {
             // 레시피 존재 여부 확인
             RecipeDTO recipe = recipeService.getRecipeById(recipeId);
@@ -46,11 +49,27 @@ public class ReviewController {
                 return "redirect:/recipe/list";
             }
 
-            List<ReviewEntity> reviews = reviewService.getReviewsByRecipe(recipeId);
+            List<ReviewEntity> reviews;
 
-            model.addAttribute("reviews", reviews);
+            // 검색 조건이 있는 경우
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                if ("writer".equals(searchType)) {
+                    // 작성자로 검색
+                    reviews = reviewService.getReviewsByRecipeAndWriter(recipeId, keyword);
+                } else {
+                    // 내용으로 검색 (기본값)
+                    reviews = reviewService.getReviewsByRecipeAndContent(recipeId, keyword);
+                }
+            } else {
+                // 검색 조건이 없는 경우 전체 리뷰 조회
+                reviews = reviewService.getReviewsByRecipe(recipeId);
+            }
+
+            model.addAttribute("reviewList", reviews);
             model.addAttribute("recipe", recipe);
             model.addAttribute("recipeId", recipeId);
+            model.addAttribute("searchType", searchType);
+            model.addAttribute("keyword", keyword);
 
             return "reviews/list";
         } catch (Exception e) {
