@@ -1,0 +1,117 @@
+/* White Card Theme CSS */
+/* Common styles for notice, csboard, and userinfo pages */
+
+/* Background and text colors */
+.white-card-theme {
+    font-family: 'Inter', sans-serif;
+    background-color: #f1f3f5;
+    color: #212529;
+}
+
+/* Card styles */
+.white-card-theme .content-card {
+    background-color: #ffffff;
+    border-radius: 1.5rem;
+    padding: 2.5rem 3rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+    max-width: 960px;
+    margin: auto;
+}
+
+/* Section title */
+.white-card-theme .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d6efd;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Form controls */
+.white-card-theme .form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.white-card-theme .form-control,
+.white-card-theme .form-select {
+    border-radius: 0.75rem;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+    color: #212529;
+    background-color: #ffffff;
+    transition: box-shadow 0.2s ease;
+}
+
+.white-card-theme .form-control::placeholder {
+    color: #6c757d;
+}
+
+.white-card-theme .form-control:focus,
+.white-card-theme .form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    border-color: #86b7fe;
+    color: #212529;
+    background-color: #ffffff;
+}
+
+/* Tables */
+.white-card-theme .table th {
+    color: #6c757d;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.white-card-theme .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Buttons */
+.white-card-theme .btn-rounded {
+    border-radius: 50px;
+    padding: 0.6rem 1.8rem;
+    font-weight: 600;
+}
+
+.white-card-theme .btn-dark-outline {
+    border: 1px solid #212529;
+    color: #212529;
+    background-color: transparent;
+}
+
+.white-card-theme .btn-dark-outline:hover {
+    background-color: #212529;
+    color: white;
+}
+
+/* Field styles for view pages */
+.white-card-theme .field-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.4rem;
+}
+
+.white-card-theme .field-content {
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    background-color: #f8f9fa;
+    color: #212529;
+    white-space: pre-wrap;
+    margin-bottom: 1.5rem;
+}
+
+/* Search form */
+.white-card-theme .search-input {
+    border-radius: 999px;
+    padding: 0.6rem 1.2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .white-card-theme .content-card {
+        padding: 2rem 1.5rem;
+        width: 95%;
+    }
+}

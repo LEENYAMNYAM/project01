@@ -1,0 +1,135 @@
+/* Transparent Theme CSS */
+/* Common styles for recipe, reviews, cart, and payment pages */
+
+/* Background and text colors */
+.transparent-theme {
+    background-color: transparent;
+    color: white;
+}
+
+/* Card styles */
+.transparent-theme .card {
+    background-color: rgba(33, 37, 41, 0.8);
+    border: none;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.transparent-theme .card-header {
+    background-color: rgba(33, 37, 41, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+}
+
+.transparent-theme .card-body {
+    padding: 1.5rem;
+}
+
+.transparent-theme .card-footer {
+    background-color: rgba(33, 37, 41, 0.9);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+}
+
+/* Form controls */
+.transparent-theme .form-control,
+.transparent-theme .form-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.transparent-theme .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.transparent-theme .form-control:focus,
+.transparent-theme .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+}
+
+/* Tables */
+.transparent-theme .table {
+    color: white;
+}
+
+.transparent-theme .table-dark {
+    background-color: rgba(33, 37, 41, 0.7);
+}
+
+.transparent-theme .table-dark th,
+.transparent-theme .table-dark td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Buttons */
+.transparent-theme .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.transparent-theme .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.transparent-theme .btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.transparent-theme .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.transparent-theme .btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+.transparent-theme .btn-outline-secondary {
+    color: #f8f9fa;
+    border-color: #f8f9fa;
+}
+
+.transparent-theme .btn-outline-secondary:hover {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+/* Divider */
+.transparent-theme .divider {
+    max-width: 3.25rem;
+    border-width: 0.2rem;
+    border-color: #f4623a;
+}
+
+/* Grid items (for recipe and review cards) */
+.transparent-theme .card-grid .card {
+    height: 100%;
+    transition: transform 0.2s;
+}
+
+.transparent-theme .card-grid .card:hover {
+    transform: translateY(-5px);
+}
+
+.transparent-theme .card-grid .card-img-top {
+    height: 160px;
+    object-fit: cover;
+}
+
+.transparent-theme .card-grid .card-body {
+    padding: 1rem;
+}
+
+.transparent-theme .card-grid .card-footer {
+    background-color: transparent;
+    border-top: none;
+    padding: 0.5rem 1rem 1rem;
+}
