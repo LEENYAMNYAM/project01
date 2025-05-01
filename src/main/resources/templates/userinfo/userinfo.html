@@ -14,9 +14,9 @@
     }
 
     .userinfo-card {
-      width: 50%; /* 가로 절반 */
+      max-width: 760px; /* 일관된 너비로 변경 */
       background-color: #ffffff;
-      padding: 80px; /* 상하좌우 40px 추가 */
+      padding: 3rem; /* 일관된 패딩으로 변경 */
       border-radius: 1.5rem; /* 둥근 모서리 */
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
       color: #212529;
@@ -70,7 +70,7 @@
 
     @media (max-width: 768px) {
       .userinfo-card {
-        width: 90%; /* 모바일에서는 꽉 채우게 */
+        max-width: 90%; /* 모바일에서는 화면 너비에 맞게 조정 */
       }
     }
   </style>

@@ -18,7 +18,7 @@
             border-radius: 1.5rem;
             padding: 3rem;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
-            max-width: 720px;
+            max-width: 700px;
             margin: auto;
         }
 
@@ -70,7 +70,7 @@
     <div class="update-card">
         <div class="section-title">🛠 질문 수정</div>
 
-        <form th:action="@{/csboard/update/submit}" method="post">
+        <form th:action="@{/templates/csboard/update/submit}" method="post">
             <input type="hidden" name="id" th:value="${cs.id}" />
 
             <div class="mb-4">

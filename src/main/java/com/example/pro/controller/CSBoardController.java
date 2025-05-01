@@ -41,11 +41,7 @@ public class CSBoardController {
     }
 
     @PostMapping("/register")
-    public String createFromForm(@ModelAttribute CSBoardDTO dto, @AuthenticationPrincipal PrincipalDetail principalDetail) {
-        // Set the writer to the logged-in user's username
-        if (principalDetail != null) {
-            dto.setWriter(principalDetail.getUsername());
-        }
+    public String createFromForm(@ModelAttribute CSBoardDTO dto) {
         csBoardService.createQBoard(dto);
         return "redirect:/csboard/list";
     }
