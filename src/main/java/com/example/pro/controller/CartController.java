@@ -79,7 +79,7 @@ public class CartController {
         model.addAttribute("recipeIdMap", recipeIdMap);
 
         log.info("장바구니 렌더링 완료: {}", username);
-        return "cart/list";
+        return "/cart/list";
     }
 
     @GetMapping("/checkout")
@@ -97,8 +97,9 @@ public class CartController {
         List<CartDTO> cartDTOList = cartService.getAllCartsByUsername(username); // 전체 장바구니 재료
 
         Optional<CartDTO> optionalCart = cartDTOList.stream()
-                .filter(c -> c.getId().equals(cartId))
-                .filter(c -> c.getRecipeIngredients().stream().anyMatch(i -> i.getRecipeId().equals(recipeId)))
+                .filter(c -> c.getId() != null && c.getId().equals(cartId))  // null 체크 추가
+                .filter(c -> c.getRecipeIngredients() != null &&
+                        c.getRecipeIngredients().stream().anyMatch(i -> i.getRecipeId().equals(recipeId)))
                 .findFirst();
 
         if (optionalCart.isEmpty()) {

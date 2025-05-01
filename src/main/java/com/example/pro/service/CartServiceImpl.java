@@ -133,6 +133,7 @@ public class CartServiceImpl implements CartService {
 
     CartDTO entityToDto(CartEntity cartEntity) {
         CartDTO cartDTO = new CartDTO();
+        cartDTO.setId(cartEntity.getId());
         cartDTO.setUsername(cartEntity.getUserEntity().getUsername());
         cartDTO.setTotalPrice(cartEntity.getTotalPrice());
         cartDTO.setCreatedAt(cartEntity.getCreatedAt());
