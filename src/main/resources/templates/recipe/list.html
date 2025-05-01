@@ -33,7 +33,7 @@
             </form>
 
             <!-- 전체 레시피 리스트 -->
-            <div class="row g-4">
+            <div class="row g-4 card-grid">
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="recipe : ${recipeList}">
                     <div class="card h-100 shadow-sm border-0 bg-transparent text-white">
                         <img th:src="${recipe.mainImagePath}" class="card-img-top" alt="레시피 이미지"
