@@ -83,7 +83,7 @@
                 <tr th:each="cs, csStat : ${csPage.content}">
                     <td th:text="${(csPage.number * csPage.size) + csStat.index + 1}">번호</td>
                     <td class="text-start ps-4">
-                        <a th:href="@{/templates/csboard/view(id=${cs.id})}"
+                        <a th:href="@{/csboard/view(id=${cs.id})}"
                            th:text="${cs.title}"
                            class="text-decoration-none fw-semibold text-dark d-block text-truncate"></a>
                     </td>
@@ -99,7 +99,7 @@
         </div>
 
         <!-- 검색창 -->
-        <form th:action="@{/templates/csboard/list}" method="get" class="search-form">
+        <form th:action="@{/csboard/list}" method="get" class="search-form">
             <input type="text" name="keyword" placeholder="🔍 제목으로 검색해보세요"
                    th:value="${keyword}" class="form-control search-input shadow-sm">
             <button type="submit" class="btn btn-outline-dark btn-rounded ms-2">검색</button>
@@ -110,20 +110,20 @@
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/templates/csboard/list(page=${currentPage - 1}, keyword=${keyword})}">이전</a>
+                       th:href="@{/csboard/list(page=${currentPage - 1}, keyword=${keyword})}">이전</a>
                 </li>
 
                 <li class="page-item"
                     th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                     th:classappend="${i == currentPage} ? 'active'">
                     <a class="page-link"
-                       th:href="@{/templates/csboard/list(page=${i}, keyword=${keyword})}"
+                       th:href="@{/csboard/list(page=${i}, keyword=${keyword})}"
                        th:text="${i + 1}">1</a>
                 </li>
 
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/templates/csboard/list(page=${currentPage + 1}, keyword=${keyword})}">다음</a>
+                       th:href="@{/csboard/list(page=${currentPage + 1}, keyword=${keyword})}">다음</a>
                 </li>
             </ul>
         </nav>
