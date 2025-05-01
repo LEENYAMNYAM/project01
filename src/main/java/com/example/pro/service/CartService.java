@@ -2,8 +2,6 @@ package com.example.pro.service;
 
 import com.example.pro.dto.CartDTO;
 import com.example.pro.dto.RecipeDTO;
-import com.example.pro.entity.CartEntity;
-import com.example.pro.repository.UserRepository;
 
 import java.util.List;
 

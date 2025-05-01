@@ -13,9 +13,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,28 +80,41 @@ public class RecipeController {
                 .toList();
 
         // 4. 레시피 저장 서비스 호출
-        recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap);
+        RecipeDTO updatedRecipeDTO = recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap);
 
-        recipeDTO.setSteps(recipeStepService.getRecipeStepByRecipeId(recipeDTO.getId()));
-        recipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId()));
+        log.info("recipeDTO.getId() : " + updatedRecipeDTO.getId());
 
-        // 5.Cart에 레시피재료 저장
-        CartDTO savedCartDTO = cartService.createCart(recipeDTO);
-        log.info("Saved Cart ID: {}", savedCartDTO.getId());
+        log.info("recipeStepService.getRecipeStepByRecipeId(updatedRecipeDTO.getId()) : " + recipeStepService.getRecipeStepByRecipeId(updatedRecipeDTO.getId()));
+        updatedRecipeDTO.setSteps(recipeStepService.getRecipeStepByRecipeId(updatedRecipeDTO.getId()));
 
-        // 6. CartID를 recipeIngredientDTO에 추가하기
-        Long cartId = savedCartDTO.getId();
-        List<RecipeIngredientsDTO> recipeIngredientsDTOList = recipeDTO.getRecipeIngredients();
-        List<RecipeIngredientsDTO> updatedRecipeIngredientsDTOList = new ArrayList<>();
-        for (RecipeIngredientsDTO dto : recipeIngredientsDTOList) {
-            dto.setCartId(cartId);
-            updatedRecipeIngredientsDTOList.add(dto);
-        }
-        recipeDTO.setRecipeIngredients(updatedRecipeIngredientsDTOList);
+        // 5. 빈카트 생성
+        CartDTO savedCartDTO = cartService.createCart(updatedRecipeDTO);
 
-        log.info("recipeDTO : " + recipeDTO);
+        updatedRecipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(updatedRecipeDTO.getId()));
+        log.info("recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId())" + recipeIngredientsService.getRecipeIngredientsbyRecipeId(updatedRecipeDTO.getId()));
+        log.info("updatedRecipeDTOO4 : " + updatedRecipeDTO);
+
+
+//        // 5.Cart에 레시피재료 저장
+//        CartDTO savedCartDTO = cartService.createCart(updatedRecipeDTO);
+//        log.info("Saved Cart ID: {}", savedCartDTO.getId());
+//
+//
+//        // 6. CartID를 recipeIngredientDTO에 추가하기
+//        Long cartId = savedCartDTO.getId();
+//        List<RecipeIngredientsDTO> recipeIngredientsDTOList = updatedRecipeDTO.getRecipeIngredients();
+//        List<RecipeIngredientsDTO> updatedRecipeIngredientsDTOList = new ArrayList<>();
+//        for (RecipeIngredientsDTO dto : recipeIngredientsDTOList) {
+//            dto.setCartId(cartId);
+//            log.info("dto.getCartId() : " + dto.getCartId());
+//            updatedRecipeIngredientsDTOList.add(dto);
+//            log.info("updatedRecipeIngredientsDTOList : " + updatedRecipeIngredientsDTOList);
+//        }
+//        updatedRecipeDTO.setRecipeIngredients(updatedRecipeIngredientsDTOList);
+
+        log.info("updatedRecipeDTO6 : " + updatedRecipeDTO);
         // 7. 추가한 재료가 있으면 장바구니리스트로, 없으면 레시피리스트로
-        if (recipeDTO.getRecipeIngredients() == null || recipeDTO.getRecipeIngredients().isEmpty()) {
+        if (updatedRecipeDTO.getRecipeIngredients() == null || updatedRecipeDTO.getRecipeIngredients().isEmpty()) {
             return "redirect:/recipe/list";
         } else {
             return "redirect:/cart/list";
@@ -336,5 +349,16 @@ public class RecipeController {
 
     }
 
+    // 레시피 좋아요 기능 삭제됨
+    @PostMapping("/like/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleRecipeLike(
+            @PathVariable Long id,
+            @AuthenticationPrincipal PrincipalDetail principalDetail) {
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", "레시피 좋아요 기능이 리뷰로 이전되었습니다. 리뷰에 좋아요를 눌러주세요.");
+        return ResponseEntity.ok(response);
+    }
 }

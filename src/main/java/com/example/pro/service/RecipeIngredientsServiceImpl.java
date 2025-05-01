@@ -8,6 +8,7 @@ import com.example.pro.repository.CartRepository;
 import com.example.pro.repository.IngredientRepository;
 import com.example.pro.repository.RecipeIngredientsRepository;
 import com.example.pro.repository.RecipeRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @Log4j2
 @RequiredArgsConstructor
+@Data
 public class RecipeIngredientsServiceImpl implements RecipeIngredientsService {
 
     private final RecipeRepository recipeRepository;
@@ -30,9 +32,11 @@ public class RecipeIngredientsServiceImpl implements RecipeIngredientsService {
     public List<RecipeIngredientsDTO> getRecipeIngredientsbyRecipeId(Long recipeId) {
         List<RecipeIngredientsEntity> recipeIngredientsEntityList = recipeIngredientsRepository.findByRecipeEntity_Id(recipeId);
 
+        log.info("getRecipeIngredientsbyRecipeId(Entity) : " + recipeIngredientsEntityList);
         List<RecipeIngredientsDTO> recipeIngredientsDTOList = recipeIngredientsEntityList.stream()
                 .map(recipeIngredientsEntity -> entityToDto(recipeIngredientsEntity))
                 .collect(Collectors.toList());
+        log.info("getRecipeIngredientsbyRecipeId(DTO) : " + recipeIngredientsDTOList);
         return recipeIngredientsDTOList;
     }
 

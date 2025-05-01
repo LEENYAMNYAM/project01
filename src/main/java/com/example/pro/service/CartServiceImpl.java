@@ -10,6 +10,7 @@ import com.example.pro.repository.RecipeIngredientsRepository;
 import com.example.pro.repository.RecipeRepository;
 import com.example.pro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Log4j2
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
@@ -34,30 +36,33 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public CartDTO createCart(RecipeDTO recipeDTO) {
-        CartDTO cartDTO = new CartDTO();
-        cartDTO.setUsername(recipeDTO.getUsername());
-        cartDTO.setRecipeIngredients(recipeDTO.getRecipeIngredients());
 
-        // 총합 계산 (단가 * 수량)
-        long totalPrice = 0;
-        for (RecipeIngredientsDTO dto : recipeDTO.getRecipeIngredients()) {
-            totalPrice += dto.getIngredient().getPrice() * dto.getQuantity();
-        }
-        cartDTO.setTotalPrice(totalPrice);
-        cartDTO.setRecipeTitle(recipeDTO.getTitle());
 
-        // 엔티티 변환 및 연관관계 정리
-        CartEntity cartEntity = dtoToEntity(cartDTO);
-        for (RecipeIngredientsEntity e : cartEntity.getRecipeIngredients()) {
-            e.setCartEntity(cartEntity);
-        }
-
-        CartEntity savedCart =  cartRepository.save(cartEntity);
-
-        // 저장된 엔티티로 DTO 반환
-        CartDTO savedCartDTO = entityToDto(savedCart);
-        savedCartDTO.setId(savedCart.getId()); // 여기서 ID 세팅 ✅
-        return savedCartDTO;
+//        CartDTO cartDTO = new CartDTO();
+//        cartDTO.setUsername(recipeDTO.getUsername());
+//        cartDTO.setRecipeIngredients(recipeDTO.getRecipeIngredients());
+//
+//        // 총합 계산 (단가 * 수량)
+//        long totalPrice = 0;
+//        for (RecipeIngredientsDTO dto : recipeDTO.getRecipeIngredients()) {
+//            totalPrice += dto.getIngredient().getPrice() * dto.getQuantity();
+//        }
+//        cartDTO.setTotalPrice(totalPrice);
+//        cartDTO.setRecipeTitle(recipeDTO.getTitle());
+//
+//        // 엔티티 변환 및 연관관계 정리
+//        CartEntity cartEntity = dtoToEntity(cartDTO);
+//        log.info("cartEntity : " + cartEntity);
+//        for (RecipeIngredientsEntity e : cartEntity.getRecipeIngredients()) {
+//            e.setCartEntity(cartEntity);
+//        }
+//
+//        CartEntity savedCart =  cartRepository.save(cartEntity);
+//
+//        // 저장된 엔티티로 DTO 반환
+//        CartDTO savedCartDTO = entityToDto(savedCart);
+//        savedCartDTO.setId(savedCart.getId()); // 여기서 ID 세팅 ✅
+//        return savedCartDTO;
 
 
     }
@@ -114,6 +119,7 @@ public class CartServiceImpl implements CartService {
 
     CartDTO entityToDto(CartEntity cartEntity) {
         CartDTO cartDTO = new CartDTO();
+        cartDTO.setId(cartEntity.getId());
         cartDTO.setUsername(cartEntity.getUserEntity().getUsername());
         cartDTO.setTotalPrice(cartEntity.getTotalPrice());
         cartDTO.setCreatedAt(cartEntity.getCreatedAt());

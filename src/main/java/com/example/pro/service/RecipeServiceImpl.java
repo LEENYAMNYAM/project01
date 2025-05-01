@@ -33,7 +33,7 @@ public class RecipeServiceImpl implements RecipeService {
     private final RecipeIngredientsServiceImpl recipeIngredientsServiceImpl;
 
     @Override
-    public void registerRecipe(RecipeDTO recipeDTO, List<MultipartFile> recipeStepImages, Map<String, String> paramMap) {
+    public RecipeDTO registerRecipe(RecipeDTO recipeDTO, List<MultipartFile> recipeStepImages, Map<String, String> paramMap) {
 
         // 1. RecipeEntity 저장
         log.info("userRepository.findByUsername(recipeDTO.getUsername() : " + userRepository.findByUsername(recipeDTO.getUsername()));
@@ -96,6 +96,7 @@ public class RecipeServiceImpl implements RecipeService {
             stepIndex++;
         }
 
+        return recipeRepository.findById(recipeEntity.getId()).map(this::entityToDto).orElseThrow();
     }
 
     @Override
@@ -263,6 +264,20 @@ public class RecipeServiceImpl implements RecipeService {
         recipeDTO.setUsername(recipeEntity.getUser().getUsername());
         recipeDTO.setCreatedAt(recipeEntity.getCreatedAt());
         recipeDTO.setLikeCount(recipeEntity.getLikeCount());
+
+        // Calculate average rating from reviews
+        List<ReviewEntity> reviews = recipeEntity.getReviews();
+        if (reviews != null && !reviews.isEmpty()) {
+            double sum = 0;
+            for (ReviewEntity review : reviews) {
+                sum += review.getRating();
+            }
+            double avgRating = sum / reviews.size();
+            recipeDTO.setAverageRating(Math.round(avgRating * 10.0) / 10.0); // Round to 1 decimal place
+        } else {
+            recipeDTO.setAverageRating(0.0); // Default if no reviews
+        }
+
         return recipeDTO;
     }
 

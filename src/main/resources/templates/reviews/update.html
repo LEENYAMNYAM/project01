@@ -29,6 +29,14 @@
                                     <p class="form-control-plaintext" th:text="${review.recipe.title}">레시피 제목</p>
                                 </div>
 
+                                <!-- 리뷰 제목 -->
+                                <div class="form-group mb-3">
+                                    <label for="title">리뷰 제목</label>
+                                    <input type="text" id="title" name="title" class="form-control" 
+                                           placeholder="리뷰 제목을 입력하세요 (최대 100자)" maxlength="100" required 
+                                           th:value="${reviewDTO.title}" />
+                                </div>
+
                                 <!-- 별점 -->
                                 <div class="form-group mb-3">
                                     <label for="rating">별점</label>

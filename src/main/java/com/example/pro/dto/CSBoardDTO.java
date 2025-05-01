@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class CSBoardDTO {
 
     private Long id;
