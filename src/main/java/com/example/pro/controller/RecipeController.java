@@ -113,7 +113,7 @@ public class RecipeController {
         }
         model.addAttribute("recipeList", recipeList);
         model.addAttribute("category", category);
-        return "/recipe/list";
+        return "recipe/list";
     }
 
     @GetMapping("/view")
@@ -163,7 +163,7 @@ public class RecipeController {
         model.addAttribute("categories", List.of("밥", "국", "메인반찬", "밑반찬", "면"));
         model.addAttribute("ingredients", ingredientService.findAllIngredient());
 
-        return "/recipe/update";
+        return "recipe/update";
     }
 
 

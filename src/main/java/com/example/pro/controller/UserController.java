@@ -75,7 +75,7 @@ public class UserController {
         log.info("User DTO added to model");
 
 
-        return "/userinfo/userinfo";
+        return "userinfo/userinfo";
     }
     @GetMapping("/userupdate")
     public String userUpdate(@AuthenticationPrincipal PrincipalDetail principal, Model model) {

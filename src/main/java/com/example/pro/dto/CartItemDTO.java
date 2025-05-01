@@ -15,6 +15,14 @@ public class CartItemDTO {
 
     private Long ingredientId;
 
+    private Long recipeId;
+
     private Long cartId;
+
+    private Long quantity;
+
+    private IngredientDTO ingredient;
+
+    private RecipeDTO recipe;
 
 }

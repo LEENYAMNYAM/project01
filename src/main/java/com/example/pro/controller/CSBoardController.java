@@ -91,7 +91,7 @@ public class CSBoardController {
         }
         model.addAttribute("canReply", canReply);
 
-        return "/csboard/view";
+        return "csboard/view";
     }
 
 
@@ -104,7 +104,7 @@ public class CSBoardController {
     public String updateForm(@RequestParam Long id, Model model) {
         CSBoardDTO dto = csBoardService.getBoard(id, false); // ✅ 조회수 증가 X
         model.addAttribute("cs", dto);
-        return "/csboard/update"; // update.html
+        return "csboard/update"; // update.html
     }
 
     @PostMapping("/update/submit")
