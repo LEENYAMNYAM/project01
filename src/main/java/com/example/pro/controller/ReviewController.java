@@ -71,7 +71,7 @@ public class ReviewController {
             model.addAttribute("searchType", searchType);
             model.addAttribute("keyword", keyword);
 
-            return "reviews/list";
+            return "/reviews/list";
         } catch (Exception e) {
             log.error("Error listing reviews: " + e.getMessage());
             return "redirect:/recipe/list";
@@ -100,7 +100,7 @@ public class ReviewController {
             model.addAttribute("recipe", recipe);
             model.addAttribute("reviewDTO", reviewDTO);
 
-            return "reviews/reviewregister";
+            return "/reviews/reviewregister";
         } catch (Exception e) {
             log.error("Error accessing review form: " + e.getMessage());
             return "redirect:/recipe/list";
@@ -129,7 +129,7 @@ public class ReviewController {
             model.addAttribute("error", "별점은 1~5 사이의 값이어야 합니다.");
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
-            return "reviews/reviewregister";
+            return "/reviews/reviewregister";
         }
 
         if (reviewDTO.getTitle() == null || reviewDTO.getTitle().trim().isEmpty()) {
@@ -137,7 +137,7 @@ public class ReviewController {
             model.addAttribute("error", "리뷰 제목을 입력해주세요.");
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
-            return "reviews/reviewregister";
+            return "/reviews/reviewregister";
         }
 
         if (reviewDTO.getTitle().length() > 100) {
@@ -145,7 +145,7 @@ public class ReviewController {
             model.addAttribute("error", "리뷰 제목은 100자 이내로 작성해주세요.");
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
-            return "reviews/reviewregister";
+            return "/reviews/reviewregister";
         }
 
         if (reviewDTO.getContent() == null || reviewDTO.getContent().trim().isEmpty()) {
@@ -153,7 +153,7 @@ public class ReviewController {
             model.addAttribute("error", "리뷰 내용을 입력해주세요.");
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
-            return "reviews/reviewregister";
+            return "/reviews/reviewregister";
         }
 
         if (reviewDTO.getContent().length() > 1000) {
@@ -161,7 +161,7 @@ public class ReviewController {
             model.addAttribute("error", "리뷰 내용은 1000자 이내로 작성해주세요.");
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
-            return "reviews/reviewregister";
+            return "/reviews/reviewregister";
         }
 
         // 이미지 파일이 있으면 저장
@@ -193,7 +193,7 @@ public class ReviewController {
             model.addAttribute("review", review);
             model.addAttribute("recipe", recipe);
 
-            return "reviews/view";
+            return "/reviews/view";
         } catch (Exception e) {
             log.error("Error viewing review: " + e.getMessage());
             return "redirect:/recipe/list";
@@ -229,7 +229,7 @@ public class ReviewController {
             model.addAttribute("recipe", recipe);
             model.addAttribute("review", review);  // Add the review entity to the model
 
-            return "reviews/update";
+            return "/reviews/update";
         } catch (Exception e) {
             log.error("Error accessing update form: " + e.getMessage());
             return "redirect:/recipe/list";
@@ -267,7 +267,7 @@ public class ReviewController {
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(existingReview.getRecipe().getId()));
             model.addAttribute("review", existingReview);
-            return "reviews/update";
+            return "/reviews/update";
         }
 
         if (reviewDTO.getTitle() == null || reviewDTO.getTitle().trim().isEmpty()) {
@@ -276,7 +276,7 @@ public class ReviewController {
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(existingReview.getRecipe().getId()));
             model.addAttribute("review", existingReview);
-            return "reviews/update";
+            return "/reviews/update";
         }
 
         if (reviewDTO.getTitle().length() > 100) {
@@ -285,7 +285,7 @@ public class ReviewController {
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(existingReview.getRecipe().getId()));
             model.addAttribute("review", existingReview);
-            return "reviews/update";
+            return "/reviews/update";
         }
 
         if (reviewDTO.getContent() == null || reviewDTO.getContent().trim().isEmpty()) {
@@ -294,7 +294,7 @@ public class ReviewController {
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(existingReview.getRecipe().getId()));
             model.addAttribute("review", existingReview);
-            return "reviews/update";
+            return "/reviews/update";
         }
 
         if (reviewDTO.getContent().length() > 1000) {
@@ -303,7 +303,7 @@ public class ReviewController {
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(existingReview.getRecipe().getId()));
             model.addAttribute("review", existingReview);
-            return "reviews/update";
+            return "/reviews/update";
         }
 
         // 이미지 삭제 체크박스가 선택된 경우
@@ -343,11 +343,11 @@ public class ReviewController {
         if (review.getBuyer() == null ||
             !review.getBuyer().getUsername().equals(principalDetail.getUsername())) {
             log.warn("Unauthorized review delete attempt: " + principalDetail.getUsername());
-            return "redirect:/reviews/list/" + recipeId;
+            return "redirect:/recipe/view?id=" + recipeId;
         }
 
         reviewService.deleteReview(id);
-        return "redirect:/reviews/list/" + recipeId;
+        return "redirect:/recipe/view?id=" + recipeId;
     }
 
     // 리뷰에 답변 추가
