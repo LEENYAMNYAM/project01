@@ -20,34 +20,21 @@ public interface ReviewService {
     RecipeEntity getRecipeEntityById(Long recipeId);
     double calculateAverageRating(Long recipeId);
 
-    // Search functionality
-    List<ReviewEntity> getReviewsByRecipeAndWriter(Long recipeId, String writer);
-    List<ReviewEntity> getReviewsByRecipeAndContent(Long recipeId, String content);
-
-    // Review like functionality
-    boolean toggleReviewLike(Long reviewId, String username);
-    boolean hasUserLikedReview(Long reviewId, String username);
-    int getReviewLikesCount(Long reviewId);
-    void updateReviewLikesCount(Long reviewId);
-
     default ReviewEntity dtoToEntity(ReviewDTO reviewDTO, RecipeEntity recipe) {
         ReviewEntity review = new ReviewEntity();
         review.setBuyer(reviewDTO.getBuyer());
         review.setViewer(reviewDTO.getViewer());
-        review.setTitle(reviewDTO.getTitle());
         review.setContent(reviewDTO.getContent());
         review.setRating(reviewDTO.getRating());
         review.setImagePath(reviewDTO.getImagePath());
         review.setId(reviewDTO.getId());
         review.setRecipe(recipe);
-        review.setLikesCount(reviewDTO.getLikesCount());
         return review;
     }
     default ReviewDTO entityToDto(ReviewEntity reviewEntity) {
         ReviewDTO reviewDTO = new ReviewDTO();
         reviewDTO.setBuyer(reviewEntity.getBuyer());
         reviewDTO.setViewer(reviewEntity.getViewer());
-        reviewDTO.setTitle(reviewEntity.getTitle());
         reviewDTO.setContent(reviewEntity.getContent());
         reviewDTO.setRating(reviewEntity.getRating());
         reviewDTO.setImagePath(reviewEntity.getImagePath());
@@ -55,7 +42,6 @@ public interface ReviewService {
         reviewDTO.setRecipeId(reviewEntity.getRecipe().getId());
         reviewDTO.setReply(reviewEntity.getReply());
         reviewDTO.setReplyDate(reviewEntity.getReplyDate());
-        reviewDTO.setLikesCount(reviewEntity.getLikesCount());
         return reviewDTO;
     }
 }

@@ -22,7 +22,7 @@ public class CartDTO {
 
     private List<RecipeIngredientsDTO> recipeIngredients;
 
-    private String recipeTitle;
+
 
     private LocalDateTime createdAt;
 }

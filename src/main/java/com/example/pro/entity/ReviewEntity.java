@@ -55,7 +55,7 @@ public class ReviewEntity extends BaseEntity {
 
     // 좋아요 수
     @Column(nullable = false)
-    private int likesCount = 0;
+    private int likesCount;
 
     public void change1(String title, String content, int rating) {
         this.title = title;

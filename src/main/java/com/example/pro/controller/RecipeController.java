@@ -2,9 +2,10 @@ package com.example.pro.controller;
 
 import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.*;
-import com.example.pro.entity.ReviewEntity;
+import com.example.pro.entity.*;
 import com.example.pro.repository.CartRepository;
 import com.example.pro.repository.IngredientRepository;
+import com.example.pro.repository.RecipeIngredientsRepository;
 import com.example.pro.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -13,9 +14,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +44,7 @@ public class RecipeController {
     private final IngredientRepository ingredientRepository;
     private final CartService cartService;
     private final CartRepository cartRepository;
+    private final RecipeIngredientsRepository recipeIngredientsRepository;
 
     @GetMapping("/register")
     public void recipeRegister(Model model) {
@@ -58,12 +60,13 @@ public class RecipeController {
                                  @RequestParam Map<String, String> paramMap,
                                  MultipartHttpServletRequest request,
                                  Model model) throws IOException {
+        UserEntity userEntity = principalDetail.getUser(); // PrincipalDetail에서 유저 정보를 가져옴
+        recipeDTO.setUsername(userEntity.getUsername()); // 로그인된 유저의 정보로 recipeDTO 설정
 
-        //1. 로그인 사용자 정보 세팅
+        // 1. 로그인 사용자 정보 세팅
         if (principalDetail != null) {
             recipeDTO.setUsername(principalDetail.getUsername());
         }
-//        recipeDTO.setUsername("hong");
 
         // 2. mainImageFile → 대표 이미지
         MultipartFile mainImage = request.getFile("mainImageFile");
@@ -80,47 +83,18 @@ public class RecipeController {
                 .toList();
 
         // 4. 레시피 저장 서비스 호출
-        RecipeDTO updatedRecipeDTO = recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap);
+        recipeService.registerRecipe(recipeDTO, recipeStepImages, paramMap); // 레시피 저장 및 카트 저장은 서비스에서 처리
 
-        log.info("recipeDTO.getId() : " + updatedRecipeDTO.getId());
+        // 레시피 등록 후 재료 정보 업데이트
+        recipeDTO.setSteps(recipeStepService.getRecipeStepByRecipeId(recipeDTO.getId()));
+        recipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId()));
 
-        log.info("recipeStepService.getRecipeStepByRecipeId(updatedRecipeDTO.getId()) : " + recipeStepService.getRecipeStepByRecipeId(updatedRecipeDTO.getId()));
-        updatedRecipeDTO.setSteps(recipeStepService.getRecipeStepByRecipeId(updatedRecipeDTO.getId()));
-
-        // 5. 빈카트 생성
-        CartDTO savedCartDTO = cartService.createCart(updatedRecipeDTO);
-
-        updatedRecipeDTO.setRecipeIngredients(recipeIngredientsService.getRecipeIngredientsbyRecipeId(updatedRecipeDTO.getId()));
-        log.info("recipeIngredientsService.getRecipeIngredientsbyRecipeId(recipeDTO.getId())" + recipeIngredientsService.getRecipeIngredientsbyRecipeId(updatedRecipeDTO.getId()));
-        log.info("updatedRecipeDTOO4 : " + updatedRecipeDTO);
-
-
-//        // 5.Cart에 레시피재료 저장
-//        CartDTO savedCartDTO = cartService.createCart(updatedRecipeDTO);
-//        log.info("Saved Cart ID: {}", savedCartDTO.getId());
-//
-//
-//        // 6. CartID를 recipeIngredientDTO에 추가하기
-//        Long cartId = savedCartDTO.getId();
-//        List<RecipeIngredientsDTO> recipeIngredientsDTOList = updatedRecipeDTO.getRecipeIngredients();
-//        List<RecipeIngredientsDTO> updatedRecipeIngredientsDTOList = new ArrayList<>();
-//        for (RecipeIngredientsDTO dto : recipeIngredientsDTOList) {
-//            dto.setCartId(cartId);
-//            log.info("dto.getCartId() : " + dto.getCartId());
-//            updatedRecipeIngredientsDTOList.add(dto);
-//            log.info("updatedRecipeIngredientsDTOList : " + updatedRecipeIngredientsDTOList);
-//        }
-//        updatedRecipeDTO.setRecipeIngredients(updatedRecipeIngredientsDTOList);
-
-        log.info("updatedRecipeDTO6 : " + updatedRecipeDTO);
-        // 7. 추가한 재료가 있으면 장바구니리스트로, 없으면 레시피리스트로
-        if (updatedRecipeDTO.getRecipeIngredients() == null || updatedRecipeDTO.getRecipeIngredients().isEmpty()) {
-            return "redirect:/recipe/list";
-        } else {
-            return "redirect:/cart/list";
-        }
+        // 5. 추가한 재료가 있으면 장바구니리스트로, 없으면 레시피리스트로
+        // 재료가 있는지 확인하고 카트로 보내기
+        return "redirect:/cart/list"; // 장바구니로
 
     }
+
 
     @GetMapping("/list")
     public String recipeList(
@@ -349,16 +323,5 @@ public class RecipeController {
 
     }
 
-    // 레시피 좋아요 기능 삭제됨
-    @PostMapping("/like/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> toggleRecipeLike(
-            @PathVariable Long id,
-            @AuthenticationPrincipal PrincipalDetail principalDetail) {
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", false);
-        response.put("message", "레시피 좋아요 기능이 리뷰로 이전되었습니다. 리뷰에 좋아요를 눌러주세요.");
-        return ResponseEntity.ok(response);
-    }
 }

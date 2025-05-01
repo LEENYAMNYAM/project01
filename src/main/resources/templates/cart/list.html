@@ -2,12 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="ko">
+
 <div class="container-fluid text-white p-5" layout:fragment="content"
      style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
     <section class="page-section">
         <div class="container">
             <h2 class="text-center mt-0">🛒 장바구니</h2>
-            <hr class="divider my-4" />
+            <hr class="divider my-4"/>
 
             <!-- 장바구니가 비어있을 경우 -->
             <div th:if="${groupedByRecipe.isEmpty()}" class="text-center py-5">
@@ -21,7 +22,8 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 th:text="${entry.key}">레시피 제목</h4>
                     <!-- 레시피 전체 삭제 -->
-                    <form th:action="@{'/cart/delete/recipe/' + ${recipeIdMap[entry.key]}}" method="post" onsubmit="return confirm('이 레시피의 재료를 모두 삭제할까요?');">
+                    <form th:action="@{'/cart/delete/recipe/' + ${recipeIdMap[entry.key]}}" method="post"
+                          onsubmit="return confirm('이 레시피의 재료를 모두 삭제할까요?');">
                         <button type="submit" class="btn btn-danger btn-sm">레시피 전체 삭제</button>
                     </form>
                 </div>
@@ -44,24 +46,24 @@
                             </thead>
                             <tbody>
                             <tr th:each="ingredient : ${entry.value}">
-                                <td th:text="${ingredient.ingredient.name}">재료명</td>
-                                <td th:text="${ingredient.quantity}"></td>
-                                <td th:text="${ingredient.ingredient.price} + '원'"></td>
-                                <td th:text="${ingredient.quantity * ingredient.ingredient.price} + '원'"></td>
+                                <td th:text="${ingredient.ingredient.ingredientName}">재료명</td>
+                                <td th:text="${ingredient.quantity}">수량</td>
+                                <td th:text="${ingredient.ingredient.price} + '원'">단가</td>
+                                <td th:text="${ingredient.quantity * ingredient.ingredient.price} + '원'">합계</td>
                                 <td>
-                                    <!-- 개별 재료 삭제 -->
                                     <form th:action="@{'/cart/delete/item/' + ${ingredient.id}}" method="post"
                                           onsubmit="return confirm('이 재료를 삭제할까요?');">
                                         <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
                                     </form>
                                 </td>
                             </tr>
+
                             </tbody>
                         </table>
                     </div>
                     <div class="card-footer text-end">
                         <a href="/recipe/list" class="btn btn-secondary">계속 쇼핑하기</a>
-                        <a href="/cart/checkout" class="btn btn-primary">결제하기</a>
+                        <a th:href="@{'/cart/checkout'(recipeId=${recipeIdMap[entry.key]}, cartId=${entry.value[0].cartId})}" class="btn btn-primary">결제하기</a>
                     </div>
                 </div>
             </div>
@@ -71,19 +73,19 @@
 
 <script layout:fragment="script">
     // 수량 증가
-    $('.increase-quantity').click(function() {
+    $('.increase-quantity').click(function () {
         const itemId = $(this).data('id');
         updateQuantity(itemId, 1);
     });
 
     // 수량 감소
-    $('.decrease-quantity').click(function() {
+    $('.decrease-quantity').click(function () {
         const itemId = $(this).data('id');
         updateQuantity(itemId, -1);
     });
 
     // 아이템 삭제
-    $('.remove-item').click(function() {
+    $('.remove-item').click(function () {
         const itemId = $(this).data('id');
         if (confirm('정말 삭제하시겠습니까?')) {
             removeItem(itemId);
@@ -122,4 +124,5 @@
             });
     }
 </script>
+
 </html>

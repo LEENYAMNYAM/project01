@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface RecipeService {
-    RecipeDTO registerRecipe(RecipeDTO recipeDTO, List<MultipartFile> recipeStepImages, Map<String, String> paramMap);
+    void registerRecipe(RecipeDTO recipeDTO, List<MultipartFile> recipeStepImages, Map<String, String> paramMap);
     List<RecipeDTO> getAllRecipe();
     List<RecipeDTO> searchRecipeByTitle(String keyword);
     List<RecipeDTO> findByUsername(String username);

@@ -35,7 +35,7 @@ public class CustomSecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.disable())
                 .authorizeHttpRequests(authorizeHttpRequestsConfigurer -> authorizeHttpRequestsConfigurer
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                        .requestMatchers( "/", "/login","/userinfo/**","/recipe/**","/qnaboard/**","/notice/**", "/review/**", "/userinfo/**").permitAll()
+                        .requestMatchers( "/", "/login","/userinfo/**","/recipe/**","/qnaboard/**","/notice/**", "/review/**", "/userinfo/**","/cart/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/",
                                 "/home",

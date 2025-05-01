@@ -55,9 +55,6 @@ public class UserServiceImpl implements UserService {
 
     }
 
-
-
-
     @Override
     public void deleteUser(String username) {
         UserEntity user = userRepository.findByUsername(username)
@@ -80,4 +77,24 @@ public class UserServiceImpl implements UserService {
     public void dropUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    @Override
+    public UserDTO findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(userEntity -> {
+                    UserDTO dto = new UserDTO();
+                    dto.setUsername(userEntity.getUsername());
+                    dto.setName(userEntity.getName());
+                    dto.setEmail(userEntity.getEmail());
+                    dto.setPhone(userEntity.getPhone());
+                    dto.setGender(userEntity.getGender());
+                    dto.setAddress(userEntity.getAddress());
+                    dto.setRole(userEntity.getRole());
+                    dto.setPoint(userEntity.getPoint());
+                    dto.setJoinDate(userEntity.getRegDate());
+                    return dto;
+                })
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+    }
+
 }

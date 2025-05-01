@@ -11,6 +11,7 @@ public interface UserService {
     void updateUser(String username, UserDTO userDTO);
     void deleteUser(String username);
     List<UserEntity> findAll();
+    UserDTO findByUsername(String username);
 
     //    void changePassword(Long id, String newPassword);
     void dropUser(Long id);

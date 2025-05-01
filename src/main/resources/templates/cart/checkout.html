@@ -71,22 +71,14 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label for="name" class="form-label">받는 사람</label>
-                                    <input type="text" class="form-control" id="name" name="name"
-                                           th:value="${user.name}" required>
+                                    <input type="text" class="form-control" id="name" name="name" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">연락처</label>
-                                    <input type="text" class="form-control" id="phone" name="phone"
-                                           th:value="${user.phone}" required>
+                                    <input type="text" class="form-control" id="phone" name="phone" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="address" class="form-label">배송 주소</label>
-                                    <input type="text" class="form-control mb-2" id="address" name="address"
-                                           th:value="${user.address}" required>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="searchAddress">주소 검색</button>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="addressDetail" class="form-label">상세 주소</label>
+                                    <label for="addressDetail" class="form-label">배송 주소</label>
                                     <input type="text" class="form-control" id="addressDetail" name="addressDetail">
                                 </div>
                                 <div class="mb-3">
@@ -158,13 +150,6 @@
         } else {
             $('#deliveryRequestDirect').hide();
         }
-    });
-
-    // 주소 검색 기능
-    $('#searchAddress').click(function() {
-        // 주소 검색 API 연동 (예: 다음 우편번호 서비스)
-        // 실제 구현 시 해당 API의 스크립트를 포함하고 함수를 호출
-        alert('주소 검색 기능은 실제 API 연동이 필요합니다.');
     });
 
     // 포인트 사용 제한

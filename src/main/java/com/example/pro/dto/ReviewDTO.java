@@ -21,8 +21,6 @@ public class ReviewDTO {
 
     private UserEntity viewer;
 
-    private String title;
-
     private String content;
 
     private int rating;
@@ -32,6 +30,4 @@ public class ReviewDTO {
     private String reply;
 
     private LocalDateTime replyDate;
-
-    private int likesCount = 0;
 }
