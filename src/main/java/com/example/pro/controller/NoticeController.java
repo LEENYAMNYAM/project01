@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -25,14 +26,15 @@ public class NoticeController {
     }
 
     @GetMapping("/create")
-    public String create(Model model) {
+    public String create(Model model, Principal princial) {
         model.addAttribute("notice", new NoticeDTO());
+        model.addAttribute("username", princial.getName());
         return "notice/register";
     }
 
     @PostMapping
-    public String create(@ModelAttribute NoticeDTO dto) {
-        noticeService.createNotice(dto);
+    public String create(@ModelAttribute NoticeDTO dto, Principal principal) {
+        noticeService.createNotice(dto, principal.getName());
         return "redirect:/notice/list";
     }
 

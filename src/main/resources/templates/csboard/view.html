@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/layout.html}" lang="ko">
 
 <div class="container py-5" layout:fragment="content">
@@ -105,8 +106,48 @@
         <div class="view-buttons">
             <a href="/csboard/list" class="btn btn-outline-secondary btn-rounded">← 목록으로</a>
             <div>
-                <a th:href="@{/templates/csboard/update(id=${cs.id})}" class="btn btn-dark-outline btn-rounded me-2">✏ 수정</a>
+                <a th:href="@{/csboard/update(id=${cs.id})}" class="btn btn-dark-outline btn-rounded me-2">✏ 수정</a>
                 <button class="btn btn-danger btn-rounded" onclick="deleteCS()">🗑 삭제</button>
+            </div>
+        </div>
+
+        <!-- Replies Section -->
+        <div class="replies-section mt-5">
+            <h3 class="mb-4">답변</h3>
+
+            <!-- Display existing replies -->
+            <div th:if="${replies != null && !replies.isEmpty()}" class="replies-list">
+                <div th:each="reply : ${replies}" class="reply-item mb-4 p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong th:text="${reply.writer}">작성자</strong>
+                            <span class="text-muted ms-2" th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}">2023-01-01</span>
+                        </div>
+                        <div th:if="${canReply}">
+                            <button class="btn btn-sm btn-danger" th:onclick="'deleteReply(' + ${reply.id} + ', ' + ${cs.id} + ')'">삭제</button>
+                        </div>
+                    </div>
+                    <div class="reply-content" th:text="${reply.content}">답변 내용입니다.</div>
+                </div>
+            </div>
+            <div th:if="${replies == null || replies.isEmpty()}" class="no-replies text-center p-4 bg-light rounded">
+                <p class="mb-0">아직 답변이 없습니다.</p>
+            </div>
+
+            <!-- Reply form - only visible to original poster or admin -->
+            <div th:if="${canReply}" class="reply-form mt-4">
+                <h4 class="mb-3">답변 작성</h4>
+                <form th:action="@{/csboard/reply/{id}(id=${cs.id})}" method="post">
+                    <div class="form-group mb-3">
+                        <textarea name="content" class="form-control" rows="4" placeholder="답변을 입력하세요..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-rounded">답변 등록</button>
+                </form>
+            </div>
+
+            <!-- Error message for unauthorized users -->
+            <div th:if="${param.error != null && param.error[0] == 'unauthorized'}" class="alert alert-danger mt-3">
+                답변을 작성할 권한이 없습니다. 작성자 또는 관리자만 답변을 작성할 수 있습니다.
             </div>
         </div>
     </div>
@@ -121,6 +162,23 @@
                     if (res.ok) {
                         alert("삭제되었습니다.");
                         window.location.href = "/csboard/list";
+                    } else {
+                        alert("삭제 실패 😥");
+                    }
+                });
+            }
+        }
+
+        function deleteReply(replyId, csBoardId) {
+            if (confirm("정말 이 답변을 삭제하시겠습니까?")) {
+                fetch("/csboard/reply/delete/" + replyId + "?csBoardId=" + csBoardId, {
+                    method: "DELETE"
+                }).then(res => {
+                    if (res.ok) {
+                        alert("답변이 삭제되었습니다.");
+                        window.location.reload();
+                    } else if (res.status === 403) {
+                        alert("답변을 삭제할 권한이 없습니다.");
                     } else {
                         alert("삭제 실패 😥");
                     }
