@@ -38,6 +38,7 @@
                             <thead>
                             <tr>
                                 <th>재료명</th>
+                                <th>단위</th>
                                 <th>수량</th>
                                 <th>단가</th>
                                 <th>합계</th>
@@ -47,6 +48,7 @@
                             <tbody>
                             <tr th:each="ingredient : ${entry.value}">
                                 <td th:text="${ingredient.ingredient.ingredientName}">재료명</td>
+                                <td th:text="${ingredient.ingredient.detail}">단위</td>
                                 <td th:text="${ingredient.quantity}">수량</td>
                                 <td th:text="${ingredient.ingredient.price} + '원'">단가</td>
                                 <td th:text="${ingredient.quantity * ingredient.ingredient.price} + '원'">합계</td>
@@ -62,7 +64,7 @@
                         </table>
                     </div>
                     <div class="card-footer text-end">
-                        <a href="/recipe/list" class="btn btn-secondary">계속 쇼핑하기</a>
+                        <a href="/recipe/list" class="btn btn-secondary">새 레시피 구매하기</a>
                         <a th:href="@{'/cart/checkout'(recipeId=${recipeIdMap[entry.key]}, cartId=${entry.value[0].cartId})}" class="btn btn-primary">결제하기</a>
                     </div>
                 </div>

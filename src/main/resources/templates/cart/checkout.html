@@ -21,7 +21,8 @@
                                 <table class="table table-dark">
                                     <thead>
                                         <tr>
-                                            <th>상품명</th>
+                                            <th>재료명</th>
+                                            <th>단위</th>
                                             <th>수량</th>
                                             <th>가격</th>
                                             <th>합계</th>
@@ -36,6 +37,7 @@
                                                     <span th:text="${item.ingredient.ingredientName}">재료명</span>
                                                 </div>
                                             </td>
+                                            <td th:text="${item.ingredient.detail}">단위</td>
                                             <td th:text="${item.quantity}">수량</td>
                                             <td th:text="${#numbers.formatInteger(item.ingredient.price, 0, 'COMMA')} + '원'">가격</td>
                                             <td th:text="${#numbers.formatInteger(item.ingredient.price * item.quantity, 0, 'COMMA')} + '원'">합계</td>
@@ -43,15 +45,15 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td colspan="3" class="text-end"><strong>상품 금액:</strong></td>
+                                            <td colspan="4" class="text-end"><strong>상품 금액:</strong></td>
                                             <td th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">상품 금액</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3" class="text-end"><strong>배송비:</strong></td>
+                                            <td colspan="4" class="text-end"><strong>배송비:</strong></td>
                                             <td th:text="${#numbers.formatInteger(shippingFee, 0, 'COMMA')} + '원'">배송비</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3" class="text-end"><strong>총 결제 금액:</strong></td>
+                                            <td colspan="4" class="text-end"><strong>총 결제 금액:</strong></td>
                                             <td th:text="${#numbers.formatInteger(totalPrice + shippingFee, 0, 'COMMA')} + '원'">총 결제 금액</td>
                                         </tr>
                                     </tfoot>
@@ -64,6 +66,17 @@
                 <!-- 배송 및 결제 정보 -->
                 <div class="col-lg-4">
                     <form th:action="@{/payment/process}" method="post" id="checkoutForm">
+                        <input type="hidden" name="cartId" th:value="${cartId}">
+                        <input type="hidden" name="recipeId" th:value="${recipeId}">
+                        <input type="hidden" name="totalAmount" th:value="${totalPrice + shippingFee}">
+                        <input type="hidden" name="shippingFee" th:value="${shippingFee}">
+                        <input type="hidden" id="usedPoints" name="usedPoints" value="0">
+                        <input type="hidden" name="shippingAddress" th:value="${shippingAddress}">
+                        <input type="hidden" name="shippingAddressDetail" th:value="${shippingAddressDetail}">
+                        <input type="hidden" name="deliveryRequest" th:value="${deliveryRequest}">
+                        <input type="hidden" name="deliveryRequestDirect" th:value="${deliveryRequestDirect}">
+                        <input type="hidden" name="paymentMethod" th:value="${paymentMethod}">
+                        <input type="hidden" name="paymentMethodDetail" th:value="${paymentMethodDetail}">
                         <div class="card bg-dark text-white mb-4">
                             <div class="card-header">
                                 <h3>배송 정보</h3>
@@ -78,8 +91,12 @@
                                     <input type="text" class="form-control" id="phone" name="phone" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="addressDetail" class="form-label">배송 주소</label>
-                                    <input type="text" class="form-control" id="addressDetail" name="addressDetail">
+                                    <label for="shippingAddress" class="form-label">배송 기본 주소</label>
+                                    <input type="text" class="form-control" id="shippingAddress" name="shippingAddress">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="shippingAddressDetail" class="form-label">배송 상세 주소</label>
+                                    <input type="text" class="form-control" id="shippingAddressDetail" name="shippingAddressDetail">
                                 </div>
                                 <div class="mb-3">
                                     <label for="deliveryRequest" class="form-label">배송 요청사항</label>
@@ -113,9 +130,9 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="usePoints" class="form-label">포인트 사용</label>
+                                    <label for="usedPointsVisible" class="form-label">포인트 사용</label>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" id="usePoints" name="usePoints"
+                                        <input type="number" class="form-control" id="usedPointsVisible"
                                                min="0" max="${user.points}" value="0">
                                         <span class="input-group-text">/ <span th:text="${user.points}">0</span> 포인트</span>
                                     </div>
@@ -185,5 +202,11 @@
             return false;
         }
     });
+
+    // 사용포인트 hidden값 설정
+    document.getElementById('usedPointsVisible').addEventListener('input', function () {
+        document.getElementById('usedPoints').value = this.value;
+    });
+
 </script>
 </html>

@@ -93,8 +93,36 @@ public class RecipeServiceImpl implements RecipeService {
 
         cartEntity.setTotalPrice(totalPrice);
         cartRepository.save(cartEntity);
-
         log.info("장바구니 저장됨: {}", cartEntity.getId());
+
+
+        // 3. 요리 순서 저장
+        int stepIndex = 0;
+        for (MultipartFile stepImage : recipeStepImages) {
+            String contentKey = "steps[" + stepIndex + "].content";
+            if (!paramMap.containsKey(contentKey)) break;
+
+            String content = paramMap.get(contentKey);
+            String imageName = null;
+
+            if (!stepImage.isEmpty()) {
+                imageName = fileService.saveFile(stepImage);
+            }
+
+            RecipeStepEntity step = RecipeStepEntity.builder()
+                    .recipeEntity(recipeEntity)
+                    .stepNumber(stepIndex+1)
+                    .content(content)
+                    .imageName(imageName)
+                    .build();
+
+            recipeStepRepository.save(step);
+            stepIndex++;
+        }
+
+        userEntity.addPoints(100);
+        userRepository.save(userEntity);
+
     }
 
 

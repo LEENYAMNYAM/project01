@@ -29,7 +29,7 @@ public class CartEntity {
 
     private Long totalPrice;
 
-    @OneToMany(mappedBy = "cartEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cartEntity", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
     private List<RecipeIngredientsEntity> recipeIngredients;
 
 

@@ -124,6 +124,8 @@ public class CartController {
         UserDTO userDTO = userService.findByUsername(username);
 
         // 5. 모델에 담기
+        model.addAttribute("cartId", cartId);
+        model.addAttribute("recipeId", recipeId);
         model.addAttribute("cartItems", recipeIngredientDTOList);
         model.addAttribute("totalPrice", totalPrice);
         model.addAttribute("shippingFee", shippingFee);
@@ -141,7 +143,6 @@ public class CartController {
 
         String username = principal.getName();
         cartService.deleteCartItemById(id, username);
-
 
         return "redirect:/cart/list";
     }

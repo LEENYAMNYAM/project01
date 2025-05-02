@@ -12,9 +12,4 @@ public interface CartService {
     List<CartDTO> getAllCartsByUsername (String username);
     void deleteCartItemById(Long cartItemId, String username);
     void deleteCartById(Long cartId, String username);
-
-
-
-
-
 }

@@ -92,6 +92,7 @@ public class RecipeController {
 
         // 5. 추가한 재료가 있으면 장바구니리스트로, 없으면 레시피리스트로
         // 재료가 있는지 확인하고 카트로 보내기
+
         return "redirect:/cart/list"; // 장바구니로
 
     }

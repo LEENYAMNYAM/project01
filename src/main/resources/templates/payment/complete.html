@@ -76,8 +76,8 @@
                                                 </div>
                                             </td>
                                             <td th:text="${item.quantity}">1</td>
-                                            <td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'">10,000원</td>
-                                            <td th:text="${#numbers.formatInteger(item.price * item.quantity, 0, 'COMMA')} + '원'">10,000원</td>
+                                            <td th:text="${#numbers.formatInteger(item.ingredient.price, 0, 'COMMA')} + '원'">10,000원</td>
+                                            <td th:text="${#numbers.formatInteger(item.ingredient.price * item.quantity, 0, 'COMMA')} + '원'">10,000원</td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
@@ -127,11 +127,13 @@
                     <!-- 버튼 -->
                     <div class="text-center mt-4">
                         <a href="/mypage/orders" class="btn btn-primary me-2">주문 내역 확인</a>
-                        <a href="/recipe/list" class="btn btn-secondary">계속 쇼핑하기</a>
+                        <a href="/recipe/list" class="btn btn-secondary">레시피 검색</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 </div>
-</html>
+<script layout:fragment="script" th:if="${order != null}">
+    alert("총 결제 금액은 [[${order.totalAmount}]]원입니다.\n정상 결제되었습니다.");
+</script>
