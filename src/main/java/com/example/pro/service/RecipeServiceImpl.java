@@ -265,6 +265,20 @@ public class RecipeServiceImpl implements RecipeService {
         recipeDTO.setUsername(recipeEntity.getUser().getUsername());
         recipeDTO.setCreatedAt(recipeEntity.getCreatedAt());
         recipeDTO.setLikeCount(recipeEntity.getLikeCount());
+
+        // Calculate average rating from reviews
+        List<ReviewEntity> reviews = recipeEntity.getReviews();
+        if (reviews != null && !reviews.isEmpty()) {
+            double sum = 0;
+            for (ReviewEntity review : reviews) {
+                sum += review.getRating();
+            }
+            double avgRating = sum / reviews.size();
+            recipeDTO.setAverageRating(Math.round(avgRating * 10.0) / 10.0); // Round to 1 decimal place
+        } else {
+            recipeDTO.setAverageRating(0.0); // Default if no reviews
+        }
+
         return recipeDTO;
     }
 

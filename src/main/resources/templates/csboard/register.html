@@ -70,16 +70,11 @@
     <div class="register-card">
         <div class="section-title">✍ 새 질문 작성</div>
 
-        <form th:action="@{/templates/csboard/register}" method="post">
+        <form th:action="@{/csboard/register}" method="post">
 
             <div class="mb-4">
                 <label for="title" class="form-label">제목</label>
                 <input type="text" id="title" name="title" class="form-control shadow-sm" placeholder="질문 제목을 입력하세요" required>
-            </div>
-
-            <div class="mb-4">
-                <label for="writer" class="form-label">작성자</label>
-                <input type="text" id="writer" name="writer" class="form-control shadow-sm" placeholder="작성자 이름을 입력하세요" required>
             </div>
 
             <div class="mb-4">

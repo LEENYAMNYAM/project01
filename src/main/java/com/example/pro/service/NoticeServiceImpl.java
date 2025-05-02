@@ -56,9 +56,9 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public NoticeDTO createNotice(NoticeDTO dto) {
+    public NoticeDTO createNotice(NoticeDTO dto, String username) {
         NoticeEntity noticeEntity = new NoticeEntity();
-        noticeEntity.change(dto.title, dto.content, dto.important, dto.writer);
+        noticeEntity.change(dto.title, dto.content, dto.important, username);
         return toDTO(noticeRepository.save(noticeEntity));
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface NoticeService {
     List<NoticeDTO> getAllNotices();
-    NoticeDTO createNotice(NoticeDTO dto);
+    NoticeDTO createNotice(NoticeDTO dto, String username);
     NoticeDTO getNoticeById(Long id, boolean increaseHitcount);
     NoticeDTO getNoticeById(Long id);
     void updateNotice(Long id, NoticeDTO dto);

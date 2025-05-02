@@ -1,5 +1,6 @@
 package com.example.pro.controller;
 
+import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.NoticeDTO;
 import com.example.pro.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -31,8 +33,8 @@ public class NoticeController {
     }
 
     @PostMapping
-    public String create(@ModelAttribute NoticeDTO dto) {
-        noticeService.createNotice(dto);
+    public String create(@ModelAttribute NoticeDTO dto, Principal principal) {
+        noticeService.createNotice(dto, principal.getName());
         return "redirect:/notice/list";
     }
 

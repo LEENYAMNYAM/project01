@@ -133,6 +133,30 @@ public class CartController {
     }
 
 
+    @PostMapping("/delete/item/{id}")
+    public String deleteCartItem(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String username = principal.getName();
+        cartService.deleteCartItemById(id, username);
+
+
+        return "redirect:/cart/list";
+    }
+    @PostMapping("/delete/{cartId}")
+    public String deleteCart(@PathVariable Long cartId, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String username = principal.getName();
+        cartService.deleteCartById(cartId, username);
+        return "redirect:/cart/list";
+    }
+
+
+
 }
 
 

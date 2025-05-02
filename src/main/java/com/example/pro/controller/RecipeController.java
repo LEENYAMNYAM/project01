@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/recipe")
@@ -323,5 +324,16 @@ public class RecipeController {
 
     }
 
+    // 레시피 좋아요 기능 삭제됨
+    @PostMapping("/like/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleRecipeLike(
+            @PathVariable Long id,
+            @AuthenticationPrincipal PrincipalDetail principalDetail) {
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", "레시피 좋아요 기능이 리뷰로 이전되었습니다. 리뷰에 좋아요를 눌러주세요.");
+        return ResponseEntity.ok(response);
+    }
 }

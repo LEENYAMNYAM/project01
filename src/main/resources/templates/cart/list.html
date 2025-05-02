@@ -22,9 +22,9 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 th:text="${entry.key}">레시피 제목</h4>
                     <!-- 레시피 전체 삭제 -->
-                    <form th:action="@{'/cart/delete/recipe/' + ${recipeIdMap[entry.key]}}" method="post"
-                          onsubmit="return confirm('이 레시피의 재료를 모두 삭제할까요?');">
-                        <button type="submit" class="btn btn-danger btn-sm">레시피 전체 삭제</button>
+                    <form th:action="@{/cart/delete/{cartId}(cartId=${entry.value[0].cartId})}" method="post"
+                          onsubmit="return confirm('이 장바구니를 삭제할까요?');">
+                        <button type="submit" class="btn btn-danger btn-sm">장바구니 삭제</button>
                     </form>
                 </div>
                 <div class="card-body">

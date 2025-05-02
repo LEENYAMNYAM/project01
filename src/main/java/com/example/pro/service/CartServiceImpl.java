@@ -11,6 +11,7 @@ import com.example.pro.repository.RecipeIngredientsRepository;
 import com.example.pro.repository.RecipeRepository;
 import com.example.pro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,12 +26,13 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Log4j2
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final RecipeIngredientsServiceImpl recipeIngredientsServiceImpl;
-    private final RecipeIngredientsRepository recipeIngredientRepository;
+    private final RecipeIngredientsRepository recipeIngredientsRepository;
     private final RecipeRepository recipeRepository;
     private final RecipeServiceImpl recipeServiceImpl;
 
@@ -75,18 +77,6 @@ public class CartServiceImpl implements CartService {
 //        return savedCartDTO;
 //    }
 
-
-    // 개별재료 삭제
-    public void removeIngredientFromCart(Long ingredientId) {
-        recipeIngredientRepository.deleteById(ingredientId);
-    }
-
-    //레시피재료 전체 삭제
-    public void removeRecipeFromCart(Long recipeId, String username) {
-        List<RecipeIngredientsEntity> items = recipeIngredientRepository.findByRecipeEntity_IdAndCartEntity_UserEntity_Username(recipeId, username);
-        recipeIngredientRepository.deleteAll(items);
-    }
-
     public List<CartDTO> getAllCartsByUsername(String username) {
         List<CartEntity> cartEntities = cartRepository.findByUserEntity_Username(username);
 
@@ -98,19 +88,37 @@ public class CartServiceImpl implements CartService {
     }
 
 
-    @Override
-    public void deleteCart(Long cartId) {
+    public void deleteCartItemById(Long id, String username) {
+        // 재료 조회
+        RecipeIngredientsEntity ingredient = recipeIngredientsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 재료가 없습니다: " + id));
 
+        // 장바구니 조회
+        CartEntity cart = ingredient.getCartEntity();
+        if (cart == null || cart.getUserEntity() == null) {
+            log.error("cartEntity or userEntity is null for ingredient id: {}", id);
+            throw new IllegalStateException("잘못된 장바구니 정보입니다.");
+        }
+
+        // 로그인한 사용자와 장바구니의 소유자가 동일한지 확인
+        if (!cart.getUserEntity().getUsername().equals(username)) {
+            throw new SecurityException("본인의 장바구니가 아닙니다.");
+        }
+
+        // 해당 재료 삭제
+        recipeIngredientsRepository.deleteById(id);
+        log.info("재료 삭제 완료: {}", id);
     }
 
-    @Override
-    public void updateCart(Long cartId, List<Long> recipeIds) {
+    public void deleteCartById(Long cartId, String username) {
+        CartEntity cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 장바구니가 없습니다: " + cartId));
 
-    }
+        if (!cart.getUserEntity().getUsername().equals(username)) {
+            throw new SecurityException("본인의 장바구니가 아닙니다.");
+        }
 
-    @Override
-    public void addCart(Long cartId, List<Long> recipeIds) {
-
+        cartRepository.delete(cart);
     }
 
     CartEntity dtoToEntity(CartDTO cartDTO) {

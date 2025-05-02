@@ -10,11 +10,8 @@ import java.util.List;
 public interface CartService {
 //    CartDTO createCart(RecipeDTO recipeDTO);
     List<CartDTO> getAllCartsByUsername (String username);
-    void deleteCart(Long cartId);
-    void updateCart(Long cartId, List<Long> recipeIds);
-    void addCart(Long cartId, List<Long> recipeIds);
-    void removeIngredientFromCart(Long ingredientId);
-    void removeRecipeFromCart(Long recipeId, String username);
+    void deleteCartItemById(Long cartItemId, String username);
+    void deleteCartById(Long cartId, String username);
 
 
 
