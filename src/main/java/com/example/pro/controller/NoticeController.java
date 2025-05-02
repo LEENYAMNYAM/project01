@@ -27,8 +27,9 @@ public class NoticeController {
     }
 
     @GetMapping("/create")
-    public String create(Model model) {
+    public String create(Model model, Principal princial) {
         model.addAttribute("notice", new NoticeDTO());
+        model.addAttribute("username", princial.getName());
         return "notice/register";
     }
 
