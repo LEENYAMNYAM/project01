@@ -11,6 +11,7 @@ public interface NoticeService {
     NoticeDTO createNotice(NoticeDTO dto, String username);
     NoticeDTO getNoticeById(Long id, boolean increaseHitcount);
     NoticeDTO getNoticeById(Long id);
+    List<NoticeDTO> getLatest3Notices();
     void updateNotice(Long id, NoticeDTO dto);
     void deleteNotice(Long id);
 

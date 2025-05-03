@@ -57,6 +57,16 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    public List<NoticeDTO> getLatest3Notices() {
+        return noticeRepository.findTop3ByOrderByIdDesc()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
+    @Override
     public NoticeDTO createNotice(NoticeDTO dto, String username) {
         NoticeEntity noticeEntity = new NoticeEntity();
         noticeEntity.change(dto.title, dto.content, dto.important, username);

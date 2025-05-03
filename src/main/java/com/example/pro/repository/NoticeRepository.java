@@ -9,10 +9,13 @@ import java.util.List;
 
 public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
 
-    // 기존: 전체 검색용
+    // 전체 검색용
     List<NoticeEntity> findByTitleContaining(String keyword);
 
-    // 추가: 페이징 가능한 제목 검색
+    // 페이징 가능한 제목 검색
     Page<NoticeEntity> findByTitleContaining(String keyword, Pageable pageable);
+
+    // 최신 3가지 공지사항 객체 가져오기
+    List<NoticeEntity> findTop3ByOrderByIdDesc();
 }
 
