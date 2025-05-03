@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>엄카집밥 프로젝트</title>
+    <title>슬기로운 엄카집밥</title>
     <link rel="icon" type="/image/x-icon" href="/assets/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
@@ -42,6 +42,7 @@
         .navbar-brand {
             color: white !important;
             transition: color 0.3s;
+            font-size: 1.5rem;
         }
 
         /* 작은 화면일 때(navbar-toggler가 보이는 화면) */
@@ -79,52 +80,81 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
     <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="/">엄카집밥</a>
+        <a class="navbar-brand" href="/"> 🍚 엄카집밥</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
                 aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ms-auto my-2 my-lg-0">
                 <li sec:authorize="isAuthenticated()" class="nav-item">
-                    <a class="nav-link" href="/recipe/register">레시피 등록</a>
+                    <a class="nav-link" href="/recipe/register">
+                        <i class="bi bi-pencil-square me-2"></i>레시피 등록
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/recipe/list">레시피 전체보기</a>
+                    <a class="nav-link" href="/recipe/list">
+                        <i class="bi bi-list-ul me-2"></i>레시피 전체보기
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/notice/list">공지사항</a>
+                    <a class="nav-link" href="/notice/list">
+                        <i class="bi bi-bell-fill me-2"></i>공지사항
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/csboard/list">Q&A</a>
+                    <a class="nav-link" href="/csboard/list">
+                        <i class="bi bi-question-diamond-fill me-2"></i>Q&A
+                    </a>
                 </li>
                 <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem;">
+                       data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 1.2rem;">
+                        <i class="bi bi-people-fill me-2"></i>
                         회원정보
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-2 mt-2" aria-labelledby="userDropdown"
-                        style="min-width: 80px; font-size: 0.85rem;">
-                        <li><a class="dropdown-item" href="/userinfo/userinfo" style="padding: 4px 8px;">내 정보</a></li>
-                        <li><a class="dropdown-item" href="/cart/list" style="padding: 4px 8px;">장바구니</a></li>
+                        style="min-width: 80px; font-size: 1.2rem;">
+                        <li>
+                            <a class="dropdown-item" href="/userinfo/userinfo" style="padding: 4px 8px;">
+                                <i class="bi bi-person-lines-fill me-2"></i>내 정보
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/cart/list" style="padding: 4px 8px;">
+                                <i class="bi bi-cart-check-fill me-2"></i>장바구니
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
                 <li sec:authorize="hasRole('ADMIN')" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem;">
-                        ADMIN
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-shield-lock-fill me-2"></i>관리자
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-2 mt-2" aria-labelledby="adminDropdown"
-                        style="min-width: 80px; font-size: 0.85rem;">
-                        <li><a class="dropdown-item" href="/admin/adminlist" style="padding: 4px 8px;">회원 관리</a></li>
-                        <li><a class="dropdown-item" href="/admin/ingredientlist" style="padding: 4px 8px;">재료 관리</a></li>
+                        style="min-width: 80px;">
+                        <li>
+                            <a class="dropdown-item" href="/admin/adminlist" style="padding: 4px 8px;">
+                                <i class="bi bi-people-fill me-2"></i>회원 관리
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/ingredientlist" style="padding: 4px 8px;">
+                                <i class="bi bi-box-seam me-2"></i>재료 관리
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li sec:authorize="isAnonymous()" class="nav-item">
-                    <a class="nav-link" href="/userinfo/login">Login</a>
+                    <a class="nav-link" href="/userinfo/login">
+                        <i class="bi bi-door-open-fill me-2"></i>Login
+                    </a>
                 </li>
                 <li sec:authorize="isAuthenticated()" class="nav-item">
-                    <a class="nav-link" href="/logout">Logout([[${#authentication.principal.username}]])</a>
+                    <a class="nav-link" href="/logout">
+                        <i class="bi bi-box-arrow-right me-2"></i>Logout([[${#authentication.principal.username}]])
+                    </a>
                 </li>
             </ul>
         </div>
@@ -132,21 +162,25 @@
 </nav>
 
 <!-- Content -->
-<div class="container-fluid" layout:fragment="content"
+<div class="container-fluid"
      style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
-    <div class="container-fluid text-white p-5">
-        <section class="page-section">
-            <div class="container">
-                <h2 class="text-center mt-0">메인화면 작성하면 됩니다.</h2>
-                <hr class="divider my-4"/>
-            </div>
-        </section>
+    <div layout:fragment="content">
+        <div class="container-fluid text-white p-5">
+            <section class="page-section">
+                <div class="container">
+                    <h2 class="text-center mt-0">메인화면 작성하면 됩니다.</h2>
+                    <hr class="divider my-4"/>
+                </div>
+            </section>
+        </div>
     </div>
 </div>
 
 <!-- Footer -->
-<footer class="bg-light py-5">
+<footer class="footer-custom">
     <div class="container px-4 px-lg-5">
+        <div class="small text-center text-muted">슬기로운 엄카집밥. All Rights Reserved.</div>
+        <div class="small text-center text-muted">거리는 멀어도 마음은 가까이 🍽</div>
         <div class="small text-center text-muted">Copyright &copy; 2025 - Team don't sell people</div>
     </div>
 </footer>

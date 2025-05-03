@@ -20,6 +20,7 @@ public interface RecipeService {
     void updateRecipe(RecipeDTO recipeDTO);
     void deleteRecipe(Long id);
     public String getRecipeTitleById(Long id);
+    public List<RecipeDTO> getRecentRecipes();
 
 
 }

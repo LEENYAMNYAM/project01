@@ -194,6 +194,21 @@ public class RecipeServiceImpl implements RecipeService {
                 .collect(Collectors.toList());
     }
 
+    public List<RecipeDTO> getRecentRecipes() {
+        List<RecipeEntity> recentEntities = recipeRepository.findTop4ByOrderByCreatedAtDesc();
+
+        log.info("recentEntities: " + recentEntities);
+
+        // 빈 리스트거나 null일 경우를 방어
+        if (recentEntities == null || recentEntities.isEmpty()) {
+            return List.of(); // 빈 리스트 반환
+        }
+
+        return recentEntities.stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public List<RecipeDTO> searchByCategoryAndKeyword(String category, String searchType, String keyword) {
         List<RecipeEntity> entityList;
