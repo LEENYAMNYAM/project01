@@ -25,7 +25,9 @@ public class NoticeEntity {
         this.title = title;
         this.content = content;
         this.important = important;
-        this.writer = writer;
+        if( writer != null) {
+            this.writer = writer;
+        }
     }
 
     public String getNoticeType() {

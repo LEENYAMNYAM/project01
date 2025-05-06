@@ -30,6 +30,13 @@
         .badge {
             font-size: 0.75rem;
         }
+        .notice-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+
         .title-link:hover {
             text-decoration: underline;
             color: #0d6efd;
@@ -50,7 +57,7 @@
     <div class="notice-card">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold text-dark mb-0 display-6">📢 공지사항</h2>
+            <h2 class="notice-title">📢 공지사항</h2>
             <a sec:authorize="hasRole('ADMIN')" href="/notice/create" class="btn btn-primary btn-rounded shadow-sm">+ 새 공지 작성</a>
         </div>
 
@@ -88,6 +95,14 @@
             </table>
         </div>
 
+        <!-- Search Form -->
+        <form th:action="@{/notice/list}" method="get" class="d-flex justify-content-center mt-5">
+            <input class="form-control me-2 w-50 search-input shadow-sm" type="search" name="keyword"
+                   placeholder="🔍 제목으로 검색해보세요"
+                   th:value="${keyword}">
+            <button class="btn btn-outline-dark btn-rounded" type="submit">검색</button>
+        </form>
+
         <!-- Paging -->
         <div class="mt-4 d-flex justify-content-center" th:if="${noticePage.totalElements > 0}">
             <ul class="pagination">
@@ -105,13 +120,6 @@
             </ul>
         </div>
 
-        <!-- Search Form -->
-        <form th:action="@{/notice/list}" method="get" class="d-flex justify-content-center mt-5">
-            <input class="form-control me-2 w-50 search-input shadow-sm" type="search" name="keyword"
-                   placeholder="🔍 제목으로 검색해보세요"
-                   th:value="${keyword}">
-            <button class="btn btn-outline-dark btn-rounded" type="submit">검색</button>
-        </form>
         </div>
         </div>
     </section>
