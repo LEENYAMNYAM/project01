@@ -179,10 +179,14 @@ public class CSBoardController {
 
             UserEntity currentUser = principalDetail.getUser();
 
-            // Check if user is an admin
+            // Get the CSBoard to check if the user is the original poster
+            CSBoardDTO csBoard = csBoardService.getBoard(csBoardId, false);
+
+            // Check if user is the original poster or an admin
+            boolean isOriginalPoster = csBoard.getWriter().equals(currentUser.getUsername());
             boolean isAdmin = "ROLE_ADMIN".equals(currentUser.getRole());
 
-            if (!isAdmin) {
+            if (!isOriginalPoster && !isAdmin) {
                 log.warn("Unauthorized reply deletion attempt by: " + currentUser.getUsername());
                 return "unauthorized";
             }

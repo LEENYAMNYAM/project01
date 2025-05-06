@@ -5,50 +5,65 @@
 <div class="container-fluid text-white p-5" layout:fragment="content">
     <section class="page-section">
         <div class="container">
-            <h2 class="text-center mt-0">⭐ 리뷰 목록</h2>
-            <hr class="divider my-4" />
+            <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body p-4">
+                    <h2 class="text-center fw-bold mb-4 fs-1">⭐ 리뷰 목록</h2>
+                    <hr class="divider my-4" />
 
-            <!-- 검색 -->
-            <form method="get" th:action="@{/reviews/list/{id}(id=${recipeId})}" class="d-flex align-items-center mb-4" style="gap: 8px;">
-                <select name="searchType" class="form-select" style="width: 120px; height: 36px; font-size: 14px;">
-                    <option value="content">내용</option>
-                    <option value="writer">작성자</option>
-                </select>
-                <input type="text" name="keyword" class="form-control" placeholder="검색어 입력" style="height: 36px; font-size: 14px;">
-                <button type="submit" class="btn btn-primary" style="height: 36px; width: 80px; font-size: 14px;">검색</button>
-            </form>
+                    <!-- 검색 -->
+                    <form method="get" th:action="@{/reviews/list/{id}(id=${recipeId})}" class="d-flex justify-content-center mb-4">
+                        <div class="input-group" style="max-width: 600px;">
+                            <select name="searchType" class="form-select rounded-start rounded-pill border-end-0">
+                                <option value="content">내용</option>
+                                <option value="writer">작성자</option>
+                            </select>
+                            <input type="text" name="keyword" class="form-control border-start-0 border-end-0" placeholder="검색어 입력">
+                            <button type="submit" class="btn btn-primary rounded-end rounded-pill fw-semibold px-3">검색</button>
+                        </div>
+                    </form>
 
-            <!-- 리뷰 목록 -->
-            <div class="row g-4">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="review : ${reviewList}">
-                    <div class="card h-100 shadow-sm border-0 bg-transparent text-white">
-                        <div th:if="${review.imagePath != null}">
-                            <img th:src="@{${review.imagePath}}" class="card-img-top" alt="리뷰 이미지"
-                                 style="height: 160px; object-fit: contain;" />
-                        </div>
-                        <div th:unless="${review.imagePath != null}" class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 160px;">
-                            <i class="bi bi-card-text" style="font-size: 2rem;"></i>
-                        </div>
-                        <div class="card-body p-2">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="badge bg-primary" th:text="${review.recipe.title}">레시피 제목</span>
-                                <span class="text-warning" th:text="${'★ ' + review.rating}">★ 5</span>
+                    <!-- 리뷰 목록 -->
+                    <div class="row g-4">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="review : ${reviewList}">
+                            <div class="card h-100 shadow-sm border-0 bg-dark text-white rounded-3 overflow-hidden">
+                                <div class="position-relative">
+                                    <img th:if="${review.imagePath != null}" th:src="@{${review.imagePath}}" 
+                                         class="card-img-top" alt="리뷰 이미지"
+                                         style="height: 160px; object-fit: cover;" />
+                                    <div th:unless="${review.imagePath != null}" 
+                                         class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
+                                         style="height: 160px;">
+                                        <i class="bi bi-card-text" style="font-size: 3rem;"></i>
+                                    </div>
+                                    <div class="position-absolute top-0 end-0 bg-dark bg-opacity-75 px-2 py-1 m-2 rounded-pill">
+                                        <span class="text-warning" th:text="${'★ ' + review.rating}">★ 5</span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="mb-2">
+                                        <span class="badge bg-primary rounded-pill px-3 py-2" th:text="${review.recipe.title}">레시피 제목</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-light" th:text="${review.buyer.username}">작성자</span>
+                                        <span class="text-light small" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">등록일</span>
+                                    </div>
+                                    <div class="text-danger fw-bold mt-2" th:text="'❤️ ' + ${review.likesCount}">좋아요수</div>
+                                </div>
+                                <div class="card-footer text-center bg-transparent border-0 pb-3">
+                                    <a th:href="@{/reviews/view/{id}(id=${review.id})}" class="btn btn-outline-light rounded-pill fw-semibold w-100">
+                                        자세히 보기
+                                    </a>
+                                </div>
                             </div>
-                            <p class="text-muted mb-1" style="font-size: 0.85rem;">
-                                <span class="text-white" th:text="${review.buyer.username}">작성자</span> |
-                                <span class="text-white" th:text="${#temporals.format(review.createdAt, 'MM/dd')}">등록일</span> |
-                                <span class="text-white" th:text="'❤️ ' + ${review.likesCount}">좋아요수</span>
-                            </p>
-                        </div>
-                        <div class="card-footer text-center bg-transparent border-0">
-                            <a th:href="@{/reviews/view/{id}(id=${review.id})}" class="btn btn-secondary btn-sm w-100">자세히 보기</a>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="mt-4 text-center" th:if="${recipeId != null}">
-                <a th:href="@{/reviews/register/{id}(id=${recipeId})}" class="btn btn-primary btn-lg">➕ 리뷰 작성하기</a>
+                    <div class="mt-5 text-center" th:if="${recipeId != null}">
+                        <a th:href="@{/reviews/register/{id}(id=${recipeId})}" class="btn btn-primary btn-lg rounded-pill fw-semibold px-4">
+                            <i class="bi bi-plus-circle me-2"></i>리뷰 작성하기
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

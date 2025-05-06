@@ -5,56 +5,69 @@
 <div class="container-fluid text-white p-5" layout:fragment="content">
     <section class="page-section">
         <div class="container">
-            <h2 class="text-center mt-0">🍱 전체 레시피 목록</h2>
-            <hr class="divider my-4" />
+            <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body p-4">
+                    <h2 class="text-center fw-bold mb-4 fs-1">🍱 전체 레시피 목록</h2>
+                    <hr class="divider my-4" />
 
-            <!-- 카테고리 검색 리스트 -->
-            <div class="d-flex mb-4" style="gap: 8px;">
-                <a href="/recipe/list" class="btn btn-secondary">전체</a>
-                <a href="/recipe/list?category=밥" class="btn btn-secondary">밥</a>
-                <a href="/recipe/list?category=국" class="btn btn-secondary">국</a>
-                <a href="/recipe/list?category=메인반찬" class="btn btn-secondary">메인반찬</a>
-                <a href="/recipe/list?category=밑반찬" class="btn btn-secondary">밑반찬</a>
-                <a href="/recipe/list?category=면" class="btn btn-secondary">면</a>
-            </div>
+                    <!-- 카테고리 검색 리스트 -->
+                    <div class="d-flex flex-wrap justify-content-center mb-4 gap-2">
+                        <a href="/recipe/list" class="btn btn-secondary rounded-pill fw-semibold px-3">전체</a>
+                        <a href="/recipe/list?category=밥" class="btn btn-secondary rounded-pill fw-semibold px-3">밥</a>
+                        <a href="/recipe/list?category=국" class="btn btn-secondary rounded-pill fw-semibold px-3">국</a>
+                        <a href="/recipe/list?category=메인반찬" class="btn btn-secondary rounded-pill fw-semibold px-3">메인반찬</a>
+                        <a href="/recipe/list?category=밑반찬" class="btn btn-secondary rounded-pill fw-semibold px-3">밑반찬</a>
+                        <a href="/recipe/list?category=면" class="btn btn-secondary rounded-pill fw-semibold px-3">면</a>
+                    </div>
 
-            <!-- 검색 -->
-            <form method="get" action="/recipe/list" class="d-flex align-items-center mb-4" style="gap: 8px;">
-                <!-- 카테고리 hidden 필드 추가 -->
-                <input type="hidden" name="category" th:value="${param.category}" />
+                    <!-- 검색 -->
+                    <form method="get" action="/recipe/list" class="d-flex justify-content-center mb-4">
+                        <!-- 카테고리 hidden 필드 추가 -->
+                        <input type="hidden" name="category" th:value="${param.category}" />
 
-                <select name="searchType" class="form-select" style="width: 120px; height: 36px; font-size: 14px;">
-                    <option value="title">제목</option>
-                    <option value="writer">작성자</option>
-                </select>
-                <input type="text" name="keyword" class="form-control" placeholder="검색어 입력" style="height: 36px; font-size: 14px;">
-                <button type="submit" class="btn btn-primary" style="height: 36px; width: 80px; font-size: 14px;">검색</button>
-            </form>
-
-            <!-- 전체 레시피 리스트 -->
-            <div class="row g-4">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="recipe : ${recipeList}">
-                    <div class="card h-100 shadow-sm border-0 bg-transparent text-white">
-                        <img th:src="${recipe.mainImagePath}" class="card-img-top" alt="레시피 이미지"
-                             style="height: 160px; object-fit: cover;" />
-                        <div class="card-body p-2">
-                            <h6 class="card-title text-truncate mb-1" th:text="${recipe.title}">레시피 제목</h6>
-                            <p class="text-muted mb-1" style="font-size: 0.85rem;">
-                                <span class="text-white" th:text="${recipe.username}">작성자</span>
-                                <span class="text-white" th:text="${recipe.category}">카테고리</span>
-                                <span class="text-white" th:text="${#temporals.format(recipe.createdAt, 'MM/dd')}">등록일</span>
-                                <span class="text-white" th:text="'⭐ ' + ${recipe.averageRating}">평균 별점</span>
-                            </p>
+                        <div class="input-group" style="max-width: 600px;">
+                            <select name="searchType" class="form-select rounded-start rounded-pill border-end-0">
+                                <option value="title">제목</option>
+                                <option value="writer">작성자</option>
+                            </select>
+                            <input type="text" name="keyword" class="form-control border-start-0 border-end-0" placeholder="검색어 입력">
+                            <button type="submit" class="btn btn-primary rounded-end rounded-pill fw-semibold px-3">검색</button>
                         </div>
-                        <div class="card-footer text-center bg-transparent border-0">
-                            <a th:href="@{/recipe/view(id=${recipe.id})}" class="btn btn-secondary btn-sm w-100" >자세히 보기</a>
+                    </form>
+
+                    <!-- 전체 레시피 리스트 -->
+                    <div class="row g-4">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="recipe : ${recipeList}">
+                            <div class="card h-100 shadow-sm border-0 bg-dark text-white rounded-3 overflow-hidden">
+                                <div class="position-relative">
+                                    <img th:src="${recipe.mainImagePath}" class="card-img-top" alt="레시피 이미지"
+                                         style="height: 160px; object-fit: cover;" />
+                                    <span class="position-absolute top-0 end-0 badge bg-primary m-2 rounded-pill px-2 py-1" 
+                                          th:text="${recipe.category}">카테고리</span>
+                                </div>
+                                <div class="card-body p-3">
+                                    <h5 class="card-title fw-bold text-truncate mb-2" th:text="${recipe.title}">레시피 제목</h5>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-light" th:text="${recipe.username}">작성자</span>
+                                        <span class="text-light" th:text="${#temporals.format(recipe.createdAt, 'yyyy-MM-dd')}">등록일</span>
+                                    </div>
+                                    <div class="text-warning fw-bold" th:text="'⭐ ' + ${recipe.averageRating}">평균 별점</div>
+                                </div>
+                                <div class="card-footer text-center bg-transparent border-0 pb-3">
+                                    <a th:href="@{/recipe/view(id=${recipe.id})}" class="btn btn-outline-light rounded-pill fw-semibold w-100">
+                                        자세히 보기
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="mt-4 text-center">
-                <a href="/recipe/register" class="btn btn-primary btn-lg">레시피 등록</a>
+                    <div class="mt-5 text-center">
+                        <a href="/recipe/register" class="btn btn-primary btn-lg rounded-pill fw-semibold px-4">
+                            <i class="bi bi-plus-circle me-2"></i>레시피 등록
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

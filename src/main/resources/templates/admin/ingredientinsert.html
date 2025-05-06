@@ -2,124 +2,81 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>재료 등록</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <style>
-    #imagePreview {
-      width: 100%;
-      height: 200px;
-      background-color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid #ccc;
-      margin-top: 10px;
-      min-height: 100px; /* 최소 높이를 지정하여 보이도록 함 */
-    }
-
-    #imagePreview img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-       /* input, textarea 기본 스타일 조정 */
-     input.form-control, textarea.form-control {
-       background-color: #f8f9fa; /* 밝은 회색 배경 */
-       border: 2px solid #ced4da; /* 진한 테두리 */
-       color: black; /* 글자는 검정 */
-     }
-
-    /* 포커스 되었을 때 */
-    input.form-control:focus, textarea.form-control:focus {
-      background-color: #ffffff; /* 포커스할 때는 하얗게 */
-      border-color: #86b7fe; /* 포커스 테두리 색 (파란색 느낌) */
-      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); /* 부드러운 그림자 */
-    }
-
-
-  </style>
-</head>
-<body class="bg-light">
 <div class="container-fluid text-white p-5" layout:fragment="content">
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="p-4 bg-white rounded-4 shadow-lg">
-          <h2 class="text-center mb-4" style="color: black;">🍳 재료 등록</h2>
-          <hr class="divider my-4" />
+  <section class="page-section">
+    <div class="container">
+      <div class="card mx-auto shadow-lg border-0 rounded-4 p-5 bg-white text-dark" style="max-width: 700px;">
+        <div class="card-body">
+          <h2 class="text-primary fw-bold text-center mb-4 fs-1">🍳 재료 등록</h2>
 
           <!-- 재료 등록 폼 -->
-          <form action="/admin/ingredientinsert" method="post" id="ingredientForm" >
+          <form action="/admin/ingredientinsert" method="post" id="ingredientForm">
             <!-- 재료명 입력 -->
-            <div class="form-group mb-4">
-              <label for="ingredientName" class="form-label" style="color: black;">재료명</label>
-              <input type="text" id="ingredientName" name="ingredientName" placeholder="재료명" class="form-control" required />
+            <div class="mb-4">
+              <label for="ingredientName" class="form-label fw-semibold text-secondary">재료명</label>
+              <input type="text" id="ingredientName" name="ingredientName" 
+                     class="form-control form-control-lg rounded-3 shadow-sm"
+                     placeholder="재료명을 입력하세요" required />
             </div>
 
             <!-- 가격 입력 -->
-            <div class="form-group mb-4">
-              <label for="price" class="form-label" style="color: black;">가격</label>
-              <input type="number" id="price" name="price" placeholder="가격" class="form-control" required />
+            <div class="mb-4">
+              <label for="price" class="form-label fw-semibold text-secondary">가격</label>
+              <input type="number" id="price" name="price" 
+                     class="form-control form-control-lg rounded-3 shadow-sm"
+                     placeholder="가격을 입력하세요" required />
             </div>
 
             <!-- 상세 정보 입력 -->
-            <div class="form-group mb-4">
-              <label for="detail" class="form-label" style="color: black;">상세 정보</label>
-              <textarea id="detail" name="detail" placeholder="상세 정보" class="form-control" required></textarea>
+            <div class="mb-4">
+              <label for="detail" class="form-label fw-semibold text-secondary">상세 정보</label>
+              <textarea id="detail" name="detail" 
+                        class="form-control form-control-lg rounded-3 shadow-sm"
+                        placeholder="상세 정보를 입력하세요" rows="3" required></textarea>
             </div>
 
             <!-- 이미지 URL 입력 -->
-            <div class="form-group mb-4">
-              <label for="imageUrl" class="form-label" style="color: black;">이미지 URL</label>
-              <textarea id="imageUrl" name="imageUrl" placeholder="이미지 URL을 입력하세요" class="form-control" rows="3" required oninput="previewImage()"></textarea>
-              <small class="form-text text-muted">이미지 URL을 입력하면 미리보기가 가능합니다.</small>
+            <div class="mb-4">
+              <label for="imageUrl" class="form-label fw-semibold text-secondary">이미지 URL</label>
+              <textarea id="imageUrl" name="imageUrl" 
+                        class="form-control form-control-lg rounded-3 shadow-sm"
+                        placeholder="이미지 URL을 입력하세요" rows="3" required 
+                        oninput="previewImage()"></textarea>
+              <small class="form-text text-muted mt-2">이미지 URL을 입력하면 아래에서 미리보기가 가능합니다.</small>
             </div>
 
             <!-- 이미지 미리보기 -->
-            <div class="form-group mb-4">
-              <label class="form-label" style="color: black;">이미지 미리보기</label>
-              <div id="imagePreview" class="border rounded d-flex justify-content-center align-items-center" style="height: 200px; background-color: #f8f9fa;">
+            <div class="mb-4">
+              <label class="form-label fw-semibold text-secondary">이미지 미리보기</label>
+              <div id="imagePreview" class="border rounded-3 d-flex justify-content-center align-items-center bg-light shadow-sm" 
+                   style="height: 200px;">
                 <span class="text-muted">이미지 미리보기</span>
               </div>
             </div>
 
             <!-- 버튼 -->
-            <div class="text-center mt-4">
-              <button type="submit" class="btn btn-primary btn-lg">재료 등록</button>
-              <button type="reset" class="btn btn-secondary btn-lg ms-3">리셋</button>
+            <div class="d-grid gap-3 mt-5">
+              <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold shadow-sm">재료 등록</button>
+              <button type="reset" class="btn btn-outline-dark btn-lg rounded-pill fw-semibold">초기화</button>
             </div>
           </form>
-
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>
 
-
-<!-- Bootstrap 및 jQuery JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script layout:fragment="script" th:inline="javascript">
-
+<script layout:fragment="script">
   function previewImage() {
-    var imageUrl = document.getElementById('imageUrl').value; // 텍스트 영역에서 URL 가져오기
-    var imagePreview = document.getElementById('imagePreview'); // 미리보기 영역
+    var imageUrl = document.getElementById('imageUrl').value;
+    var imagePreview = document.getElementById('imagePreview');
+
     if (imageUrl) {
-      // 이미지 URL이 있을 경우 미리보기로 표시
-      imagePreview.innerHTML = '<img src="' + imageUrl + '" alt="미리보기 이미지" />';
+      imagePreview.innerHTML = '<img src="' + imageUrl + '" alt="미리보기 이미지" class="img-fluid" style="max-height: 180px;" />';
     } else {
-      // URL이 없을 경우 기본 텍스트로 표시
-      imagePreview.innerHTML = '<span>이미지 미리보기</span>';
+      imagePreview.innerHTML = '<span class="text-muted">이미지 미리보기</span>';
     }
   }
 </script>
-
-</body>
 </html>

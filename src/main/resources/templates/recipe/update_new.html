@@ -2,76 +2,134 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-
 <div class="container-fluid text-white p-5" layout:fragment="content">
     <section class="page-section" id="recipe-form-section">
         <div class="container">
             <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
                 <div class="card-body p-4">
-                    <h2 class="text-center fw-bold mb-4 fs-1">🍳 나만의 레시피 작성하기</h2>
+                    <h2 class="text-center fw-bold mb-4 fs-1">🍳 레시피 수정하기</h2>
                     <hr class="divider my-4"/>
 
-                    <form action="/recipe/register" method="post" enctype="multipart/form-data">
+                    <form th:action="@{/recipe/update}" method="post" enctype="multipart/form-data">
+                        <!-- 레시피 ID (hidden) -->
+                        <input type="hidden" name="id" th:value="${recipe.id}" />
+
+                        <!-- 제목 -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">레시피 제목</label>
                             <input type="text" name="title" class="form-control form-control-lg rounded-3 shadow-sm" 
-                                   placeholder="레시피 제목을 입력하세요" required>
+                                   placeholder="레시피 제목을 입력하세요" th:value="${recipe.title}" required/>
                         </div>
 
+                        <!-- 카테고리 -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">카테고리</label>
                             <select name="category" class="form-select form-select-lg rounded-3 shadow-sm" required>
                                 <option value="">카테고리를 선택하세요</option>
-                                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"
+                                        th:selected="${cat == recipe.category}"></option>
                             </select>
                         </div>
 
+                        <!-- YouTube 링크 -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">YouTube 링크</label>
-                            <input type="url" name="youtubeLink" class="form-control form-control-lg rounded-3 shadow-sm"
-                                   placeholder="YouTube 링크를 입력하세요 (선택사항)">
+                            <input type="url" name="youtubeLink" class="form-control form-control-lg rounded-3 shadow-sm" 
+                                   placeholder="YouTube 링크를 입력하세요 (선택사항)" th:value="${recipe.youtubeLink}"/>
                         </div>
 
+                        <!-- 메인 이미지 업로드 -->
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">대표 이미지 업로드</label>
-                            <input type="file" name="mainImageFile" class="form-control form-control-lg rounded-3 shadow-sm">
+                            <label class="form-label fw-semibold">대표 이미지</label>
+                            <input type="hidden" name="currentMainImage" th:value="${recipe.mainImagePath}" />
+
+                            <div class="card bg-dark border border-secondary rounded-3 p-3 mb-3">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-4">
+                                        <img th:if="${recipe.mainImagePath}" th:src="@{${recipe.mainImagePath}}" 
+                                             class="img-fluid rounded-3 shadow-sm" alt="현재 대표 이미지">
+                                        <div th:unless="${recipe.mainImagePath}" 
+                                             class="bg-secondary rounded-3 d-flex justify-content-center align-items-center" 
+                                             style="height: 160px;">
+                                            <span class="text-white">이미지 없음</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p class="mb-2 text-light">새 이미지 업로드 (선택사항)</p>
+                                        <input type="file" name="mainImageFile" class="form-control form-control-lg rounded-3 shadow-sm"/>
+                                        <small class="form-text text-white-50 mt-2">
+                                            새 이미지를 업로드하지 않으면 기존 이미지가 유지됩니다.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- 재료 목록 -->
                         <div class="mb-5" id="ingredients-section">
                             <label class="form-label fw-semibold">재료</label>
-                            <div class="ingredient-entry mb-3 d-flex align-items-center gap-2">
+                            <!-- 기존 재료 목록 -->
+                            <div th:each="ingredient, iterStat : ${recipeIngredientsDTOList}" 
+                                 class="ingredient-entry mb-3 d-flex align-items-center gap-2">
                                 <div class="input-group flex-grow-1">
-                                    <input type="text" name="recipeIngredients[0].ingredient.ingredientName" 
-                                           placeholder="재료명" class="form-control form-control-lg ingredient-name" readonly/>
+                                    <input type="text" th:name="'ingredients[' + ${iterStat.index} + '].ingredientName'"
+                                           th:value="${ingredient.ingredient.ingredientName}"
+                                           placeholder="재료명" class="form-control form-control-lg ingredient-name" readonly />
                                     <button type="button" class="btn btn-secondary rounded-end rounded-3 fw-semibold open-ingredient-modal">
                                         <i class="bi bi-search me-1"></i>검색
                                     </button>
                                 </div>
-                                <input type="number" name="recipeIngredients[0].quantity" placeholder="수량" 
-                                       class="form-control form-control-lg w-auto rounded-3 shadow-sm" min="1"/>
+                                <input type="number" th:name="'ingredients[' + ${iterStat.index} + '].quantity'"
+                                       th:value="${ingredient.quantity}" placeholder="수량" 
+                                       class="form-control form-control-lg w-auto rounded-3 shadow-sm" min="1" />
+                                <button type="button" class="btn btn-outline-danger rounded-pill fw-semibold px-3 remove-ingredient"
+                                        th:if="${iterStat.index > 0}">
+                                    <i class="bi bi-trash me-1"></i>삭제
+                                </button>
                             </div>
+
+                            <!-- 새 재료 추가 버튼 -->
                             <button type="button" class="btn btn-outline-primary rounded-pill fw-semibold px-3" id="add-ingredient">
                                 <i class="bi bi-plus-circle me-1"></i>재료 추가
                             </button>
                         </div>
 
+                        <!-- 요리 순서 -->
                         <div class="mb-5" id="steps-section">
                             <label class="form-label fw-semibold">요리 순서</label>
-                            <div class="step-entry mb-3 p-3 border border-secondary rounded-3 bg-dark">
-                                <div class="mb-2 fw-semibold text-warning">Step 1</div>
+                            <!-- 기존 요리 순서 -->
+                            <div th:each="step, status : ${recipeSteps}" 
+                                 class="step-entry mb-3 p-3 border border-secondary rounded-3 bg-dark">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-semibold text-warning">Step [[${status.index + 1}]]</div>
+                                    <button type="button" class="btn btn-outline-danger rounded-pill fw-semibold px-3 remove-step"
+                                            th:if="${status.index > 0}">
+                                        <i class="bi bi-trash me-1"></i>삭제
+                                    </button>
+                                </div>
+
                                 <div class="d-flex flex-column flex-md-row gap-3">
                                     <div class="flex-grow-1">
-                                        <textarea name="steps[0].content" placeholder="요리 설명" 
+                                        <textarea th:name="'steps[' + ${status.index} + '].stepContent'"
+                                                  th:text="${step.content}" placeholder="요리 설명"
                                                   class="form-control form-control-lg rounded-3 shadow-sm" 
                                                   style="min-height: 120px;"></textarea>
                                     </div>
                                     <div>
-                                        <label class="form-label small text-light">단계 이미지 (선택)</label>
-                                        <input type="file" name="steps[0].imageFile" 
-                                               class="form-control form-control-lg rounded-3 shadow-sm" accept="image/*"/>
+                                        <div class="mb-2" th:if="${step.imagePath}">
+                                            <img th:src="@{${step.imagePath}}" class="img-fluid rounded-3 shadow-sm"
+                                                 style="max-height: 100px;" alt="단계 이미지">
+                                            <input type="hidden" th:name="'steps[' + ${status.index} + '].currentImage'" 
+                                                   th:value="${step.imagePath}" />
+                                        </div>
+                                        <label class="form-label small text-light">단계 이미지 변경 (선택)</label>
+                                        <input type="file" th:name="'steps[' + ${status.index} + '].stepImage'"
+                                               class="form-control form-control-lg rounded-3 shadow-sm" accept="image/*" />
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- 새 단계 추가 버튼 -->
                             <button type="button" class="btn btn-outline-success rounded-pill fw-semibold px-3" id="add-step">
                                 <i class="bi bi-plus-circle me-1"></i>순서 추가
                             </button>
@@ -79,10 +137,10 @@
 
                         <div class="d-grid gap-2 col-md-6 mx-auto mt-5">
                             <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold shadow">
-                                <i class="bi bi-check-circle me-2"></i>레시피 등록
+                                <i class="bi bi-check-circle me-2"></i>레시피 수정
                             </button>
-                            <a href="/recipe/list" class="btn btn-outline-secondary btn-lg rounded-pill fw-semibold">
-                                <i class="bi bi-arrow-left me-2"></i>목록으로 돌아가기
+                            <a th:href="@{/recipe/view(id=${recipe.id})}" class="btn btn-outline-secondary btn-lg rounded-pill fw-semibold">
+                                <i class="bi bi-arrow-left me-2"></i>돌아가기
                             </a>
                         </div>
                     </form>
@@ -112,16 +170,13 @@
             </div>
         </div>
     </div>
-
-    <script th:inline="javascript">
-        const ingredients = /*[[${ingredients}]]*/ [];
-    </script>
-
 </div>
 
-<script layout:fragment="script">
-    let ingredientIndex = 1;
-    let stepIndex = 1;
+<script layout:fragment="script" th:inline="javascript">
+    const ingredients = /*[[${ingredients}]]*/ [];
+    let ingredientIndex = /*[[${recipeIngredientsDTOList != null ? #lists.size(recipeIngredientsDTOList) : 0}]]*/ 0; // 기존 재료 개수부터 시작
+    let stepIndex = /*[[${recipeSteps != null ? #lists.size(recipeSteps) : 0}]]*/ 0; // 기존 단계 개수부터 시작
+
     let selectedInput = null;
 
     /* Ingredient 추가 */
@@ -129,13 +184,13 @@
         $('#add-ingredient').before(`
             <div class="ingredient-entry mb-3 d-flex align-items-center gap-2">
                 <div class="input-group flex-grow-1">
-                    <input type="text" name="recipeIngredients[${ingredientIndex}].ingredient.ingredientName" 
+                    <input type="text" name="ingredients[${ingredientIndex}].ingredientName" 
                            placeholder="재료명" class="form-control form-control-lg ingredient-name" readonly/>
                     <button type="button" class="btn btn-secondary rounded-end rounded-3 fw-semibold open-ingredient-modal">
                         <i class="bi bi-search me-1"></i>검색
                     </button>
                 </div>
-                <input type="number" name="recipeIngredients[${ingredientIndex}].quantity" placeholder="수량" 
+                <input type="number" name="ingredients[${ingredientIndex}].quantity" placeholder="수량" 
                        class="form-control form-control-lg w-auto rounded-3 shadow-sm" min="1"/>
                 <button type="button" class="btn btn-outline-danger rounded-pill fw-semibold px-3 remove-ingredient">
                     <i class="bi bi-trash me-1"></i>삭제
@@ -162,13 +217,13 @@
                 </div>
                 <div class="d-flex flex-column flex-md-row gap-3">
                     <div class="flex-grow-1">
-                        <textarea name="steps[${stepIndex}].content" placeholder="요리 설명" 
+                        <textarea name="steps[${stepIndex}].stepContent" placeholder="요리 설명" 
                                   class="form-control form-control-lg rounded-3 shadow-sm" 
                                   style="min-height: 120px;"></textarea>
                     </div>
                     <div>
                         <label class="form-label small text-light">단계 이미지 (선택)</label>
-                        <input type="file" name="steps[${stepIndex}].imageFile" 
+                        <input type="file" name="steps[${stepIndex}].stepImage" 
                                class="form-control form-control-lg rounded-3 shadow-sm" accept="image/*"/>
                     </div>
                 </div>
@@ -246,3 +301,4 @@
         $('#ingredientModal').modal('hide');
     });
 </script>
+</html>

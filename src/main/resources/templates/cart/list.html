@@ -7,35 +7,36 @@
      style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
     <section class="page-section">
         <div class="container">
-            <h2 class="text-center mt-0">🛒 장바구니</h2>
+            <h2 class="text-center fw-bold mb-4">🛒 장바구니</h2>
             <hr class="divider my-4"/>
 
             <!-- 장바구니가 비어있을 경우 -->
             <div th:if="${groupedByRecipe.isEmpty()}" class="text-center py-5">
-                <h4>장바구니가 비어있습니다.</h4>
+                <h4 class="mb-3">장바구니가 비어있습니다.</h4>
                 <p class="mb-4">레시피를 선택하고 재료를 장바구니에 담아보세요!</p>
-                <a href="/recipe/list" class="btn btn-primary btn-lg">레시피 둘러보기</a>
+                <a href="/recipe/list" class="btn btn-primary btn-lg rounded-pill fw-semibold px-4">레시피 둘러보기</a>
             </div>
 
             <!-- 장바구니 목록 -->
-            <div th:each="entry : ${groupedByRecipe}" class="card bg-dark text-white mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 th:text="${entry.key}">레시피 제목</h4>
+            <div th:each="entry : ${groupedByRecipe}" class="card bg-dark text-white mb-4 shadow rounded-4 overflow-hidden">
+                <div class="card-header d-flex justify-content-between align-items-center py-3">
+                    <h4 class="mb-0 fw-bold" th:text="${entry.key}">레시피 제목</h4>
+
                     <!-- 레시피 전체 삭제 -->
                     <form th:action="@{/cart/delete/{cartId}(cartId=${entry.value[0].cartId})}" method="post"
                           onsubmit="return confirm('이 장바구니를 삭제할까요?');">
-                        <button type="submit" class="btn btn-danger btn-sm">장바구니 삭제</button>
+                        <button type="submit" class="btn btn-danger btn-sm rounded-pill fw-semibold">장바구니 삭제</button>
                     </form>
                 </div>
                 <div class="card-body">
-                    <p>
+                    <p class="mb-3 fs-5">
                         재료 개수: <strong th:text="${#lists.size(entry.value)}"></strong>개 /
                         총 가격: <strong th:text="${#numbers.formatInteger(recipeTotalPrice[entry.key], 0, 'COMMA')} + '원'"></strong>
                     </p>
 
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle">
-                            <thead>
+                    <div class="table-responsive rounded-3 overflow-hidden">
+                        <table class="table table-dark table-hover align-middle mb-0">
+                            <thead class="table-dark">
                             <tr>
                                 <th>재료명</th>
                                 <th>단위</th>
@@ -55,17 +56,17 @@
                                 <td>
                                     <form th:action="@{'/cart/delete/item/' + ${ingredient.id}}" method="post"
                                           onsubmit="return confirm('이 재료를 삭제할까요?');">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">삭제</button>
                                     </form>
                                 </td>
                             </tr>
-
                             </tbody>
                         </table>
                     </div>
-                    <div class="card-footer text-end">
-                        <a href="/recipe/list" class="btn btn-secondary">새 레시피 구매하기</a>
-                        <a th:href="@{'/cart/checkout'(recipeId=${recipeIdMap[entry.key]}, cartId=${entry.value[0].cartId})}" class="btn btn-primary">결제하기</a>
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="/recipe/list" class="btn btn-secondary rounded-pill fw-semibold">새 레시피 구매하기</a>
+                        <a th:href="@{'/cart/checkout'(recipeId=${recipeIdMap[entry.key]}, cartId=${entry.value[0].cartId})}" 
+                           class="btn btn-primary rounded-pill fw-semibold">결제하기</a>
                     </div>
                 </div>
             </div>

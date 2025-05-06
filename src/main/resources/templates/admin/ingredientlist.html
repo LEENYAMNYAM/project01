@@ -2,105 +2,139 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
-<head>
-</head>
-<body class="bg-dark text-white">
 
 <div class="container-fluid text-white p-5" layout:fragment="content">
-    <div class="container mt-5">
-        <h2 class="text-center">🍳 재료 리스트</h2>
-        <hr class="divider my-4"/>
+    <section class="page-section">
+        <div class="container">
+            <div class="card mx-auto shadow-lg border-0 rounded-4 p-5 bg-white text-dark">
+                <div class="card-body">
+                    <h2 class="text-primary fw-bold text-center mb-4 fs-1">🍳 재료 관리</h2>
 
-        <!-- 레시피 작성 폼 -->
-        <form >
-            <!-- 재료 입력 (검색 버튼 + 추가 버튼 한 줄에 정렬) -->
-            <div class="form-group mb-4">
+                    <!-- 검색 및 추가 버튼 -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex gap-2 w-75">
+                            <input type="text" id="ingredientSearch" name="ingredients[0].ingredientName" 
+                                   class="form-control form-control-lg rounded-pill shadow-sm"
+                                   placeholder="재료명으로 검색..." />
+                            <button type="button" class="btn btn-outline-dark rounded-pill fw-semibold px-4 open-ingredient-modal">
+                                <i class="bi bi-search me-2"></i>검색
+                            </button>
+                        </div>
+                        <a th:href="@{/admin/ingredientinsert}" class="btn btn-primary rounded-pill fw-semibold px-4">
+                            <i class="bi bi-plus-circle me-2"></i>새 재료 등록
+                        </a>
+                    </div>
 
-                <div class="d-flex align-items-center gap-2">
-                    <input type="text" name="ingredients[0].ingredientName" placeholder="재료명 입력" class="form-control" style="max-width: 300px;" />
+                    <!-- 재료 카드 목록 -->
+                    <div id="ingredientList">
+                        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+                            <div class="col" th:each="ingredient : ${ingredients}">
+                                <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
+                                    <div class="position-relative">
+                                        <img th:src="${ingredient.imageUrl}" class="card-img-top" alt="재료 이미지" 
+                                             style="height: 160px; object-fit: cover;">
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <h5 class="card-title fw-bold mb-2" 
+                                            th:text="${ingredient.ingredientName != null and !ingredient.ingredientName.isEmpty() ? ingredient.ingredientName : '이름 없음'}">
+                                            재료명
+                                        </h5>
+                                        <p class="card-text text-secondary mb-1" th:text="${ingredient.detail}">상세 정보</p>
+                                        <p class="card-text fw-semibold text-primary fs-5" 
+                                           th:text="${ingredient.price != null ? ingredient.price.toString() + '원' : '가격 없음'}">
+                                            가격
+                                        </p>
 
-                    <button type="button" class="btn btn-secondary open-ingredient-modal">재료 검색</button>
+                                        <div class="d-flex justify-content-between mt-3">
+                                            <a th:href="@{/admin/updateIngredient/{id}(id=${ingredient.id})}" 
+                                               class="btn btn-outline-primary rounded-pill fw-semibold btn-sm px-3">
+                                                <i class="bi bi-pencil-square me-1"></i>수정
+                                            </a>
+                                            <a th:href="@{/admin/deleteIngredient/{id}(id=${ingredient.id})}" 
+                                               class="btn btn-outline-danger rounded-pill fw-semibold btn-sm px-3"
+                                               onclick="return confirm('정말 삭제하시겠습니까?');">
+                                                <i class="bi bi-trash me-1"></i>삭제
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <a th:href="@{/admin/ingredientinsert}">
-                        <button type="button" class="btn btn-primary">재료 추가</button>
-                    </a>
-                </div>
-            </div>
-
-            <!-- 재료 카드 목록 -->
-            <div id="ingredientList" class="container">
-                <div class="row row-cols-1 row-cols-md-4 g-4">
-                    <div class="col" th:each="ingredient : ${ingredients}">
-                        <div class="card ingredient-select" style="cursor: pointer;" data-name="${ingredient.ingredientName}">
-                            <img th:src="${ingredient.imageUrl}" class="card-img-top" alt="이미지" style="height: 130px; object-fit: cover;">
-                            <div class="card-body p-2 text-center" style="background-color: #f8f9fa; color: #000;">
-                                <p th:text="${ingredient.ingredientName != null and !ingredient.ingredientName.isEmpty() ? ingredient.ingredientName : '이름 없음'}">이름</p>
-                                <p th:text="${ingredient.detail}">상세 정보</p>
-                                <p th:text="${ingredient.price != null ? ingredient.price.toString() + '원' : '가격 없음'}">가격</p>
-
-                                <a th:href="@{/admin/updateIngredient/{id}(id=${ingredient.id})}" class="btn btn-primary btn-sm mt-2">수정</a>
-
-
-
-
-
-                                <a th:href="@{/admin/deleteIngredient/${ingredient.id}}" class="btn btn-danger btn-sm mt-2 ms-1">삭제</a>
+                            <!-- 재료가 없을 경우 표시 -->
+                            <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(ingredients)}">
+                                <p class="text-muted fs-5">등록된 재료가 없습니다.</p>
+                                <a th:href="@{/admin/ingredientinsert}" class="btn btn-primary rounded-pill fw-semibold mt-3">
+                                    첫 재료 등록하기
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <script th:inline="javascript">
-                const ingredients = [[${ingredients}]];  // 서버에서 전체 재료 목록 가져온 거
-
-                $(document).ready(function() {
-                    $('.open-ingredient-modal').click(function() {
-                        const searchName = $('input[name="ingredients[0].ingredientName"]').val().toLowerCase();
-                        const filteredIngredients = ingredients.filter(ing => ing.ingredientName.toLowerCase().includes(searchName));
-
-                        // 기존 재료 카드 삭제
-                        $('#ingredientList .row').empty();
-
-                        // 필터된 재료만 다시 추가
-                        filteredIngredients.forEach(ingredient => {
-                            const card = `
-                    <div class="col mb-4">
-                        <div class="card ingredient-select" style="cursor: pointer;" data-name="${ingredient.ingredientName}">
-                            <img src="${ingredient.imageUrl}" class="card-img-top" alt="이미지" style="height: 130px; object-fit: cover;">
-                            <div class="card-body p-2 text-center" style="background-color: #f8f9fa; color: #000;">
-                                <p>${ingredient.ingredientName}</p>
-                                <p>${ingredient.detail}</p>
-                                <p>${ingredient.price != null ? ingredient.price.toLocaleString() + '원' : '가격 없음'}</p>
-
-                                <!-- 수정 및 삭제 버튼 추가 -->
-                                <a href="/admin/updateIngredient/${ingredient.id}" class="btn btn-primary btn-sm mt-2">수정</a>
-                                <a href="/admin/deleteIngredient/${ingredient.id}" class="btn btn-danger btn-sm mt-2 ms-1">삭제</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                            $('#ingredientList .row').append(card);
-                        });
-                    });
-                });
-            </script>
-
-
-        </form>
-
-    </div>
+        </div>
+    </section>
 </div>
 
-<script th:inline="javascript">
-    const ingredients = [[${ingredients}]];  // 서버에서 재료 목록을 전달받음
+<script layout:fragment="script" th:inline="javascript">
+    const ingredients = /*[[${ingredients}]]*/ [];  // 서버에서 재료 목록을 전달받음
+
+    $(document).ready(function() {
+        $('.open-ingredient-modal').click(function() {
+            const searchName = $('#ingredientSearch').val().toLowerCase();
+            const filteredIngredients = ingredients.filter(ing => 
+                ing.ingredientName.toLowerCase().includes(searchName)
+            );
+
+            // 기존 재료 카드 삭제
+            $('#ingredientList .row').empty();
+
+            if (filteredIngredients.length === 0) {
+                // 검색 결과가 없을 경우
+                $('#ingredientList .row').append(`
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted fs-5">검색 결과가 없습니다.</p>
+                        <button type="button" class="btn btn-outline-secondary rounded-pill fw-semibold mt-3" 
+                                onclick="location.reload()">
+                            전체 목록 보기
+                        </button>
+                    </div>
+                `);
+            } else {
+                // 필터된 재료만 다시 추가
+                filteredIngredients.forEach(ingredient => {
+                    const card = `
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
+                                <div class="position-relative">
+                                    <img src="${ingredient.imageUrl}" class="card-img-top" alt="재료 이미지" 
+                                         style="height: 160px; object-fit: cover;">
+                                </div>
+                                <div class="card-body p-3">
+                                    <h5 class="card-title fw-bold mb-2">${ingredient.ingredientName || '이름 없음'}</h5>
+                                    <p class="card-text text-secondary mb-1">${ingredient.detail}</p>
+                                    <p class="card-text fw-semibold text-primary fs-5">
+                                        ${ingredient.price != null ? ingredient.price.toLocaleString() + '원' : '가격 없음'}
+                                    </p>
+
+                                    <div class="d-flex justify-content-between mt-3">
+                                        <a href="/admin/updateIngredient/${ingredient.id}" 
+                                           class="btn btn-outline-primary rounded-pill fw-semibold btn-sm px-3">
+                                            <i class="bi bi-pencil-square me-1"></i>수정
+                                        </a>
+                                        <a href="/admin/deleteIngredient/${ingredient.id}" 
+                                           class="btn btn-outline-danger rounded-pill fw-semibold btn-sm px-3"
+                                           onclick="return confirm('정말 삭제하시겠습니까?');">
+                                            <i class="bi bi-trash me-1"></i>삭제
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $('#ingredientList .row').append(card);
+                });
+            }
+        });
+    });
 </script>
-
-<!-- Bootstrap 및 jQuery JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-
-</body>
 </html>

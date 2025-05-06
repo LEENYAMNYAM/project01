@@ -6,19 +6,19 @@
      style="background-image: url('/assets/recipeimg/bg-main3.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); background-blend-mode: darken;">
     <section class="page-section">
         <div class="container">
-            <h2 class="text-center mt-0">🧾 결제하기</h2>
+            <h2 class="text-center fw-bold mb-4 fs-1">🧾 결제하기</h2>
             <hr class="divider my-4" />
 
             <div class="row">
                 <!-- 주문 정보 -->
                 <div class="col-lg-8">
-                    <div class="card bg-dark text-white mb-4">
-                        <div class="card-header">
-                            <h3>주문 상품 정보</h3>
+                    <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+                        <div class="card-header py-3 border-bottom border-secondary">
+                            <h3 class="fw-bold m-0">📋 주문 상품 정보</h3>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-dark">
+                        <div class="card-body p-4">
+                            <div class="table-responsive rounded-3 overflow-hidden">
+                                <table class="table table-dark mb-0">
                                     <thead>
                                         <tr>
                                             <th>재료명</th>
@@ -33,7 +33,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <img th:if="${item.ingredient.imageUrl}" th:src="${item.ingredient.imageUrl}"
-                                                         class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                         class="me-2 rounded-3" style="width: 40px; height: 40px; object-fit: cover;">
                                                     <span th:text="${item.ingredient.ingredientName}">재료명</span>
                                                 </div>
                                             </td>
@@ -77,50 +77,50 @@
                         <input type="hidden" name="deliveryRequestDirect" th:value="${deliveryRequestDirect}">
                         <input type="hidden" name="paymentMethod" th:value="${paymentMethod}">
                         <input type="hidden" name="paymentMethodDetail" th:value="${paymentMethodDetail}">
-                        <div class="card bg-dark text-white mb-4">
-                            <div class="card-header">
-                                <h3>배송 정보</h3>
+                        <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+                            <div class="card-header py-3 border-bottom border-secondary">
+                                <h3 class="fw-bold m-0">🚚 배송 정보</h3>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-4">
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">받는 사람</label>
-                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <label for="name" class="form-label fw-semibold text-secondary">받는 사람</label>
+                                    <input type="text" class="form-control form-control-lg rounded-3 shadow-sm" id="name" name="name" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="phone" class="form-label">연락처</label>
-                                    <input type="text" class="form-control" id="phone" name="phone" required>
+                                    <label for="phone" class="form-label fw-semibold text-secondary">연락처</label>
+                                    <input type="text" class="form-control form-control-lg rounded-3 shadow-sm" id="phone" name="phone" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="shippingAddress" class="form-label">배송 기본 주소</label>
-                                    <input type="text" class="form-control" id="shippingAddress" name="shippingAddress">
+                                    <label for="shippingAddress" class="form-label fw-semibold text-secondary">배송 기본 주소</label>
+                                    <input type="text" class="form-control form-control-lg rounded-3 shadow-sm" id="shippingAddress" name="shippingAddress">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="shippingAddressDetail" class="form-label">배송 상세 주소</label>
-                                    <input type="text" class="form-control" id="shippingAddressDetail" name="shippingAddressDetail">
+                                    <label for="shippingAddressDetail" class="form-label fw-semibold text-secondary">배송 상세 주소</label>
+                                    <input type="text" class="form-control form-control-lg rounded-3 shadow-sm" id="shippingAddressDetail" name="shippingAddressDetail">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="deliveryRequest" class="form-label">배송 요청사항</label>
-                                    <select class="form-select" id="deliveryRequest" name="deliveryRequest">
+                                    <label for="deliveryRequest" class="form-label fw-semibold text-secondary">배송 요청사항</label>
+                                    <select class="form-select form-select-lg rounded-3 shadow-sm" id="deliveryRequest" name="deliveryRequest">
                                         <option value="">배송 요청사항을 선택해주세요</option>
                                         <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
                                         <option value="경비실에 맡겨주세요">경비실에 맡겨주세요</option>
                                         <option value="배송 전 연락 바랍니다">배송 전 연락 바랍니다</option>
                                         <option value="direct">직접 입력</option>
                                     </select>
-                                    <input type="text" class="form-control mt-2" id="deliveryRequestDirect"
+                                    <input type="text" class="form-control form-control-lg rounded-3 shadow-sm mt-2" id="deliveryRequestDirect"
                                            name="deliveryRequestDirect" style="display: none;">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="card bg-dark text-white mb-4">
-                            <div class="card-header">
-                                <h3>결제 정보</h3>
+                        <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+                            <div class="card-header py-3 border-bottom border-secondary">
+                                <h3 class="fw-bold m-0">💳 결제 정보</h3>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-4">
                                 <div class="mb-3">
-                                    <label for="paymentMethod" class="form-label">결제 수단</label>
-                                    <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+                                    <label for="paymentMethod" class="form-label fw-semibold text-secondary">결제 수단</label>
+                                    <select class="form-select form-select-lg rounded-3 shadow-sm" id="paymentMethod" name="paymentMethod" required>
                                         <option value="">결제 수단을 선택해주세요</option>
                                         <option value="card">신용카드</option>
                                         <option value="bank">계좌이체</option>
@@ -129,26 +129,26 @@
                                     </select>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="usedPointsVisible" class="form-label">포인트 사용</label>
+                                <div class="mb-4">
+                                    <label for="usedPointsVisible" class="form-label fw-semibold text-secondary">포인트 사용</label>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" id="usedPointsVisible"
+                                        <input type="number" class="form-control form-control-lg rounded-start rounded-3 shadow-sm" id="usedPointsVisible"
                                                min="0" max="${user.points}" value="0">
-                                        <span class="input-group-text">/ <span th:text="${user.points}">0</span> 포인트</span>
+                                        <span class="input-group-text rounded-end rounded-3">/ <span th:text="${user.points}">0</span> 포인트</span>
                                     </div>
                                 </div>
 
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="agreeTerms" required>
-                                    <label class="form-check-label" for="agreeTerms">
+                                    <label class="form-check-label fw-semibold" for="agreeTerms">
                                         주문 내용을 확인하였으며, 결제 진행에 동의합니다.
                                     </label>
                                 </div>
                             </div>
-                            <div class="card-footer">
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary">결제하기</button>
-                                    <a href="/cart/list" class="btn btn-outline-secondary">장바구니로 돌아가기</a>
+                            <div class="card-footer p-4 border-top border-secondary">
+                                <div class="d-grid gap-3">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold shadow-sm">결제하기</button>
+                                    <a href="/cart/list" class="btn btn-outline-secondary btn-lg rounded-pill fw-semibold">장바구니로 돌아가기</a>
                                 </div>
                             </div>
                         </div>

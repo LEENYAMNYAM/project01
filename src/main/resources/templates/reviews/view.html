@@ -5,67 +5,73 @@
 <div class="container-fluid text-white p-5" layout:fragment="content">
     <section class="page-section">
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card bg-dark text-white">
-                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                            <h3 class="mb-0">리뷰 상세보기</h3>
-                            <div>
-                                <span class="badge bg-warning text-dark" th:text="${'★ ' + review.rating}">★ 5</span>
-                            </div>
+            <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="fw-bold mb-0 fs-3">📝 리뷰 상세보기</h2>
+                        <div class="badge bg-warning text-dark rounded-pill px-3 py-2 fs-5" th:text="${'★ ' + review.rating}">★ 5</div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- 리뷰 정보 -->
+                    <div class="mb-4">
+                        <h3 class="card-title fw-bold">
+                            <span th:text="${review.recipe.title}">레시피 제목</span>
+                            <span class="text-light fw-normal">에 대한 리뷰</span>
+                        </h3>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                            <span class="text-light"><i class="bi bi-person-fill me-1"></i><span th:text="${review.buyer.username}">작성자</span></span>
+                            <span class="text-light"><i class="bi bi-calendar-fill me-1"></i><span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span></span>
+                            <span class="text-danger fw-bold"><i class="bi bi-heart-fill me-1"></i><span th:text="${review.likesCount}">좋아요 수</span></span>
                         </div>
-                        <div class="card-body">
-                            <!-- 리뷰 정보 -->
-                            <div class="mb-4">
-                                <h5 class="card-title">
-                                    <span th:text="${review.recipe.title}">레시피 제목</span>
-                                    <small class="text-muted">에 대한 리뷰</small>
-                                </h5>
-                                <p class="card-subtitle mb-2 text-muted">
-                                    <span th:text="${review.buyer.username}">작성자</span> |
-                                    <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span> |
-                                    <span th:text="'❤️ : ' + ${review.likesCount}">좋아요 수</span>
-                                </p>
-                            </div>
+                    </div>
 
-                            <!-- 리뷰 이미지 -->
-                            <div class="mb-4" th:if="${review.imagePath != null}">
-                                <img th:src="@{${review.imagePath}}" class="img-fluid rounded" alt="리뷰 이미지"
-                                     style="max-height: 300px; width: auto; object-fit: contain;" />
-                            </div>
-
-                            <!-- 리뷰 내용 -->
-                            <div class="mb-4">
-                                <h6>리뷰 내용</h6>
-                                <p class="card-text" th:text="${review.content}">리뷰 내용이 여기에 표시됩니다.</p>
-                            </div>
-
-                            <!-- 좋아요 버튼 -->
-                            <div class="d-flex align-items-center mt-2 mb-4">
-                                <button th:attr="data-review-id=${review.id}" class="btn btn-sm btn-outline-primary like-button me-2">
-                                    <i class="bi bi-heart"></i> 좋아요
-                                </button>
-                                <span class="likes-count" th:text="${review.likesCount}">0</span>
-                            </div>
-
-                            <!-- 버튼 -->
-                            <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/reviews/list/{id}(id=${review.recipe.id})}" class="btn btn-secondary">목록으로</a>
-                                <div th:if="${#authentication.principal.username == review.buyer.username}">
-                                    <a th:href="@{/reviews/update/{id}(id=${review.id})}" class="btn btn-warning me-2">수정</a>
-                                    <a th:href="@{/reviews/delete/{id}(id=${review.id})}"
-                                       class="btn btn-danger"
-                                       onclick="return confirm('정말로 삭제하시겠습니까?');">삭제</a>
-                                </div>
+                    <!-- 리뷰 이미지 -->
+                    <div class="mb-4" th:if="${review.imagePath != null}">
+                        <div class="card bg-dark border border-secondary rounded-3 p-3">
+                            <div class="text-center">
+                                <img th:src="@{${review.imagePath}}" class="img-fluid rounded-3 shadow-sm" alt="리뷰 이미지"
+                                     style="max-height: 300px; object-fit: contain;" />
                             </div>
                         </div>
                     </div>
 
-                    <!-- 레시피로 돌아가기 -->
-                    <div class="text-center mt-3">
-                        <a th:href="@{/recipe/view/{id}(id=${review.recipe.id})}" class="btn btn-outline-primary">
-                            레시피로 돌아가기
-                        </a>
+                    <!-- 리뷰 내용 -->
+                    <div class="mb-4">
+                        <div class="small fw-semibold text-secondary mb-1">리뷰 내용</div>
+                        <div class="p-3 bg-secondary bg-opacity-25 rounded-3 fs-5" th:text="${review.content}">
+                            리뷰 내용이 여기에 표시됩니다.
+                        </div>
+                    </div>
+
+                    <!-- 좋아요 버튼 -->
+                    <div class="d-flex align-items-center mt-4 mb-4">
+                        <button th:attr="data-review-id=${review.id}" class="btn btn-outline-danger rounded-pill fw-semibold px-3 like-button me-2">
+                            <i class="bi bi-heart me-1"></i> 좋아요
+                        </button>
+                        <span class="likes-count fw-bold fs-5" th:text="${review.likesCount}">0</span>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-5">
+                        <div>
+                            <a th:href="@{/reviews/list/{id}(id=${review.recipe.id})}" class="btn btn-outline-secondary rounded-pill fw-semibold px-4">
+                                <i class="bi bi-arrow-left me-2"></i>목록으로
+                            </a>
+                            <a th:href="@{/recipe/view(id=${review.recipe.id})}" class="btn btn-outline-primary rounded-pill fw-semibold px-4 ms-2">
+                                <i class="bi bi-arrow-up-right-circle me-2"></i>레시피로 이동
+                            </a>
+                        </div>
+                        <div th:if="${#authentication.principal.username == review.buyer.username}">
+                            <a th:href="@{/reviews/update/{id}(id=${review.id})}" class="btn btn-warning rounded-pill fw-semibold px-3 me-2">
+                                <i class="bi bi-pencil-fill me-1"></i>수정
+                            </a>
+                            <a th:href="@{/reviews/delete/{id}(id=${review.id})}"
+                               class="btn btn-danger rounded-pill fw-semibold px-3"
+                               onclick="return confirm('정말로 삭제하시겠습니까?');">
+                                <i class="bi bi-trash-fill me-1"></i>삭제
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,13 +103,13 @@
 
                             // 버튼 스타일 변경
                             if (data.isLiked) {
-                                likeButton.classList.remove('btn-outline-primary');
-                                likeButton.classList.add('btn-primary');
+                                likeButton.classList.remove('btn-outline-danger');
+                                likeButton.classList.add('btn-danger');
                                 likeButton.querySelector('i').classList.remove('bi-heart');
                                 likeButton.querySelector('i').classList.add('bi-heart-fill');
                             } else {
-                                likeButton.classList.remove('btn-primary');
-                                likeButton.classList.add('btn-outline-primary');
+                                likeButton.classList.remove('btn-danger');
+                                likeButton.classList.add('btn-outline-danger');
                                 likeButton.querySelector('i').classList.remove('bi-heart-fill');
                                 likeButton.querySelector('i').classList.add('bi-heart');
                             }
