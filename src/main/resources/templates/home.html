@@ -412,11 +412,10 @@
         <h6>📢 최신 공지사항</h6>
         <ul>
             <li th:each="notice : ${latestNotices}" >
-                <a href="/notice/view?id=${notice.id}">
-                    <div th:text="${notice.title}" >공지사항 제목</div>
+                <a th:href="@{/notice/view(id=${notice.id})}">
+                    <div th:text="${notice.title}" class="text-decoration-none fw-semibold text-dark d-block text-truncate">공지사항 제목</div>
                 </a>
             </li>
-
             <li th:if="${#lists.isEmpty(latestNotices)}">공지사항이 없습니다.</li>
         </ul>
     </div>

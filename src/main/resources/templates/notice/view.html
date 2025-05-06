@@ -91,59 +91,63 @@
         }
     </style>
 
-    <div class="view-card">
-        <div class="section-title">📘 공지사항 상세보기</div>
+    <section class="page-section">
+        <div class="container">
+            <div class="view-card">
+                <div class="section-title">📘 공지사항 상세보기</div>
 
-        <div class="view-field">
-            <div class="field-label">제목</div>
-            <div class="field-content" th:text="${notice.title}">공지 제목</div>
-        </div>
+                <div class="view-field">
+                    <div class="field-label">제목</div>
+                    <div class="field-content" th:text="${notice.title}">공지 제목</div>
+                </div>
 
-        <div class="view-field">
-            <div class="field-label">작성자</div>
-            <div class="field-content" th:text="${notice.writer}" readonly="readonly">홍길동</div>
-        </div>
+                <div class="view-field">
+                    <div class="field-label">작성자</div>
+                    <div class="field-content" th:text="${notice.writer}" readonly="readonly">홍길동</div>
+                </div>
 
-        <div class="view-field">
-            <div class="field-label">중요도</div>
-            <div class="field-content">
-                <span th:class="${notice.important} ? 'tag important' : 'tag'"
-                      th:text="${notice.important} ? '중요 공지' : '일반 공지'">일반 공지</span>
+                <div class="view-field">
+                    <div class="field-label">중요도</div>
+                    <div class="field-content">
+                        <span th:class="${notice.important} ? 'tag important' : 'tag'"
+                              th:text="${notice.important} ? '중요 공지' : '일반 공지'">일반 공지</span>
+                    </div>
+                </div>
+
+                <div class="view-field">
+                    <div class="field-label">내용</div>
+                    <div class="field-content" th:text="${notice.content}" style="white-space: pre-wrap;">공지 내용</div>
+                </div>
+
+                <input type="hidden" id="noticeId" th:value="${notice.id}" />
+
+                <div class="view-buttons">
+                    <a href="/notice/list" class="btn btn-outline-secondary btn-rounded">← 목록으로</a>
+                    <div>
+                        <a th:href="@{'/notice/update?id=' + ${notice.id}}" class="btn btn-outline-primary btn-rounded me-2">✏ 수정</a>
+                        <button type="button" class="btn btn-danger btn-rounded text-white" onclick="deleteNotice()">❌ 삭제</button>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="view-field">
-            <div class="field-label">내용</div>
-            <div class="field-content" th:text="${notice.content}" style="white-space: pre-wrap;">공지 내용</div>
-        </div>
-
-        <input type="hidden" id="noticeId" th:value="${notice.id}" />
-
-        <div class="view-buttons">
-            <a href="/notice/list" class="btn btn-outline-secondary btn-rounded">← 목록으로</a>
-            <div>
-                <a th:href="@{'/notice/update?id=' + ${notice.id}}" class="btn btn-outline-primary btn-rounded me-2">✏ 수정</a>
-                <button type="button" class="btn btn-danger btn-rounded text-white" onclick="deleteNotice()">❌ 삭제</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function deleteNotice() {
-            const id = document.getElementById("noticeId").value;
-            if (confirm("정말 삭제하시겠습니까?")) {
-                fetch("/notice/delete/" + id, {
-                    method: "DELETE"
-                }).then(res => {
-                    if (res.ok) {
-                        alert("삭제되었습니다.");
-                        window.location.href = "/notice/list";
-                    } else {
-                        alert("삭제에 실패했습니다.");
+            <script>
+                function deleteNotice() {
+                    const id = document.getElementById("noticeId").value;
+                    if (confirm("정말 삭제하시겠습니까?")) {
+                        fetch("/notice/delete/" + id, {
+                            method: "DELETE"
+                        }).then(res => {
+                            if (res.ok) {
+                                alert("삭제되었습니다.");
+                                window.location.href = "/notice/list";
+                            } else {
+                                alert("삭제에 실패했습니다.");
+                            }
+                        });
                     }
-                });
-            }
-        }
-    </script>
+                }
+            </script>
+        </div>
+    </section>
 </div>
 </html>

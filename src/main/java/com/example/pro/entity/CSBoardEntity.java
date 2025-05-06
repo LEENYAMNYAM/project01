@@ -18,6 +18,7 @@ public class CSBoardEntity {
     private Long id;
     private String title;
     private String writer;
+    @Column(length = 5000)
     private String content;
     private Long hitcount;
     private boolean secret;

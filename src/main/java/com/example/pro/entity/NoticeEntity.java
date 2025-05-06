@@ -1,9 +1,6 @@
 package com.example.pro.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -18,6 +15,7 @@ public class NoticeEntity {
     private Long id;
     private String title;
     private String writer;
+    @Column(length = 5000)
     private String content;
     private Long hitcount;
 

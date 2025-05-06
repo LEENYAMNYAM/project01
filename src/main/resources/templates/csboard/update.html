@@ -41,6 +41,8 @@
             border: 1px solid #ced4da;
             padding: 0.75rem 1rem;
             transition: box-shadow 0.2s ease;
+            color: #212529 !important;
+            background-color: #ffffff;
         }
 
         .form-control:focus,
@@ -67,35 +69,39 @@
         }
     </style>
 
-    <div class="update-card">
-        <div class="section-title">🛠 질문 수정</div>
+    <section class="page-section">
+        <div class="container">
+            <div class="update-card">
+                <div class="section-title">🛠 질문 수정</div>
 
-        <form th:action="@{/csboard/update/submit}" method="post">
-            <input type="hidden" name="id" th:value="${cs.id}" />
+                <form th:action="@{/csboard/update/submit}" method="post">
+                    <input type="hidden" name="id" th:value="${cs.id}" />
 
-            <div class="mb-4">
-                <label for="title" class="form-label">제목</label>
-                <input type="text" id="title" name="title" class="form-control shadow-sm"
-                       th:value="${cs.title}" required>
+                    <div class="mb-4">
+                        <label for="title" class="form-label">제목</label>
+                        <input type="text" id="title" name="title" class="form-control shadow-sm"
+                               th:value="${cs.title}" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="writer" class="form-label">작성자</label>
+                        <input type="text" id="writer" name="writer" class="form-control shadow-sm"
+                               th:value="${cs.writer}" readonly>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="content" class="form-label">내용</label>
+                        <textarea id="content" name="content" rows="6" class="form-control shadow-sm"
+                                  th:text="${cs.content}" required></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a th:href="@{'/csboard/view?id=' + ${cs.id}}" class="btn btn-outline-secondary btn-rounded">← 돌아가기</a>
+                        <button type="submit" class="btn btn-dark-outline btn-rounded">수정 완료</button>
+                    </div>
+                </form>
             </div>
-
-            <div class="mb-4">
-                <label for="writer" class="form-label">작성자</label>
-                <input type="text" id="writer" name="writer" class="form-control shadow-sm"
-                       th:value="${cs.writer}" readonly>
-            </div>
-
-            <div class="mb-4">
-                <label for="content" class="form-label">내용</label>
-                <textarea id="content" name="content" rows="6" class="form-control shadow-sm"
-                          th:text="${cs.content}" required></textarea>
-            </div>
-
-            <div class="d-flex justify-content-between mt-4">
-                <a th:href="@{'/csboard/view?id=' + ${cs.id}}" class="btn btn-outline-secondary btn-rounded">← 돌아가기</a>
-                <button type="submit" class="btn btn-dark-outline btn-rounded">수정 완료</button>
-            </div>
-        </form>
-    </div>
+        </div>
+    </section>
 </div>
 </html>

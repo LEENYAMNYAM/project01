@@ -36,7 +36,7 @@ public class ReviewEntity extends BaseEntity {
     private String title;
 
     // 리뷰 내용
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 5000)
     private String content;
 
     // 별점 (1~5)

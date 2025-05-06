@@ -40,6 +40,9 @@
       border-radius: 0.75rem;
       border: 1px solid #ced4da;
       transition: box-shadow 0.2s;
+      color: #212529 !important;
+      background-color: #ffffff;
+
     }
 
     .form-control:focus,
@@ -60,36 +63,41 @@
     }
   </style>
 
-  <div class="notice-edit-card">
-    <h2 class="section-title">✏ 공지사항 수정</h2>
+  <section class="page-section">
+    <div class="container">
 
-    <form th:action="@{/notice/update}" method="post">
-      <input type="hidden" name="id" th:value="${notice.id}" />
+      <div class="notice-edit-card">
+        <h2 class="section-title">✏ 공지사항 수정</h2>
 
-      <div class="mb-4">
-        <label for="title" class="form-label">제목</label>
-        <input type="text" id="title" name="title" class="form-control shadow-sm"
-               placeholder="공지 제목" th:value="${notice.title}" required>
+        <form th:action="@{/notice/update}" method="post">
+          <input type="hidden" name="id" th:value="${notice.id}" />
+
+          <div class="mb-4">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" id="title" name="title" class="form-control shadow-sm"
+                   placeholder="공지 제목" th:value="${notice.title}" required>
+          </div>
+
+          <div class="mb-4">
+            <label for="content" class="form-label">내용</label>
+            <textarea id="content" name="content" rows="6" class="form-control shadow-sm"
+                      placeholder="공지 내용을 입력해주세요." required
+                      th:text="${notice.content}"></textarea>
+          </div>
+
+          <div class="form-check form-switch mb-5 d-flex align-items-center">
+            <input class="form-check-input" type="checkbox" id="important" name="important"
+                   th:checked="${notice.important}">
+            <label class="form-check-label fw-semibold" for="important">중요 공지로 표시</label>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a th:href="@{'/notice/view?id=' + ${notice.id}}" class="btn btn-outline-secondary btn-rounded">← 돌아가기</a>
+            <button type="submit" class="btn btn-primary btn-rounded shadow-sm">수정 완료</button>
+          </div>
+        </form>
       </div>
-
-      <div class="mb-4">
-        <label for="content" class="form-label">내용</label>
-        <textarea id="content" name="content" rows="6" class="form-control shadow-sm"
-                  placeholder="공지 내용을 입력해주세요." required
-                  th:text="${notice.content}"></textarea>
-      </div>
-
-      <div class="form-check form-switch mb-5 d-flex align-items-center">
-        <input class="form-check-input" type="checkbox" id="important" name="important"
-               th:checked="${notice.important}">
-        <label class="form-check-label fw-semibold" for="important">중요 공지로 표시</label>
-      </div>
-
-      <div class="d-flex justify-content-between">
-        <a th:href="@{'/notice/view?id=' + ${notice.id}}" class="btn btn-outline-secondary btn-rounded">← 돌아가기</a>
-        <button type="submit" class="btn btn-primary btn-rounded shadow-sm">수정 완료</button>
-      </div>
-    </form>
-  </div>
+    </div>
+  </section>
 </div>
 </html>
