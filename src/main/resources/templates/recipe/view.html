@@ -113,8 +113,6 @@
                                 <li><a class="dropdown-item" th:classappend="${currentSort == 'most_likes' ? 'active' : ''}" th:href="@{/recipe/view(id=${recipe.id}, sort='most_likes')}">좋아요 많은순</a></li>
                                 <li><a class="dropdown-item" th:classappend="${currentSort == 'newest' ? 'active' : ''}" th:href="@{/recipe/view(id=${recipe.id}, sort='newest')}">최신순</a></li>
                                 <li><a class="dropdown-item" th:classappend="${currentSort == 'oldest' ? 'active' : ''}" th:href="@{/recipe/view(id=${recipe.id}, sort='oldest')}">오래된순</a></li>
-                                <li><a class="dropdown-item" th:classappend="${currentSort == 'highest_rating' ? 'active' : ''}" th:href="@{/recipe/view(id=${recipe.id}, sort='highest_rating')}">별점 높은순</a></li>
-                                <li><a class="dropdown-item" th:classappend="${currentSort == 'lowest_rating' ? 'active' : ''}" th:href="@{/recipe/view(id=${recipe.id}, sort='lowest_rating')}">별점 낮은순</a></li>
                             </ul>
                         </div>
                     </div>

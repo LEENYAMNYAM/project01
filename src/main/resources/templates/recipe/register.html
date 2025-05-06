@@ -95,10 +95,12 @@
         $('#add-ingredient').before(`
             <div class="ingredient-entry mb-2 d-flex align-items-center gap-2">
                 <div class="input-group flex-grow-1">
-                    <input type="text" name="recipeIngredients[${ingredientIndex}].ingredient.ingredientName" placeholder="재료명" class="form-control ingredient-name" readonly/>
+                    <input type="text" name="recipeIngredients[${ingredientIndex}].ingredient.ingredientName"
+                           placeholder="재료명" class="form-control ingredient-name" readonly/>
                     <button type="button" class="btn btn-outline-secondary btn-sm open-ingredient-modal">검색</button>
                 </div>
-                <input type="number" name="recipeIngredients[${ingredientIndex}].quantity" placeholder="수량" class="form-control w-auto" min="1"/>
+                <input type="number" name="recipeIngredients[${ingredientIndex}].quantity" placeholder="수량"
+                       class="form-control w-auto" min="1"/>
                 <button type="button" class="btn btn-danger btn-sm remove-ingredient" style="min-width: 70px;">삭제</button>
             </div>
         `);

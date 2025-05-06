@@ -46,10 +46,10 @@ public class RecipeServiceImpl implements RecipeService {
         // 레시피 등록 전에 로그 추가
         log.info("레시피 등록 시작: 유저 - {}, 레시피 제목 - {}", recipeDTO.getUsername(), recipeDTO.getTitle());
 
-
         // 1. 레시피 엔티티 저장
         RecipeEntity recipeEntity = dtoToEntity(recipeDTO);
-        UserEntity userEntity = userRepository.findByUsername(recipeDTO.getUsername()).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+        UserEntity userEntity = userRepository.findByUsername(recipeDTO.getUsername()).orElseThrow(()
+                -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
         recipeEntity.setUser(userEntity);
         recipeRepository.save(recipeEntity);
 
