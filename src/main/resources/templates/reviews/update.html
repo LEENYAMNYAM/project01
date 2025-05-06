@@ -3,6 +3,20 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}" lang="en">
 <div class="container-fluid text-white p-5" layout:fragment="content">
+    <style>
+        .form-label {
+            font-weight: 600;
+            color: #495057 !important;
+        }
+        .form-control,
+        textarea.form-control {
+            border-radius: 0.75rem;
+            border: 1px solid #ced4da !important;
+            transition: box-shadow 0.2s;
+            color: #212529 !important;
+            background-color: #ffffff;
+        }
+    </style>
     <section class="page-section">
         <div class="container">
             <div class="row justify-content-center">
@@ -20,18 +34,18 @@
 
                             <form th:action="@{/reviews/update/{id}(id=${reviewDTO.id})}" method="post" enctype="multipart/form-data">
                                 <!-- 리뷰 ID (hidden) -->
-                                <input type="hidden" name="id" th:value="${reviewDTO.id}" />
-                                <input type="hidden" name="recipeId" th:value="${reviewDTO.recipeId}" />
+                                <input type="hidden" name="id" class="form-control" th:value="${reviewDTO.id}" />
+                                <input type="hidden" name="recipeId" class="form-control" th:value="${reviewDTO.recipeId}" />
 
                                 <!-- 레시피 정보 -->
                                 <div class="mb-3">
                                     <label class="form-label">레시피</label>
-                                    <p class="form-control-plaintext" th:text="${review.recipe.title}">레시피 제목</p>
+                                    <p class="form-control-plaintext form-control" th:text="${review.recipe.title}">레시피 제목</p>
                                 </div>
 
                                 <!-- 리뷰 제목 -->
                                 <div class="form-group mb-3">
-                                    <label for="title">리뷰 제목</label>
+                                    <label class="form-label" for="title" >리뷰 제목</label>
                                     <input type="text" id="title" name="title" class="form-control"
                                            placeholder="리뷰 제목을 입력하세요 (최대 100자)" maxlength="100" required
                                            th:value="${reviewDTO.title}" />
@@ -39,7 +53,7 @@
 
                                 <!-- 별점 -->
                                 <div class="form-group mb-3">
-                                    <label for="rating">별점</label>
+                                    <label class="form-label" for="rating">별점</label>
                                     <select id="rating" name="rating" class="form-control" required>
                                         <option value="1" th:selected="${reviewDTO.rating == 1}">★☆☆☆☆ (1점)</option>
                                         <option value="2" th:selected="${reviewDTO.rating == 2}">★★☆☆☆ (2점)</option>
@@ -51,7 +65,7 @@
 
                                 <!-- 리뷰 내용 -->
                                 <div class="form-group mb-3">
-                                    <label for="content">리뷰 내용</label>
+                                    <label class="form-label" for="content">리뷰 내용</label>
                                     <textarea id="content" name="content" class="form-control" rows="5"
                                               placeholder="리뷰 내용을 입력하세요 (최대 1000자)" maxlength="1000" required
                                               th:text="${reviewDTO.content}"></textarea>
@@ -66,7 +80,7 @@
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="deleteImage" name="deleteImage">
-                                        <label class="form-check-label" for="deleteImage">
+                                        <label class="form-check-label form-label" for="deleteImage">
                                             이미지 삭제
                                         </label>
                                     </div>
@@ -74,7 +88,7 @@
 
                                 <!-- 새 이미지 업로드 -->
                                 <div class="form-group mb-3">
-                                    <label for="image">새 이미지 첨부 (선택사항)</label>
+                                    <label class="form-label" for="image">새 이미지 첨부 (선택사항)</label>
                                     <input type="file" id="image" name="image" class="form-control" accept="image/*" />
                                     <small class="form-text text-muted">새 이미지를 업로드하면 기존 이미지는 대체됩니다.</small>
                                 </div>

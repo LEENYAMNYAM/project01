@@ -175,7 +175,7 @@ public class ReviewController {
         }
 
         reviewService.registerReview(reviewDTO);
-        return "redirect:/reviews/list/" + reviewDTO.getRecipeId();
+        return "redirect:/recipe/view?id=" + reviewDTO.getRecipeId();
     }
 
     // 리뷰 상세 보기
@@ -325,7 +325,7 @@ public class ReviewController {
         }
 
         reviewService.updateReview(id, reviewDTO);
-        return "redirect:/reviews/view/" + id;
+        return "redirect:/recipe/view?id=" + reviewDTO.getRecipeId();
     }
 
     // 리뷰 삭제
@@ -343,11 +343,11 @@ public class ReviewController {
         if (review.getBuyer() == null ||
             !review.getBuyer().getUsername().equals(principalDetail.getUsername())) {
             log.warn("Unauthorized review delete attempt: " + principalDetail.getUsername());
-            return "redirect:/reviews/list/" + recipeId;
+            return "redirect:/recipe/view?id=" + recipeId;
         }
 
         reviewService.deleteReview(id);
-        return "redirect:/reviews/list/" + recipeId;
+        return "redirect:/recipe/view?id=" + recipeId;
     }
 
     // 리뷰에 답변 추가

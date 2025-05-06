@@ -23,7 +23,7 @@
                                 </h5>
                                 <p class="card-subtitle mb-2 text-muted">
                                     <span th:text="${review.buyer.username}">작성자</span> |
-                                    <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span> |
+                                    <span th:text="${#temporals.format(review.regDate, 'yyyy-MM-dd HH:mm')}">작성일</span> |
                                     <span th:text="'❤️ : ' + ${review.likesCount}">좋아요 수</span>
                                 </p>
                             </div>
