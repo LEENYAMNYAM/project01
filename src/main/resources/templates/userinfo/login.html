@@ -73,6 +73,24 @@
       color: white;
     }
 
+    .error-message {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+      padding: 0.2rem 0.8rem;       /* 위아래 여백 더 줄임 */
+      margin: 0.5rem auto 0 auto;   /* 위쪽 간격도 더 줄임 */
+      border-radius: 0.75rem;
+      font-size: 0.85rem;
+      text-align: center;
+      width: fit-content;
+      max-width: 80%;
+      white-space: nowrap;          /* 줄바꿈 방지 */
+      line-height: 1.2;             /* 줄 간격 줄임 */
+      display: inline-block;        /* 블록 요소로 인해 세로 공간 차지하지 않도록 */
+    }
+
+
+
     @media (max-width: 768px) {
       .login-card {
         width: 90%;
@@ -102,6 +120,13 @@
             <button type="submit" class="btn btn-primary btn-rounded shadow-sm">로그인</button>
             <a th:href="@{/userinfo/join}" class="btn btn-dark-outline btn-rounded">회원가입</a>
           </div>
+
+          <div th:if="${session.errorMessage}" style="text-align: center;">
+            <span class="error-message" th:text="${session.errorMessage}"></span>
+          </div>
+
+
+
         </form>
 
         <p class="text-center mt-5" style="color: #495057;">Welcome back to 엄카집밥 🍱</p>
