@@ -87,7 +87,7 @@ public class CSBoardController {
         if (principalDetail != null) {
             UserEntity currentUser = principalDetail.getUser();
             // Check if user is the original poster
-            boolean isOriginalPoster = dto.getWriter().equals(currentUser.getUsername());
+            boolean isOriginalPoster = dto.getWriter() != null && dto.getWriter().equals(currentUser.getUsername());
             // Check if user is an admin
             boolean isAdmin = "ROLE_ADMIN".equals(currentUser.getRole());
 
@@ -141,7 +141,7 @@ public class CSBoardController {
             CSBoardDTO csBoard = csBoardService.getBoard(id, false);
 
             // Check if user is the original poster or an admin
-            boolean isOriginalPoster = csBoard.getWriter().equals(currentUser.getUsername());
+            boolean isOriginalPoster = csBoard.getWriter() != null && csBoard.getWriter().equals(currentUser.getUsername());
             boolean isAdmin = "ROLE_ADMIN".equals(currentUser.getRole());
 
             if (!isOriginalPoster && !isAdmin) {

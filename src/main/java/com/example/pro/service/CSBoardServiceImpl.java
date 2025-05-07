@@ -2,11 +2,14 @@ package com.example.pro.service;
 
 import com.example.pro.dto.CSBoardDTO;
 import com.example.pro.entity.CSBoardEntity;
+import com.example.pro.entity.CSBoardReplyEntity;
+import com.example.pro.repository.CSBoardReplyRepository;
 import com.example.pro.repository.CSBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +19,9 @@ public class CSBoardServiceImpl implements CSBoardService {
 
     @Autowired
     private CSBoardRepository csBoardRepository;
+
+    @Autowired
+    private CSBoardReplyRepository csBoardReplyRepository;
 
     @Override
     public List<CSBoardDTO> getAllQBoards() {
@@ -75,8 +81,22 @@ public class CSBoardServiceImpl implements CSBoardService {
     }
 
     @Override
+    @Transactional
     public void deleteQBoard(Long id) {
-        csBoardRepository.deleteById(id);
+        // Find the board entity
+        CSBoardEntity board = csBoardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("CSBoard not found with id: " + id));
+
+        // Find all replies associated with this board
+        List<CSBoardReplyEntity> replies = csBoardReplyRepository.findByCsBoard(board);
+
+        // Delete all replies first
+        for (CSBoardReplyEntity reply : replies) {
+            csBoardReplyRepository.delete(reply);
+        }
+
+        // Then delete the board post
+        csBoardRepository.delete(board);
     }
 
     private CSBoardDTO toDTO(CSBoardEntity board) {

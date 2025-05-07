@@ -26,7 +26,7 @@
                 </div>
                 <div class="col-md-4 text-md-end">
                     <!-- 수정/삭제 버튼 (작성자만 보이게) -->
-                    <div th:if="${#authentication.principal.username == recipe.username}">
+                    <div th:if="${#authentication.isAuthenticated() && #authentication.principal instanceof T(com.example.pro.config.auth.PrincipalDetail) && #authentication.principal.username == recipe.username}">
                         <a th:href="@{/recipe/update(id=${recipe.id})}" class="btn btn-warning">수정</a>
                         <a th:href="@{/recipe/delete(id=${recipe.id})}" class="btn btn-danger"
                            onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
@@ -43,7 +43,18 @@
                 <div class="col-md-4">
                     <!-- 유튜브 링크가 있을 경우 -->
                     <div th:if="${recipe.youtubeLink}" class="ratio ratio-16x9">
-                        <iframe th:src="${recipe.youtubeLink}" title="YouTube video" allowfullscreen></iframe>
+                        <iframe th:with="videoId=${
+                            #strings.contains(recipe.youtubeLink, 'embed') ? 
+                                recipe.youtubeLink : 
+                                (#strings.contains(recipe.youtubeLink, 'youtu.be/') ? 
+                                    'https://www.youtube.com/embed/' + #strings.substringAfter(recipe.youtubeLink, 'youtu.be/') : 
+                                    (#strings.contains(recipe.youtubeLink, 'v=') ? 
+                                        'https://www.youtube.com/embed/' + #strings.substringBefore(#strings.substringAfter(recipe.youtubeLink, 'v='), '&') : 
+                                        recipe.youtubeLink))
+                        }" 
+                        th:src="${videoId}" 
+                        title="YouTube video" 
+                        allowfullscreen></iframe>
                     </div>
                     <!-- 유튜브 링크가 없을 경우 -->
                     <div th:unless="${recipe.youtubeLink}" class="card bg-dark text-white">
@@ -168,7 +179,7 @@
                                     </button>
 
                                     <!-- 리뷰 작성자만 볼 수 있는 수정/삭제 버튼 -->
-                                    <div th:if="${#authentication.principal.username == review.buyer.username}">
+                                    <div th:if="${#authentication.isAuthenticated() && #authentication.principal instanceof T(com.example.pro.config.auth.PrincipalDetail) && #authentication.principal.username == review.buyer.username}">
                                         <a th:href="@{/reviews/update/{id}(id=${review.id})}" class="btn btn-sm btn-warning">수정</a>
                                         <a th:href="@{/reviews/delete/{id}(id=${review.id})}" class="btn btn-sm btn-danger"
                                            onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
@@ -216,7 +227,7 @@
                                             </div>
 
                                             <!-- 레시피 작성자만 볼 수 있는 답변 폼 (답변이 없을 경우) -->
-                                            <div th:if="${#authentication.principal.username == recipe.username && review.reply == null}" class="mt-3">
+                                            <div th:if="${#authentication.isAuthenticated() && #authentication.principal instanceof T(com.example.pro.config.auth.PrincipalDetail) && #authentication.principal.username == recipe.username && review.reply == null}" class="mt-3">
                                                 <form th:action="@{/reviews/reply/{id}(id=${review.id})}" method="post">
                                                     <div class="input-group">
                                                         <textarea name="reply" class="form-control" placeholder="답변을 작성하세요..." required></textarea>
@@ -266,9 +277,19 @@
     <!-- 리뷰 좋아요 기능을 위한 JavaScript -->
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
+            // 인증 상태 변수 (Thymeleaf에서 설정)
+            const isAuthenticated = /*[[${#authentication.isAuthenticated()}]]*/ false;
+
             // 모든 리뷰 좋아요 버튼에 이벤트 리스너 추가
             document.querySelectorAll('.like-button').forEach(button => {
                 button.addEventListener('click', function() {
+                    // 로그인 상태 확인
+                    if (!isAuthenticated) {
+                        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+                        window.location.href = '/user/login';
+                        return;
+                    }
+
                     const reviewId = this.getAttribute('data-review-id');
                     const likeButton = this;
                     const likesCountElement = this.nextElementSibling;
