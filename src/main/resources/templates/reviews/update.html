@@ -32,32 +32,51 @@
                                 <!-- 리뷰 제목 -->
                                 <div class="mb-4">
                                     <label for="title" class="form-label fw-semibold">리뷰 제목</label>
-                                    <input type="text" id="title" name="title" 
-                                           class="form-control form-control-lg rounded-3 shadow-sm"
-                                           placeholder="리뷰 제목을 입력하세요 (최대 100자)" maxlength="100" required
-                                           th:value="${reviewDTO.title}" />
+                                    <div class="position-relative">
+                                        <input type="text" id="title" name="title" 
+                                               class="form-control form-control-lg rounded-3 shadow-sm"
+                                               placeholder="리뷰 제목을 입력하세요 (최대 100자)" maxlength="100" required
+                                               th:value="${reviewDTO.title}" />
+                                        <div class="position-absolute top-0 end-0 mt-2 me-3">
+                                            <small id="titleCounter" class="text-muted">0/100</small>
+                                        </div>
+                                    </div>
+                                    <div id="titleFeedback" class="invalid-feedback d-none">
+                                        리뷰 제목을 입력해주세요.
+                                    </div>
                                 </div>
 
                                 <!-- 별점 -->
                                 <div class="mb-4">
-                                    <label for="rating" class="form-label fw-semibold">별점</label>
-                                    <select id="rating" name="rating" 
-                                            class="form-select form-select-lg rounded-3 shadow-sm" required>
-                                        <option value="1" th:selected="${reviewDTO.rating == 1}">★☆☆☆☆ (1점)</option>
-                                        <option value="2" th:selected="${reviewDTO.rating == 2}">★★☆☆☆ (2점)</option>
-                                        <option value="3" th:selected="${reviewDTO.rating == 3}">★★★☆☆ (3점)</option>
-                                        <option value="4" th:selected="${reviewDTO.rating == 4}">★★★★☆ (4점)</option>
-                                        <option value="5" th:selected="${reviewDTO.rating == 5}">★★★★★ (5점)</option>
-                                    </select>
+                                    <label class="form-label fw-semibold">별점</label>
+                                    <div class="star-rating">
+                                        <input type="hidden" id="rating" name="rating" th:value="${reviewDTO.rating}" required>
+                                        <div class="stars">
+                                            <i class="bi bi-star star-icon" data-rating="1"></i>
+                                            <i class="bi bi-star star-icon" data-rating="2"></i>
+                                            <i class="bi bi-star star-icon" data-rating="3"></i>
+                                            <i class="bi bi-star star-icon" data-rating="4"></i>
+                                            <i class="bi bi-star star-icon" data-rating="5"></i>
+                                        </div>
+                                        <div class="rating-text mt-2">별점을 선택하세요</div>
+                                    </div>
                                 </div>
 
                                 <!-- 리뷰 내용 -->
                                 <div class="mb-4">
                                     <label for="content" class="form-label fw-semibold">리뷰 내용</label>
-                                    <textarea id="content" name="content" 
-                                              class="form-control form-control-lg rounded-3 shadow-sm" rows="5"
-                                              placeholder="리뷰 내용을 입력하세요 (최대 1000자)" maxlength="1000" required
-                                              th:text="${reviewDTO.content}"></textarea>
+                                    <div class="position-relative">
+                                        <textarea id="content" name="content" 
+                                                  class="form-control form-control-lg rounded-3 shadow-sm" rows="5"
+                                                  placeholder="리뷰 내용을 입력하세요 (최대 1000자)" maxlength="1000" required
+                                                  th:text="${reviewDTO.content}"></textarea>
+                                        <div class="position-absolute bottom-0 end-0 mb-2 me-3">
+                                            <small id="contentCounter" class="text-muted">0/1000</small>
+                                        </div>
+                                    </div>
+                                    <div id="contentFeedback" class="invalid-feedback d-none">
+                                        리뷰 내용을 입력해주세요.
+                                    </div>
                                 </div>
 
                                 <!-- 현재 이미지 -->
@@ -66,7 +85,7 @@
                                     <div class="card bg-dark border border-secondary rounded-3 p-3 mb-3">
                                         <div class="text-center">
                                             <img th:src="@{${reviewDTO.imagePath}}" class="img-fluid rounded-3 shadow-sm"
-                                                 alt="현재 이미지" style="max-height: 200px;" />
+                                                 alt="현재 이미지" style="max-height: 200px;" id="currentImage" />
                                         </div>
                                         <div class="form-check mt-3">
                                             <input class="form-check-input" type="checkbox" id="deleteImage" name="deleteImage">
@@ -77,12 +96,29 @@
                                     </div>
                                 </div>
 
-                                <!-- 새 이미지 업로드 -->
+                                <!-- 새 이미지 업로드 (모바일 최적화) -->
                                 <div class="mb-4">
                                     <label for="image" class="form-label fw-semibold">새 이미지 첨부 (선택사항)</label>
-                                    <input type="file" id="image" name="image" 
-                                           class="form-control form-control-lg rounded-3 shadow-sm" accept="image/*" />
-                                    <small class="form-text text-white-50 mt-2">새 이미지를 업로드하면 기존 이미지는 대체됩니다.</small>
+                                    <div class="mobile-image-upload">
+                                        <div class="image-preview-container mb-2 d-none">
+                                            <img id="imagePreview" class="img-fluid rounded-3 shadow-sm" alt="이미지 미리보기" />
+                                            <button type="button" id="removeImage" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </div>
+                                        <div class="d-grid gap-2 d-md-block">
+                                            <button type="button" id="takePictureBtn" class="btn btn-secondary rounded-pill me-md-2">
+                                                <i class="bi bi-camera-fill me-1"></i>사진 촬영
+                                            </button>
+                                            <button type="button" id="selectImageBtn" class="btn btn-secondary rounded-pill">
+                                                <i class="bi bi-image me-1"></i>갤러리에서 선택
+                                            </button>
+                                        </div>
+                                        <input type="file" id="image" name="image" 
+                                               class="form-control form-control-lg rounded-3 shadow-sm d-none" 
+                                               accept="image/*" capture="environment" />
+                                        <small class="form-text text-white-50 mt-2">새 이미지를 업로드하면 기존 이미지는 대체됩니다.</small>
+                                    </div>
                                 </div>
 
                                 <!-- 버튼 -->
@@ -102,4 +138,293 @@
         </div>
     </section>
 </div>
+
+<!-- 동적 별점 인터페이스와 실시간 유효성 검사를 위한 JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 별점 관련 요소
+        const stars = document.querySelectorAll('.star-icon');
+        const ratingInput = document.getElementById('rating');
+        const ratingText = document.querySelector('.rating-text');
+
+        // 유효성 검사 관련 요소
+        const titleInput = document.getElementById('title');
+        const contentInput = document.getElementById('content');
+        const titleCounter = document.getElementById('titleCounter');
+        const contentCounter = document.getElementById('contentCounter');
+        const titleFeedback = document.getElementById('titleFeedback');
+        const contentFeedback = document.getElementById('contentFeedback');
+
+        // 이미지 업로드 관련 요소
+        const imageInput = document.getElementById('image');
+        const takePictureBtn = document.getElementById('takePictureBtn');
+        const selectImageBtn = document.getElementById('selectImageBtn');
+        const imagePreviewContainer = document.querySelector('.image-preview-container');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImage');
+        const deleteImageCheckbox = document.getElementById('deleteImage');
+        const currentImage = document.getElementById('currentImage');
+
+        // 폼 요소
+        const form = document.querySelector('form');
+
+        // 별점 텍스트 배열
+        const ratingLabels = [
+            '별점을 선택하세요',
+            '★☆☆☆☆ (1점) - 매우 불만족',
+            '★★☆☆☆ (2점) - 불만족',
+            '★★★☆☆ (3점) - 보통',
+            '★★★★☆ (4점) - 만족',
+            '★★★★★ (5점) - 매우 만족'
+        ];
+
+        // 글자 수 카운터 업데이트 함수
+        function updateCharCounter(input, counter, maxLength) {
+            const currentLength = input.value.length;
+            counter.textContent = currentLength + '/' + maxLength;
+
+            // 글자 수가 최대치에 가까워지면 경고 색상으로 변경
+            if (currentLength >= maxLength * 0.9) {
+                counter.classList.remove('text-muted');
+                counter.classList.add('text-warning');
+            } else {
+                counter.classList.remove('text-warning');
+                counter.classList.add('text-muted');
+            }
+        }
+
+        // 필드 유효성 검사 함수
+        function validateField(input, feedback) {
+            if (input.value.trim() === '') {
+                input.classList.add('is-invalid');
+                feedback.classList.remove('d-none');
+                return false;
+            } else {
+                input.classList.remove('is-invalid');
+                feedback.classList.add('d-none');
+                return true;
+            }
+        }
+
+        // 제목 입력 이벤트
+        titleInput.addEventListener('input', function() {
+            updateCharCounter(titleInput, titleCounter, 100);
+        });
+
+        // 내용 입력 이벤트
+        contentInput.addEventListener('input', function() {
+            updateCharCounter(contentInput, contentCounter, 1000);
+        });
+
+        // 포커스 아웃 이벤트에 유효성 검사 추가
+        titleInput.addEventListener('blur', function() {
+            validateField(titleInput, titleFeedback);
+        });
+
+        contentInput.addEventListener('blur', function() {
+            validateField(contentInput, contentFeedback);
+        });
+
+        // 폼 제출 시 유효성 검사
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+
+            // 제목 검증
+            if (!validateField(titleInput, titleFeedback)) {
+                isValid = false;
+            }
+
+            // 내용 검증
+            if (!validateField(contentInput, contentFeedback)) {
+                isValid = false;
+            }
+
+            // 별점 검증
+            if (!ratingInput.value) {
+                ratingText.classList.add('text-danger');
+                ratingText.textContent = '별점을 선택해주세요.';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+
+        // 초기 글자 수 카운터 설정
+        updateCharCounter(titleInput, titleCounter, 100);
+        updateCharCounter(contentInput, contentCounter, 1000);
+
+        // 초기 별점 설정 (기존 리뷰의 별점으로 초기화)
+        const initialRating = parseInt(ratingInput.value) || 0;
+        highlightStars(initialRating);
+        ratingText.textContent = initialRating > 0 ? ratingLabels[initialRating] : ratingLabels[0];
+
+        // 모바일 최적화: 터치 이벤트 처리
+        const starContainer = document.querySelector('.stars');
+
+        // 터치 시작 이벤트 (모바일)
+        starContainer.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // 기본 동작 방지
+            const touch = e.touches[0];
+            handleStarTouch(touch);
+        }, { passive: false });
+
+        // 터치 이동 이벤트 (모바일)
+        starContainer.addEventListener('touchmove', function(e) {
+            e.preventDefault(); // 기본 동작 방지
+            const touch = e.touches[0];
+            handleStarTouch(touch);
+        }, { passive: false });
+
+        // 터치 종료 이벤트 (모바일)
+        starContainer.addEventListener('touchend', function(e) {
+            e.preventDefault(); // 기본 동작 방지
+            // 현재 선택된 별점 유지
+        }, { passive: false });
+
+        // 터치 위치에 따른 별점 처리 함수
+        function handleStarTouch(touch) {
+            const starElements = document.querySelectorAll('.star-icon');
+
+            // 각 별 요소를 확인하여 터치 위치에 있는 별 찾기
+            for (let i = 0; i < starElements.length; i++) {
+                const star = starElements[i];
+                const rect = star.getBoundingClientRect();
+
+                // 터치 위치가 별 요소 내에 있는지 확인
+                if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                    touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                    const rating = parseInt(star.getAttribute('data-rating'));
+                    ratingInput.value = rating;
+                    highlightStars(rating);
+                    ratingText.textContent = ratingLabels[rating];
+
+                    // 햅틱 피드백 (지원되는 기기에서)
+                    if (window.navigator && window.navigator.vibrate) {
+                        window.navigator.vibrate(50);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        // 마우스 오버 이벤트 (데스크톱)
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                highlightStars(rating);
+                ratingText.textContent = ratingLabels[rating];
+            });
+        });
+
+        // 마우스 아웃 이벤트 (데스크톱)
+        starContainer.addEventListener('mouseout', function() {
+            const currentRating = parseInt(ratingInput.value) || 0;
+            highlightStars(currentRating);
+            ratingText.textContent = currentRating > 0 ? ratingLabels[currentRating] : ratingLabels[0];
+        });
+
+        // 클릭 이벤트 (데스크톱)
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                ratingInput.value = rating;
+                highlightStars(rating);
+                ratingText.textContent = ratingLabels[rating];
+            });
+        });
+
+        // 별점 하이라이트 함수
+        function highlightStars(rating) {
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                if (starRating <= rating) {
+                    star.classList.remove('bi-star');
+                    star.classList.add('bi-star-fill');
+                    star.classList.add('text-warning');
+                } else {
+                    star.classList.remove('bi-star-fill');
+                    star.classList.remove('text-warning');
+                    star.classList.add('bi-star');
+                }
+            });
+        }
+
+        // 모바일 최적화: 이미지 업로드 처리
+        // 사진 촬영 버튼 클릭 이벤트
+        takePictureBtn.addEventListener('click', function() {
+            imageInput.setAttribute('capture', 'environment'); // 후면 카메라 사용
+            imageInput.click();
+        });
+
+        // 갤러리에서 선택 버튼 클릭 이벤트
+        selectImageBtn.addEventListener('click', function() {
+            imageInput.removeAttribute('capture'); // capture 속성 제거
+            imageInput.click();
+        });
+
+        // 이미지 선택 시 미리보기 표시
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('d-none');
+
+                    // 이미지를 선택하면 삭제 체크박스 해제
+                    if (deleteImageCheckbox) {
+                        deleteImageCheckbox.checked = false;
+                    }
+                };
+
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // 이미지 제거 버튼 클릭 이벤트
+        removeImageBtn.addEventListener('click', function() {
+            imageInput.value = ''; // 파일 입력 초기화
+            imagePreviewContainer.classList.add('d-none');
+            imagePreview.src = '';
+        });
+
+        // 삭제 체크박스 이벤트 (기존 이미지가 있는 경우)
+        if (deleteImageCheckbox && currentImage) {
+            deleteImageCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // 체크박스가 선택되면 새 이미지 선택 취소
+                    imageInput.value = '';
+                    imagePreviewContainer.classList.add('d-none');
+                    imagePreview.src = '';
+                }
+            });
+        }
+    });
+</script>
+
+<!-- 별점 인터페이스 스타일 -->
+<style>
+    .star-rating .stars {
+        display: flex;
+        font-size: 2rem;
+    }
+
+    .star-icon {
+        cursor: pointer;
+        margin-right: 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .star-icon:hover {
+        transform: scale(1.2);
+    }
+
+    .rating-text {
+        font-size: 0.9rem;
+        color: #adb5bd;
+    }
+</style>
 </html>

@@ -4,9 +4,12 @@ import com.example.pro.config.auth.PrincipalDetail;
 import com.example.pro.dto.RecipeDTO;
 import com.example.pro.dto.ReviewDTO;
 import com.example.pro.entity.ReviewEntity;
+import com.example.pro.entity.ReviewReportEntity;
 import com.example.pro.entity.UserEntity;
+import com.example.pro.service.ContentFilterService;
 import com.example.pro.service.FileService;
 import com.example.pro.service.RecipeService;
+import com.example.pro.service.ReviewReportService;
 import com.example.pro.service.ReviewService;
 import com.example.pro.service.UserService;
 import lombok.extern.log4j.Log4j2;
@@ -34,6 +37,10 @@ public class ReviewController {
     private RecipeService recipeService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private ContentFilterService contentFilterService;
+    @Autowired
+    private ReviewReportService reviewReportService;
 
     // 리뷰 목록 페이지
     @GetMapping("/list/{recipeId}")
@@ -159,6 +166,18 @@ public class ReviewController {
         if (reviewDTO.getContent().length() > 1000) {
             log.warn("Review content too long: " + reviewDTO.getContent().length());
             model.addAttribute("error", "리뷰 내용은 1000자 이내로 작성해주세요.");
+            model.addAttribute("reviewDTO", reviewDTO);
+            model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
+            return "reviews/reviewregister";
+        }
+
+        // 콘텐츠 필터링 검사
+        ContentFilterService.ContentFilterResult filterResult = 
+            contentFilterService.validateReview(reviewDTO, principalDetail.getUser());
+
+        if (!filterResult.isValid()) {
+            log.warn("Content filter validation failed: " + filterResult.getErrorMessage());
+            model.addAttribute("error", filterResult.getErrorMessage());
             model.addAttribute("reviewDTO", reviewDTO);
             model.addAttribute("recipe", recipeService.getRecipeById(reviewDTO.getRecipeId()));
             return "reviews/reviewregister";
@@ -306,6 +325,19 @@ public class ReviewController {
             return "reviews/update";
         }
 
+        // 콘텐츠 필터링 검사
+        ContentFilterService.ContentFilterResult filterResult = 
+            contentFilterService.validateReview(reviewDTO, principalDetail.getUser());
+
+        if (!filterResult.isValid()) {
+            log.warn("Content filter validation failed: " + filterResult.getErrorMessage());
+            model.addAttribute("error", filterResult.getErrorMessage());
+            model.addAttribute("reviewDTO", reviewDTO);
+            model.addAttribute("recipe", recipeService.getRecipeById(existingReview.getRecipe().getId()));
+            model.addAttribute("review", existingReview);
+            return "reviews/update";
+        }
+
         // 이미지 삭제 체크박스가 선택된 경우
         if (deleteImage != null && deleteImage) {
             reviewDTO.setImagePath(null);
@@ -417,5 +449,147 @@ public class ReviewController {
         }
 
         return response;
+    }
+
+    // 리뷰 신고 폼
+    @GetMapping("/report/{id}")
+    public String reportReviewForm(@PathVariable Long id, Model model, @AuthenticationPrincipal PrincipalDetail principalDetail) {
+        try {
+            // 로그인 확인
+            if (principalDetail == null) {
+                return "redirect:/login";
+            }
+
+            // 리뷰 존재 여부 확인
+            ReviewEntity review = reviewService.readReview(id);
+            if (review == null) {
+                log.warn("Review not found with id: " + id);
+                return "redirect:/recipe/list";
+            }
+
+            // 자신의 리뷰는 신고할 수 없음
+            if (review.getBuyer() != null && 
+                review.getBuyer().getUsername().equals(principalDetail.getUsername())) {
+                log.warn("User attempted to report their own review: " + principalDetail.getUsername());
+                return "redirect:/reviews/view/" + id + "?error=자신의 리뷰는 신고할 수 없습니다.";
+            }
+
+            // 이미 신고한 리뷰인지 확인
+            if (reviewReportService.hasUserReportedReview(id, principalDetail.getUsername())) {
+                log.warn("User has already reported this review: " + principalDetail.getUsername());
+                return "redirect:/reviews/view/" + id + "?error=이미 신고한 리뷰입니다.";
+            }
+
+            RecipeDTO recipe = recipeService.getRecipeById(review.getRecipe().getId());
+
+            model.addAttribute("review", review);
+            model.addAttribute("recipe", recipe);
+
+            return "reviews/report";
+        } catch (Exception e) {
+            log.error("Error accessing report form: " + e.getMessage());
+            return "redirect:/recipe/list";
+        }
+    }
+
+    // 리뷰 신고 처리
+    @PostMapping("/report/{id}")
+    public String reportReview(@PathVariable Long id, 
+                              @RequestParam String reason,
+                              @AuthenticationPrincipal PrincipalDetail principalDetail,
+                              Model model) {
+        try {
+            // 로그인 확인
+            if (principalDetail == null) {
+                return "redirect:/login";
+            }
+
+            // 리뷰 존재 여부 확인
+            ReviewEntity review = reviewService.readReview(id);
+            if (review == null) {
+                log.warn("Review not found with id: " + id);
+                return "redirect:/recipe/list";
+            }
+
+            // 자신의 리뷰는 신고할 수 없음
+            if (review.getBuyer() != null && 
+                review.getBuyer().getUsername().equals(principalDetail.getUsername())) {
+                log.warn("User attempted to report their own review: " + principalDetail.getUsername());
+                return "redirect:/reviews/view/" + id + "?error=자신의 리뷰는 신고할 수 없습니다.";
+            }
+
+            // 이미 신고한 리뷰인지 확인
+            if (reviewReportService.hasUserReportedReview(id, principalDetail.getUsername())) {
+                log.warn("User has already reported this review: " + principalDetail.getUsername());
+                return "redirect:/reviews/view/" + id + "?error=이미 신고한 리뷰입니다.";
+            }
+
+            // 신고 사유 검증
+            if (reason == null || reason.trim().isEmpty()) {
+                log.warn("Empty report reason");
+                return "redirect:/reviews/report/" + id + "?error=신고 사유를 입력해주세요.";
+            }
+
+            // 신고 처리
+            reviewReportService.reportReview(id, reason, principalDetail.getUsername());
+
+            return "redirect:/reviews/view/" + id + "?success=리뷰가 신고되었습니다. 관리자 검토 후 조치가 취해질 것입니다.";
+        } catch (Exception e) {
+            log.error("Error reporting review: " + e.getMessage());
+            return "redirect:/reviews/view/" + id + "?error=신고 처리 중 오류가 발생했습니다: " + e.getMessage();
+        }
+    }
+
+    // 신고된 리뷰 목록 (관리자용)
+    @GetMapping("/reported")
+    public String reportedReviews(Model model, @AuthenticationPrincipal PrincipalDetail principalDetail) {
+        try {
+            // 관리자 권한 확인
+            if (principalDetail == null || !principalDetail.getUser().getRole().contains("ADMIN")) {
+                log.warn("Unauthorized access to reported reviews: " + 
+                         (principalDetail != null ? principalDetail.getUsername() : "anonymous"));
+                return "redirect:/";
+            }
+
+            // 신고된 리뷰 목록 조회
+            List<ReviewReportEntity> pendingReports = reviewReportService.getPendingReports();
+
+            model.addAttribute("pendingReports", pendingReports);
+
+            return "reviews/reported";
+        } catch (Exception e) {
+            log.error("Error listing reported reviews: " + e.getMessage());
+            return "redirect:/";
+        }
+    }
+
+    // 신고된 리뷰 처리 (관리자용)
+    @PostMapping("/moderate/{reportId}")
+    public String moderateReport(@PathVariable Long reportId,
+                               @RequestParam String action,
+                               @RequestParam(required = false) String comment,
+                               @AuthenticationPrincipal PrincipalDetail principalDetail) {
+        try {
+            // 관리자 권한 확인
+            if (principalDetail == null || !principalDetail.getUser().getRole().contains("ADMIN")) {
+                log.warn("Unauthorized attempt to moderate report: " + 
+                         (principalDetail != null ? principalDetail.getUsername() : "anonymous"));
+                return "redirect:/";
+            }
+
+            // 액션 검증
+            if (!action.equals("APPROVED") && !action.equals("REJECTED") && !action.equals("EDIT_REQUESTED")) {
+                log.warn("Invalid moderation action: " + action);
+                return "redirect:/reviews/reported?error=잘못된 처리 액션입니다.";
+            }
+
+            // 신고 처리
+            reviewReportService.moderateReport(reportId, action, principalDetail.getUsername(), comment);
+
+            return "redirect:/reviews/reported?success=신고가 처리되었습니다.";
+        } catch (Exception e) {
+            log.error("Error moderating report: " + e.getMessage());
+            return "redirect:/reviews/reported?error=신고 처리 중 오류가 발생했습니다: " + e.getMessage();
+        }
     }
 }

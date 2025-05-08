@@ -153,6 +153,159 @@
                             </a>
                         </div>
                         <div class="card-body p-4">
+                            <!-- 평점 분포 시각화 -->
+                            <div th:if="${reviewCount > 0}" class="mb-4 p-3 bg-dark border border-secondary rounded-3">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-fill me-2"></i>평점 분포</h5>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <!-- 평점 분포 막대 그래프 -->
+                                        <div class="rating-distribution">
+                                            <div class="d-flex align-items-center mb-2" th:each="rating : ${#numbers.sequence(5, 1)}">
+                                                <div class="me-2 text-warning" style="width: 70px;">
+                                                    <span th:text="${rating}">5</span>
+                                                    <i class="bi bi-star-fill"></i>
+                                                </div>
+                                                <div class="progress flex-grow-1 bg-dark border border-secondary" style="height: 25px;">
+                                                    <div class="progress-bar bg-warning" role="progressbar"
+                                                         th:with="index=${rating - 1}"
+                                                         th:style="'width: ' + (${reviewCount > 0 ? (ratingDistribution[__${index}__] * 100 / reviewCount) : 0}) + '%'"
+                                                         th:attr="aria-valuenow=${ratingDistribution[__${index}__]}"
+                                                         aria-valuemin="0" th:aria-valuemax="${reviewCount}">
+                                                    </div>
+                                                </div>
+                                                <div class="ms-2 text-light" style="width: 50px;">
+                                                    <span th:with="index=${rating - 1}" th:text="${ratingDistribution[__${index}__]}">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <!-- 평점 요약 -->
+                                        <div class="text-center p-3 bg-dark border border-secondary rounded-3">
+                                            <div class="display-4 fw-bold text-warning mb-2" th:text="${averageRating}">4.5</div>
+                                            <div class="text-warning fs-4 mb-2">
+                                                <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, #numbers.formatInteger(averageRating, 1))}"></i>
+                                                <i class="bi bi-star-half" th:if="${averageRating - #numbers.formatInteger(averageRating, 1) >= 0.5}"></i>
+                                                <i class="bi bi-star" th:each="i : ${#numbers.sequence(#numbers.formatInteger(averageRating + 0.5, 1) + 1, 5)}"></i>
+                                            </div>
+                                            <div class="text-light" th:text="${reviewCount} + ' 개의 리뷰'">100 개의 리뷰</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 시간에 따른 추세 분석 -->
+                            <div th:if="${reviewCount > 0 and !#maps.isEmpty(ratingTrend)}" class="mb-4 p-3 bg-dark border border-secondary rounded-3">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-graph-up me-2"></i>시간에 따른 평점 추세</h5>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <!-- 평점 추세 라인 차트 -->
+                                        <canvas id="ratingTrendChart" height="200"></canvas>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-3 small text-light">
+                                    <p>월별 평균 평점 변화 추이를 보여줍니다. 시간이 지남에 따라 레시피의 평가가 어떻게 변화하는지 확인하세요.</p>
+                                </div>
+                            </div>
+
+                            <!-- 비교 평점 지표 -->
+                            <div th:if="${reviewCount > 0}" class="mb-4 p-3 bg-dark border border-secondary rounded-3">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-steps me-2"></i>비교 평점 지표</h5>
+                                <div class="row">
+                                    <!-- 카테고리 평균과 비교 -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card bg-dark border border-secondary rounded-3 h-100">
+                                            <div class="card-body p-3">
+                                                <h6 class="fw-bold mb-3">카테고리 평균 비교</h6>
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span>이 레시피</span>
+                                                    <div class="text-warning">
+                                                        <span class="fw-bold" th:text="${averageRating}">4.5</span>
+                                                        <i class="bi bi-star-fill ms-1"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <span th:text="${recipe.category} + ' 평균'">카테고리 평균</span>
+                                                    <div class="text-warning">
+                                                        <span class="fw-bold" th:text="${categoryAverageRating}">4.0</span>
+                                                        <i class="bi bi-star-fill ms-1"></i>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 비교 결과 -->
+                                                <div th:if="${averageRating > categoryAverageRating}" class="alert alert-success p-2 mb-0 text-center">
+                                                    <i class="bi bi-emoji-smile me-1"></i>
+                                                    <span th:text="'카테고리 평균보다 ' + ${#numbers.formatDecimal(averageRating - categoryAverageRating, 1, 1)} + '점 높습니다'">0.5점 높습니다</span>
+                                                </div>
+                                                <div th:if="${averageRating < categoryAverageRating}" class="alert alert-warning p-2 mb-0 text-center">
+                                                    <i class="bi bi-emoji-neutral me-1"></i>
+                                                    <span th:text="'카테고리 평균보다 ' + ${#numbers.formatDecimal(categoryAverageRating - averageRating, 1, 1)} + '점 낮습니다'">0.5점 낮습니다</span>
+                                                </div>
+                                                <div th:if="${averageRating == categoryAverageRating}" class="alert alert-info p-2 mb-0 text-center">
+                                                    <i class="bi bi-emoji-neutral me-1"></i>
+                                                    <span>카테고리 평균과 동일합니다</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 상대적 순위 표시 -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card bg-dark border border-secondary rounded-3 h-100">
+                                            <div class="card-body p-3">
+                                                <h6 class="fw-bold mb-3">카테고리 내 순위</h6>
+                                                <div class="text-center mb-3">
+                                                    <div class="display-6 fw-bold" th:text="${recipeRank}">1</div>
+                                                    <div class="text-light" th:text="'/' + ${totalRecipesInCategory} + ' 위'">/ 10 위</div>
+                                                </div>
+
+                                                <!-- 순위 표시 -->
+                                                <div class="progress bg-dark border border-secondary" style="height: 30px;">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                         th:style="'width: ' + (100 - (recipeRank - 1) * 100 / totalRecipesInCategory) + '%'"
+                                                         aria-valuemin="0" aria-valuemax="100">
+                                                        <span class="fw-bold" th:text="'상위 ' + ${#numbers.formatInteger(100 - (recipeRank - 1) * 100 / totalRecipesInCategory, 0)} + '%'">상위 90%</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="text-center mt-3 small text-light">
+                                                    <p th:text="${recipe.category} + ' 카테고리 내 평점 기준 순위입니다'">카테고리 내 평점 기준 순위입니다</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 유사 레시피 비교 -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card bg-dark border border-secondary rounded-3 h-100">
+                                            <div class="card-body p-3">
+                                                <h6 class="fw-bold mb-3">유사 레시피 비교</h6>
+                                                <div th:if="${#lists.isEmpty(similarRecipes)}" class="text-center py-4">
+                                                    <i class="bi bi-search me-1"></i>
+                                                    <span>유사한 레시피가 없습니다</span>
+                                                </div>
+                                                <div th:unless="${#lists.isEmpty(similarRecipes)}">
+                                                    <ul class="list-group list-group-flush">
+                                                        <li th:each="similar : ${similarRecipes}" class="list-group-item bg-dark border-secondary">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <a th:href="@{/recipe/view(id=${similar.id})}" class="text-decoration-none text-white text-truncate me-2" th:text="${similar.title}">유사 레시피 제목</a>
+                                                                <div class="text-warning">
+                                                                    <span class="fw-bold" th:text="${#numbers.formatDecimal(similarRecipesRatings.get(similar.id), 1, 1)}">4.5</span>
+                                                                    <i class="bi bi-star-fill ms-1"></i>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="text-center mt-3 small text-light">
+                                                    <p>같은 카테고리의 인기 레시피입니다</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- 리뷰가 없을 경우 -->
                             <div th:if="${#lists.isEmpty(reviews)}" class="text-center py-5">
                                 <i class="bi bi-chat-square-text fs-1 mb-3"></i>
@@ -294,38 +447,17 @@
                                 </div>
                             </div>
 
-                            <!-- 페이지네이션 -->
-                            <div th:if="${reviewPage.totalPages > 1}" class="d-flex justify-content-center mt-4">
-                                <nav aria-label="리뷰 페이지네이션">
-                                    <ul class="pagination">
-                                        <!-- 이전 페이지 -->
-                                        <li class="page-item rounded-pill overflow-hidden me-1" th:classappend="${reviewPage.first} ? 'disabled' : ''">
-                                            <a class="page-link border-0 fw-semibold" 
-                                               th:href="@{/recipe/view(id=${recipe.id}, sort=${currentSort}, page=${currentPage - 1}, size=${pageSize})}" 
-                                               aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
+                            <!-- 무한 스크롤 로딩 인디케이터 -->
+                            <div id="loading-indicator" class="text-center py-4 d-none">
+                                <div class="spinner-border text-light" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-light">리뷰 불러오는 중...</p>
+                            </div>
 
-                                        <!-- 페이지 번호 -->
-                                        <li class="page-item rounded-pill overflow-hidden mx-1" 
-                                            th:each="i : ${#numbers.sequence(0, reviewPage.totalPages - 1)}"
-                                            th:classappend="${i == currentPage} ? 'active' : ''">
-                                            <a class="page-link border-0 fw-semibold" 
-                                               th:href="@{/recipe/view(id=${recipe.id}, sort=${currentSort}, page=${i}, size=${pageSize})}"
-                                               th:text="${i + 1}">1</a>
-                                        </li>
-
-                                        <!-- 다음 페이지 -->
-                                        <li class="page-item rounded-pill overflow-hidden ms-1" th:classappend="${reviewPage.last} ? 'disabled' : ''">
-                                            <a class="page-link border-0 fw-semibold" 
-                                               th:href="@{/recipe/view(id=${recipe.id}, sort=${currentSort}, page=${currentPage + 1}, size=${pageSize})}" 
-                                               aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
+                            <!-- 더 이상 리뷰가 없을 때 표시 -->
+                            <div id="no-more-reviews" class="text-center py-4 d-none">
+                                <p class="text-light">모든 리뷰를 불러왔습니다.</p>
                             </div>
                         </div>
                     </div>
@@ -385,6 +517,366 @@
                     });
                 });
             });
+        });
+    </script>
+
+    <!-- Chart.js 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- 평점 추세 차트를 위한 JavaScript -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // 평점 추세 데이터가 있는 경우에만 차트 생성
+            const ratingTrendChart = document.getElementById('ratingTrendChart');
+            if (ratingTrendChart) {
+                const ratingTrendData = /*[[${ratingTrend}]]*/ {};
+
+                // 데이터가 비어있지 않은 경우에만 차트 생성
+                if (Object.keys(ratingTrendData).length > 0) {
+                    // 데이터 준비
+                    const labels = Object.keys(ratingTrendData).sort(); // 날짜 정렬
+                    const data = labels.map(label => ratingTrendData[label]);
+
+                    // 월 이름으로 변환 (YYYY-MM 형식을 YYYY년 MM월로 변환)
+                    const formattedLabels = labels.map(label => {
+                        const parts = label.split('-');
+                        return `${parts[0]}년 ${parts[1]}월`;
+                    });
+
+                    // 차트 생성
+                    new Chart(ratingTrendChart, {
+                        type: 'line',
+                        data: {
+                            labels: formattedLabels,
+                            datasets: [{
+                                label: '월별 평균 평점',
+                                data: data,
+                                borderColor: '#ffc107', // 노란색 (warning 색상)
+                                backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                                borderWidth: 2,
+                                pointBackgroundColor: '#ffc107',
+                                pointRadius: 4,
+                                tension: 0.2, // 곡선 부드러움
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: '#fff' // 흰색 텍스트
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `평균 평점: ${context.parsed.y}점`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    min: 0,
+                                    max: 5,
+                                    ticks: {
+                                        color: '#fff', // 흰색 텍스트
+                                        stepSize: 1
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)' // 흰색 그리드 (투명도 낮게)
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: '#fff' // 흰색 텍스트
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)' // 흰색 그리드 (투명도 낮게)
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+
+    <!-- 무한 스크롤 리뷰 로딩을 위한 JavaScript -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // 초기 변수 설정
+            const recipeId = /*[[${recipe.id}]]*/ 0;
+            const currentSort = /*[[${currentSort}]]*/ 'newest';
+            const pageSize = /*[[${pageSize}]]*/ 5;
+            let currentPage = /*[[${currentPage}]]*/ 0;
+            let totalPages = /*[[${reviewPage.totalPages}]]*/ 1;
+            let isLoading = false;
+            let hasMoreReviews = currentPage < totalPages - 1;
+
+            // 요소 참조
+            const reviewsContainer = document.querySelector('.row.g-4'); // 리뷰 목록 컨테이너
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const noMoreReviewsMessage = document.getElementById('no-more-reviews');
+
+            // 스크롤 이벤트 리스너 추가
+            window.addEventListener('scroll', function() {
+                // 스크롤이 페이지 하단에 도달했는지 확인
+                if (isNearBottom() && !isLoading && hasMoreReviews) {
+                    loadMoreReviews();
+                }
+            });
+
+            // 페이지 하단에 도달했는지 확인하는 함수
+            function isNearBottom() {
+                return window.innerHeight + window.scrollY >= document.body.offsetHeight - 500;
+            }
+
+            // 추가 리뷰 로드 함수
+            function loadMoreReviews() {
+                isLoading = true;
+                currentPage++;
+
+                // 로딩 인디케이터 표시
+                loadingIndicator.classList.remove('d-none');
+
+                // AJAX 요청으로 추가 리뷰 로드
+                fetch(`/recipe/load-more-reviews?id=${recipeId}&sort=${currentSort}&page=${currentPage}&size=${pageSize}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('서버 응답 오류');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 로딩 인디케이터 숨김
+                        loadingIndicator.classList.add('d-none');
+
+                        // 더 이상 리뷰가 없는지 확인
+                        hasMoreReviews = data.hasNext;
+                        if (!hasMoreReviews) {
+                            noMoreReviewsMessage.classList.remove('d-none');
+                        }
+
+                        // 리뷰가 있으면 추가
+                        if (data.reviews && data.reviews.length > 0) {
+                            appendReviews(data.reviews);
+                        }
+
+                        isLoading = false;
+                    })
+                    .catch(error => {
+                        console.error('리뷰 로딩 중 오류 발생:', error);
+                        loadingIndicator.classList.add('d-none');
+                        isLoading = false;
+                    });
+            }
+
+            // 리뷰를 DOM에 추가하는 함수
+            function appendReviews(reviews) {
+                reviews.forEach(review => {
+                    // 리뷰 카드 요소 생성
+                    const reviewCard = document.createElement('div');
+                    reviewCard.className = 'col-12 col-sm-6 col-lg-4';
+
+                    // 리뷰 카드 내용 생성
+                    reviewCard.innerHTML = `
+                        <div class="card h-100 bg-dark text-white border border-secondary rounded-3 shadow-sm overflow-hidden">
+                            <!-- 리뷰 이미지 (있는 경우) -->
+                            <div class="position-relative">
+                                ${review.imagePath ? 
+                                    `<img src="${review.imagePath}" class="card-img-top" alt="리뷰 이미지" style="height: 160px; object-fit: cover;">` : 
+                                    `<div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 160px;">
+                                        <i class="bi bi-card-text" style="font-size: 3rem;"></i>
+                                    </div>`
+                                }
+                                <!-- 별점 표시 (이미지 위에 오버레이) -->
+                                <div class="position-absolute top-0 end-0 bg-dark bg-opacity-75 px-2 py-1 m-2 rounded-pill">
+                                    <div class="text-warning">
+                                        ${Array(review.rating).fill('<i class="bi bi-star-fill"></i>').join('')}
+                                        ${Array(5 - review.rating).fill('<i class="bi bi-star"></i>').join('')}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-body p-3">
+                                <!-- 리뷰 제목 -->
+                                <h5 class="card-title fw-bold mb-2">${review.title}</h5>
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-light">${review.buyer.username}</span>
+                                    <span class="text-light small">${new Date(review.regDate).toLocaleDateString()}</span>
+                                </div>
+
+                                <!-- 리뷰 내용 (짧게 표시) -->
+                                <p class="card-text text-truncate">${review.content}</p>
+
+                                <!-- 좋아요 버튼 -->
+                                <div class="d-flex align-items-center mt-3">
+                                    <button data-review-id="${review.id}" class="btn btn-sm btn-danger rounded-pill like-button me-2">
+                                        <i class="bi bi-heart-fill me-1"></i>좋아요
+                                    </button>
+                                    <span class="likes-count fw-bold">${review.likesCount}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-dark border-top border-secondary p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <!-- 상세 보기 버튼 -->
+                                    <button type="button" class="btn btn-outline-light btn-sm rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#reviewModal${review.id}">
+                                        <i class="bi bi-eye me-1"></i>상세 보기
+                                    </button>
+
+                                    <!-- 리뷰 작성자만 볼 수 있는 수정/삭제 버튼 -->
+                                    ${review.buyer.username === /*[[${#authentication.principal.username}]]*/ '' ? 
+                                        `<div class="d-flex gap-1">
+                                            <a href="/reviews/update/${review.id}" class="btn btn-sm btn-warning rounded-pill">
+                                                <i class="bi bi-pencil me-1"></i>수정
+                                            </a>
+                                            <a href="/reviews/delete/${review.id}" class="btn btn-sm btn-danger rounded-pill"
+                                               onclick="return confirm('정말 삭제하시겠습니까?')">
+                                                <i class="bi bi-trash me-1"></i>삭제
+                                            </a>
+                                        </div>` : 
+                                        ''
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 리뷰 상세 모달 -->
+                        <div class="modal fade" id="reviewModal${review.id}" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content bg-dark text-white border-0 rounded-4 shadow-lg">
+                                    <div class="modal-header border-bottom border-secondary">
+                                        <h5 class="modal-title fw-bold">${review.title}</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div>
+                                                <span class="badge bg-secondary rounded-pill me-2">#${review.id}</span>
+                                                <span class="fw-semibold">${review.buyer.username}</span>
+                                            </div>
+                                            <span class="text-light small">${new Date(review.regDate).toLocaleDateString()}</span>
+                                        </div>
+
+                                        <!-- 별점 표시 -->
+                                        <div class="text-warning mb-3 fs-4">
+                                            ${Array(review.rating).fill('<i class="bi bi-star-fill"></i>').join('')}
+                                            ${Array(5 - review.rating).fill('<i class="bi bi-star"></i>').join('')}
+                                        </div>
+
+                                        <!-- 리뷰 이미지 (있는 경우) -->
+                                        ${review.imagePath ? 
+                                            `<div class="mb-3">
+                                                <img src="${review.imagePath}" class="img-fluid rounded-3 shadow-sm" alt="리뷰 이미지">
+                                            </div>` : 
+                                            ''
+                                        }
+
+                                        <!-- 리뷰 내용 -->
+                                        <div class="p-3 bg-dark border border-secondary rounded-3 mb-3">
+                                            <p class="mb-0">${review.content}</p>
+                                        </div>
+
+                                        <!-- 답변 표시 -->
+                                        ${review.reply ? 
+                                            `<div class="mt-4 p-3 bg-dark border-start border-4 border-primary rounded-3">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="text-primary fw-bold mb-2">
+                                                            <i class="bi bi-reply-fill me-1"></i>
+                                                            <span>${/*[[${recipe.username}]]*/ ''}</span>의 답변
+                                                        </h6>
+                                                        <p class="mb-0">${review.reply}</p>
+                                                    </div>
+                                                    <span class="text-light small">${new Date(review.replyDate).toLocaleDateString()}</span>
+                                                </div>
+                                            </div>` : 
+                                            /*[[${#authentication.principal.username == recipe.username}]]*/ false ? 
+                                                `<div class="mt-4">
+                                                    <form action="/reviews/reply/${review.id}" method="post">
+                                                        <div class="mb-3">
+                                                            <label for="reply" class="form-label fw-semibold">답변 작성</label>
+                                                            <textarea id="reply" name="reply" class="form-control form-control-lg rounded-3 shadow-sm" 
+                                                                      rows="4" placeholder="답변을 작성하세요..." required></textarea>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <button type="submit" class="btn btn-primary rounded-pill fw-semibold">
+                                                                <i class="bi bi-send me-1"></i>답변 등록
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>` : 
+                                                ''
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // 리뷰 카드를 컨테이너에 추가
+                    reviewsContainer.appendChild(reviewCard);
+
+                    // 새로 추가된 좋아요 버튼에 이벤트 리스너 추가
+                    const newLikeButton = reviewCard.querySelector('.like-button');
+                    if (newLikeButton) {
+                        newLikeButton.addEventListener('click', function() {
+                            const reviewId = this.getAttribute('data-review-id');
+                            const likeButton = this;
+                            const likesCountElement = this.nextElementSibling;
+
+                            // AJAX 요청으로 좋아요 토글
+                            fetch(`/reviews/like/${reviewId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // 좋아요 수 업데이트
+                                    likesCountElement.textContent = data.likesCount;
+
+                                    // 버튼 스타일 변경
+                                    if (data.isLiked) {
+                                        likeButton.classList.remove('btn-outline-danger');
+                                        likeButton.classList.add('btn-danger');
+                                        likeButton.querySelector('i').classList.remove('bi-heart');
+                                        likeButton.querySelector('i').classList.add('bi-heart-fill');
+                                    } else {
+                                        likeButton.classList.remove('btn-danger');
+                                        likeButton.classList.add('btn-outline-danger');
+                                        likeButton.querySelector('i').classList.remove('bi-heart-fill');
+                                        likeButton.querySelector('i').classList.add('bi-heart');
+                                    }
+                                } else {
+                                    alert(data.message || '오류가 발생했습니다.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('좋아요 처리 중 오류가 발생했습니다.');
+                            });
+                        });
+                    }
+                });
+
+                // 모달 초기화 (Bootstrap 모달)
+                const newModals = document.querySelectorAll('.modal');
+                newModals.forEach(modal => {
+                    new bootstrap.Modal(modal);
+                });
+            }
         });
     </script>
 </div>

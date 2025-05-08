@@ -13,6 +13,17 @@
                     </div>
                 </div>
                 <div class="card-body p-4">
+                    <!-- 알림 메시지 표시 -->
+                    <div th:if="${param.success}" class="alert alert-success rounded-3 mb-4" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span th:text="${param.success}">성공 메시지</span>
+                    </div>
+
+                    <div th:if="${param.error}" class="alert alert-danger rounded-3 mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span th:text="${param.error}">에러 메시지</span>
+                    </div>
+
                     <!-- 리뷰 정보 -->
                     <div class="mb-4">
                         <h3 class="card-title fw-bold">
@@ -52,6 +63,39 @@
                         <span class="likes-count fw-bold fs-5" th:text="${review.likesCount}">0</span>
                     </div>
 
+                    <!-- 공유 기능 -->
+                    <div class="mb-4">
+                        <div class="card bg-dark border border-secondary rounded-3 p-3">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-share-fill me-2"></i>이 리뷰 공유하기</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                <!-- 소셜 미디어 공유 링크 -->
+                                <a th:href="'https://www.facebook.com/sharer/sharer.php?u=' + ${#httpServletRequest.requestURL}" 
+                                   target="_blank" class="btn btn-primary rounded-pill fw-semibold px-3">
+                                    <i class="bi bi-facebook me-1"></i> 페이스북
+                                </a>
+                                <a th:href="'https://twitter.com/intent/tweet?text=' + ${review.title} + '&url=' + ${#httpServletRequest.requestURL}" 
+                                   target="_blank" class="btn btn-info rounded-pill fw-semibold px-3 text-white">
+                                    <i class="bi bi-twitter me-1"></i> 트위터
+                                </a>
+                                <a th:href="'https://telegram.me/share/url?url=' + ${#httpServletRequest.requestURL} + '&text=' + ${review.title}" 
+                                   target="_blank" class="btn btn-primary rounded-pill fw-semibold px-3">
+                                    <i class="bi bi-telegram me-1"></i> 텔레그램
+                                </a>
+
+                                <!-- 이메일 공유 옵션 -->
+                                <a th:href="'mailto:?subject=' + ${review.title} + ' - 리뷰 공유&body=' + ${review.buyer.username} + '님의 리뷰를 확인해보세요: ' + ${#httpServletRequest.requestURL}" 
+                                   class="btn btn-secondary rounded-pill fw-semibold px-3">
+                                    <i class="bi bi-envelope me-1"></i> 이메일
+                                </a>
+
+                                <!-- 공유 URL 복사 -->
+                                <button id="copyUrlBtn" class="btn btn-success rounded-pill fw-semibold px-3">
+                                    <i class="bi bi-clipboard me-1"></i> URL 복사
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- 버튼 -->
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-5">
                         <div>
@@ -62,15 +106,25 @@
                                 <i class="bi bi-arrow-up-right-circle me-2"></i>레시피로 이동
                             </a>
                         </div>
-                        <div th:if="${#authentication.principal.username == review.buyer.username}">
-                            <a th:href="@{/reviews/update/{id}(id=${review.id})}" class="btn btn-warning rounded-pill fw-semibold px-3 me-2">
-                                <i class="bi bi-pencil-fill me-1"></i>수정
-                            </a>
-                            <a th:href="@{/reviews/delete/{id}(id=${review.id})}"
-                               class="btn btn-danger rounded-pill fw-semibold px-3"
-                               onclick="return confirm('정말로 삭제하시겠습니까?');">
-                                <i class="bi bi-trash-fill me-1"></i>삭제
-                            </a>
+                        <div class="d-flex gap-2">
+                            <!-- 신고 버튼 (로그인한 사용자만 보이고, 자신의 리뷰는 신고할 수 없음) -->
+                            <div th:if="${#authentication.isAuthenticated() && #authentication.principal.username != review.buyer.username}">
+                                <a th:href="@{/reviews/report/{id}(id=${review.id})}" class="btn btn-outline-danger rounded-pill fw-semibold px-3">
+                                    <i class="bi bi-flag-fill me-1"></i>신고
+                                </a>
+                            </div>
+
+                            <!-- 수정/삭제 버튼 (작성자만 보이게) -->
+                            <div th:if="${#authentication.principal.username == review.buyer.username}">
+                                <a th:href="@{/reviews/update/{id}(id=${review.id})}" class="btn btn-warning rounded-pill fw-semibold px-3 me-2">
+                                    <i class="bi bi-pencil-fill me-1"></i>수정
+                                </a>
+                                <a th:href="@{/reviews/delete/{id}(id=${review.id})}"
+                                   class="btn btn-danger rounded-pill fw-semibold px-3"
+                                   onclick="return confirm('정말로 삭제하시겠습니까?');">
+                                    <i class="bi bi-trash-fill me-1"></i>삭제
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -78,7 +132,7 @@
         </div>
     </section>
 
-    <!-- 리뷰 좋아요 기능을 위한 JavaScript -->
+    <!-- 리뷰 좋아요 및 공유 기능을 위한 JavaScript -->
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
             // 모든 좋아요 버튼에 이벤트 리스너 추가
@@ -123,6 +177,36 @@
                     });
                 });
             });
+
+            // URL 복사 버튼에 이벤트 리스너 추가
+            const copyUrlBtn = document.getElementById('copyUrlBtn');
+            if (copyUrlBtn) {
+                copyUrlBtn.addEventListener('click', function() {
+                    // 현재 페이지 URL 가져오기
+                    const currentUrl = window.location.href;
+
+                    // 클립보드에 URL 복사
+                    navigator.clipboard.writeText(currentUrl)
+                        .then(() => {
+                            // 복사 성공 시 버튼 텍스트 변경
+                            const originalText = this.innerHTML;
+                            this.innerHTML = '<i class="bi bi-check-circle me-1"></i> 복사됨';
+                            this.classList.remove('btn-success');
+                            this.classList.add('btn-outline-success');
+
+                            // 2초 후 원래 텍스트로 복원
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.classList.remove('btn-outline-success');
+                                this.classList.add('btn-success');
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('URL 복사 실패:', err);
+                            alert('URL을 클립보드에 복사하는 데 실패했습니다.');
+                        });
+                });
+            }
         });
     </script>
 </div>

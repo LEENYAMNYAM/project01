@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 @Controller
 @RequestMapping("/recipe")
@@ -103,25 +104,32 @@ public class RecipeController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "searchType", defaultValue = "title") String searchType,
             @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "sortBy", required = false) String sortBy,
             Model model){
 
         List<RecipeDTO> recipeList;
 
         if (category != null && !category.isEmpty()) {
             if (searchType != null && keyword != null && !keyword.isEmpty()) {
-                recipeList = recipeService.searchByCategoryAndKeyword(category, searchType, keyword);
+                recipeList = recipeService.searchByCategoryAndKeyword(category, searchType, keyword, sortBy);
             } else {
-                recipeList = recipeService.findByCategory(category);
+                recipeList = recipeService.findByCategory(category, sortBy);
             }
         } else {
             if (searchType != null && keyword != null && !keyword.isEmpty()) {
-                recipeList = recipeService.searchRecipes(searchType, keyword);
+                recipeList = recipeService.searchRecipes(searchType, keyword, sortBy);
             } else {
-                recipeList = recipeService.getAllRecipe();
+                recipeList = recipeService.getAllRecipe(sortBy);
             }
         }
+
+        // Get top rated recipes for recommendation
+        List<RecipeDTO> topRatedRecipes = recipeService.getTopRatedRecipes(3); // Get top 3 rated recipes
+
         model.addAttribute("recipeList", recipeList);
         model.addAttribute("category", category);
+        model.addAttribute("sortBy", sortBy); // Add sortBy to model for maintaining state in view
+        model.addAttribute("topRatedRecipes", topRatedRecipes); // Add top rated recipes for recommendation
         return "/recipe/list";
     }
 
@@ -145,6 +153,26 @@ public class RecipeController {
         double averageRating = reviewService.calculateAverageRating(recipe_id);
         int reviewCount = (int) reviewPage.getTotalElements();
 
+        // Get rating distribution for visualization
+        int[] ratingDistribution = reviewService.calculateRatingDistribution(recipe_id);
+
+        // Get rating trend data for time-based analysis
+        Map<String, Double> ratingTrend = reviewService.calculateRatingTrend(recipe_id);
+
+        // Get comparative rating metrics
+        double categoryAverageRating = reviewService.calculateCategoryAverageRating(recipe.getCategory());
+        List<RecipeEntity> similarRecipes = reviewService.findSimilarRecipes(recipe_id, 3); // Get top 3 similar recipes
+        int recipeRank = reviewService.calculateRecipeRank(recipe_id);
+
+        // Get total recipes in category for ranking context
+        int totalRecipesInCategory = recipeRank + similarRecipes.size(); // Approximate count based on rank and similar recipes
+
+        // Calculate average ratings for similar recipes
+        Map<Long, Double> similarRecipesRatings = new HashMap<>();
+        for (RecipeEntity similar : similarRecipes) {
+            similarRecipesRatings.put(similar.getId(), reviewService.calculateAverageRating(similar.getId()));
+        }
+
         model.addAttribute("recipe", recipe);
         model.addAttribute("recipeSteps", recipeSteps);
         model.addAttribute("recipeIngredientsDTOList", recipeIngredientsDTOList);
@@ -154,11 +182,48 @@ public class RecipeController {
         model.addAttribute("reviews", reviewPage.getContent());
         model.addAttribute("averageRating", averageRating);
         model.addAttribute("reviewCount", reviewCount);
+        model.addAttribute("ratingDistribution", ratingDistribution);
+        model.addAttribute("ratingTrend", ratingTrend);
+        model.addAttribute("categoryAverageRating", categoryAverageRating);
+        model.addAttribute("similarRecipes", similarRecipes);
+        model.addAttribute("similarRecipesRatings", similarRecipesRatings);
+        model.addAttribute("recipeRank", recipeRank);
+        model.addAttribute("totalRecipesInCategory", totalRecipesInCategory);
         model.addAttribute("currentSort", sortBy);
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
 
         }
+
+    // AJAX endpoint for loading more reviews (infinite scroll)
+    @GetMapping("/load-more-reviews")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> loadMoreReviews(
+            @RequestParam("id") Long recipeId,
+            @RequestParam(value = "sort", required = false, defaultValue = "newest") String sortBy,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+
+        try {
+            // Create Pageable object for pagination
+            Pageable pageable = PageRequest.of(page, size);
+
+            // Get paginated reviews
+            Page<ReviewEntity> reviewPage = reviewService.getReviewsByRecipePaged(recipeId, sortBy, pageable);
+
+            // Create response map
+            Map<String, Object> response = new HashMap<>();
+            response.put("reviews", reviewPage.getContent());
+            response.put("currentPage", page);
+            response.put("totalPages", reviewPage.getTotalPages());
+            response.put("hasNext", !reviewPage.isLast());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error loading more reviews: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping("/update")
     public String recipeUpdateview(@RequestParam("id") Long recipe_id, Model model) {

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      layout:decorate="~{layout/layout.html}" lang="en">
+
+<div class="container-fluid text-white p-5" layout:fragment="content">
+  <section class="page-section">
+    <div class="container">
+      <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-body p-4">
+          <h2 class="text-center fw-bold mb-4 fs-1">🏆 인기 리뷰어</h2>
+          <p class="text-center mb-5">가장 많은 팔로워를 보유한 리뷰어들입니다. 팔로우하여 그들의 리뷰를 확인해보세요!</p>
+          
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+              <!-- No popular reviewers found -->
+              <div th:if="${#lists.isEmpty(popularReviewers)}" class="text-center py-5">
+                <i class="bi bi-emoji-frown fs-1 mb-3 text-light"></i>
+                <p class="fs-5">아직 인기 리뷰어가 없습니다.</p>
+              </div>
+              
+              <!-- Popular reviewers list -->
+              <div th:unless="${#lists.isEmpty(popularReviewers)}" class="list-group">
+                <div th:each="reviewer, iterStat : ${popularReviewers}" class="list-group-item bg-dark border border-secondary rounded-3 mb-3 p-0">
+                  <div class="d-flex align-items-center p-3">
+                    <!-- Rank badge -->
+                    <div class="me-3">
+                      <div th:if="${iterStat.index == 0}" class="badge bg-warning text-dark rounded-circle p-3 fs-4 fw-bold">1</div>
+                      <div th:if="${iterStat.index == 1}" class="badge bg-secondary text-white rounded-circle p-3 fs-4 fw-bold">2</div>
+                      <div th:if="${iterStat.index == 2}" class="badge bg-danger text-white rounded-circle p-3 fs-4 fw-bold">3</div>
+                      <div th:if="${iterStat.index > 2}" class="badge bg-primary text-white rounded-circle p-3 fs-4 fw-bold" th:text="${iterStat.index + 1}">4</div>
+                    </div>
+                    
+                    <!-- User info -->
+                    <div class="flex-grow-1">
+                      <h4 class="fw-bold mb-1" th:text="${reviewer.username}">Username</h4>
+                      <p class="mb-0 text-light" th:text="${reviewer.email}">user@example.com</p>
+                    </div>
+                    
+                    <!-- Follow button (only show if not viewing own profile and logged in) -->
+                    <div sec:authorize="isAuthenticated()" th:if="${#authentication.name != reviewer.username}">
+                      <button th:attr="data-username=${reviewer.username}" class="btn btn-primary rounded-pill fw-semibold px-4 follow-btn">
+                        <i class="bi bi-person-plus-fill me-2"></i>팔로우
+                      </button>
+                    </div>
+                    
+                    <!-- View profile button -->
+                    <div class="ms-2">
+                      <a th:href="@{/userinfo/profile/{username}(username=${reviewer.username})}" class="btn btn-outline-light rounded-pill fw-semibold">
+                        <i class="bi bi-eye me-2"></i>프로필
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Back button -->
+              <div class="text-center mt-5">
+                <a href="/" class="btn btn-outline-light rounded-pill fw-semibold px-4">
+                  <i class="bi bi-arrow-left me-2"></i>메인으로
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- JavaScript for Follow functionality -->
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get all follow buttons
+      const followButtons = document.querySelectorAll('.follow-btn');
+      
+      // Add click event listener to each button
+      followButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const username = this.getAttribute('data-username');
+          followUser(username, this);
+        });
+      });
+      
+      function followUser(username, button) {
+        fetch(`/userinfo/follow/${username}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Update button text and style
+            button.innerHTML = '<i class="bi bi-check-circle me-2"></i>팔로우됨';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+            button.disabled = true;
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('팔로우 처리 중 오류가 발생했습니다.');
+        });
+      }
+    });
+  </script>
+</div>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      layout:decorate="~{layout/layout.html}" lang="en">
+
+<div class="container-fluid text-white p-5" layout:fragment="content">
+  <section class="page-section">
+    <div class="container">
+      <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-body p-4">
+          <div class="row">
+            <!-- User Profile Information -->
+            <div class="col-lg-4">
+              <div class="card bg-dark border border-secondary rounded-4 p-4 mb-4">
+                <div class="text-center mb-4">
+                  <div class="avatar-placeholder bg-primary rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 100px; height: 100px;">
+                    <span class="fs-1 fw-bold text-white" th:text="${profileUser.username.substring(0, 1).toUpperCase()}">U</span>
+                  </div>
+                  <h3 class="fw-bold mb-0" th:text="${profileUser.username}">Username</h3>
+                  <p class="text-light" th:text="${profileUser.email}">user@example.com</p>
+                </div>
+                
+                <!-- Follow/Unfollow Button (only show if not viewing own profile) -->
+                <div class="mb-4 text-center" th:if="${#authentication.name != profileUser.username}">
+                  <button th:if="${!isFollowing}" id="followBtn" class="btn btn-primary rounded-pill fw-semibold px-4">
+                    <i class="bi bi-person-plus-fill me-2"></i>팔로우
+                  </button>
+                  <button th:if="${isFollowing}" id="unfollowBtn" class="btn btn-outline-primary rounded-pill fw-semibold px-4">
+                    <i class="bi bi-person-dash-fill me-2"></i>언팔로우
+                  </button>
+                </div>
+                
+                <!-- Follower/Following Stats -->
+                <div class="d-flex justify-content-around text-center mb-4">
+                  <div>
+                    <h5 class="fw-bold text-primary" th:text="${followerCount}">0</h5>
+                    <p class="mb-0">팔로워</p>
+                  </div>
+                  <div>
+                    <h5 class="fw-bold text-primary" th:text="${followingCount}">0</h5>
+                    <p class="mb-0">팔로잉</p>
+                  </div>
+                  <div>
+                    <h5 class="fw-bold text-primary" th:text="${userReviews.size()}">0</h5>
+                    <p class="mb-0">리뷰</p>
+                  </div>
+                </div>
+                
+                <!-- User Details -->
+                <div class="list-group list-group-flush bg-dark">
+                  <div class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between">
+                      <span class="text-light">이름</span>
+                      <span class="fw-semibold" th:text="${profileUser.name}">사용자 이름</span>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between">
+                      <span class="text-light">성별</span>
+                      <span class="fw-semibold" th:text="${profileUser.gender}">남자</span>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between">
+                      <span class="text-light">포인트</span>
+                      <span class="fw-semibold" th:text="${profileUser.point}">1000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Followers List -->
+              <div class="card bg-dark border border-secondary rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-people-fill me-2"></i>팔로워</h5>
+                <div th:if="${#lists.isEmpty(followers)}" class="text-center py-3">
+                  <p class="mb-0 text-light">아직 팔로워가 없습니다.</p>
+                </div>
+                <div th:unless="${#lists.isEmpty(followers)}" class="list-group list-group-flush bg-dark">
+                  <div th:each="follower : ${followers}" class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <a th:href="@{/userinfo/profile/{username}(username=${follower.username})}" class="text-decoration-none text-white">
+                        <span th:text="${follower.username}">팔로워 이름</span>
+                      </a>
+                      <a th:href="@{/userinfo/profile/{username}(username=${follower.username})}" class="btn btn-sm btn-outline-light rounded-pill">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Following List -->
+              <div class="card bg-dark border border-secondary rounded-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-person-check-fill me-2"></i>팔로잉</h5>
+                <div th:if="${#lists.isEmpty(following)}" class="text-center py-3">
+                  <p class="mb-0 text-light">아직 팔로잉하는 사용자가 없습니다.</p>
+                </div>
+                <div th:unless="${#lists.isEmpty(following)}" class="list-group list-group-flush bg-dark">
+                  <div th:each="followedUser : ${following}" class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <a th:href="@{/userinfo/profile/{username}(username=${followedUser.username})}" class="text-decoration-none text-white">
+                        <span th:text="${followedUser.username}">팔로잉 이름</span>
+                      </a>
+                      <a th:href="@{/userinfo/profile/{username}(username=${followedUser.username})}" class="btn btn-sm btn-outline-light rounded-pill">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- User Reviews -->
+            <div class="col-lg-8">
+              <div class="card bg-dark border border-secondary rounded-4 p-4">
+                <h3 class="fw-bold mb-4"><i class="bi bi-star-fill me-2 text-warning"></i>작성한 리뷰</h3>
+                
+                <div th:if="${#lists.isEmpty(userReviews)}" class="text-center py-5">
+                  <i class="bi bi-clipboard-x fs-1 mb-3 text-light"></i>
+                  <p class="fs-5">아직 작성한 리뷰가 없습니다.</p>
+                </div>
+                
+                <div th:unless="${#lists.isEmpty(userReviews)}" class="row g-4">
+                  <div class="col-md-6" th:each="review : ${userReviews}">
+                    <div class="card h-100 bg-dark border border-secondary rounded-3">
+                      <div class="card-header bg-dark border-secondary py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <h5 class="card-title mb-0 text-truncate" th:text="${review.title}">리뷰 제목</h5>
+                          <span class="badge bg-warning text-dark rounded-pill px-2 py-1">
+                            <i class="bi bi-star-fill me-1"></i><span th:text="${review.rating}">5</span>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <p class="card-text text-truncate" th:text="${review.content}">리뷰 내용</p>
+                        <p class="card-text text-light">
+                          <small>
+                            <i class="bi bi-calendar-event me-1"></i>
+                            <span th:text="${#temporals.format(review.regDate, 'yyyy-MM-dd')}">2023-01-01</span>
+                          </small>
+                        </p>
+                      </div>
+                      <div class="card-footer bg-dark border-secondary">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <span class="text-light" th:text="${review.recipe.title}">레시피 제목</span>
+                          <a th:href="@{/reviews/view/{id}(id=${review.id})}" class="btn btn-sm btn-outline-primary rounded-pill">
+                            <i class="bi bi-eye me-1"></i>보기
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- JavaScript for Follow/Unfollow functionality -->
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      const followBtn = document.getElementById('followBtn');
+      const unfollowBtn = document.getElementById('unfollowBtn');
+      const username = /*[[${profileUser.username}]]*/ 'username';
+      
+      if (followBtn) {
+        followBtn.addEventListener('click', function() {
+          followUser(username);
+        });
+      }
+      
+      if (unfollowBtn) {
+        unfollowBtn.addEventListener('click', function() {
+          unfollowUser(username);
+        });
+      }
+      
+      function followUser(username) {
+        fetch(`/userinfo/follow/${username}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Reload the page to update UI
+            window.location.reload();
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('팔로우 처리 중 오류가 발생했습니다.');
+        });
+      }
+      
+      function unfollowUser(username) {
+        fetch(`/userinfo/unfollow/${username}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Reload the page to update UI
+            window.location.reload();
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('언팔로우 처리 중 오류가 발생했습니다.');
+        });
+      }
+    });
+  </script>
+</div>
+</html>

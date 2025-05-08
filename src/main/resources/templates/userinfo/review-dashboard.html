@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+
+<div class="container-fluid text-white p-5" layout:fragment="content">
+  <section class="page-section">
+    <div class="container">
+      <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-body p-4">
+          <h2 class="text-center fw-bold mb-4 fs-1">📊 리뷰 대시보드</h2>
+          <p class="text-center mb-4">내가 작성한 리뷰와 통계를 한눈에 확인하세요.</p>
+          
+          <!-- 사용자 정보 및 요약 통계 -->
+          <div class="row mb-5">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+              <div class="card bg-dark border border-secondary rounded-4 p-4 h-100">
+                <div class="text-center mb-4">
+                  <div class="avatar-placeholder bg-primary rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 100px; height: 100px;">
+                    <span class="fs-1 fw-bold text-white" th:text="${user.username.substring(0, 1).toUpperCase()}">U</span>
+                  </div>
+                  <h3 class="fw-bold mb-0" th:text="${user.username}">Username</h3>
+                  <p class="text-light" th:text="${user.email}">user@example.com</p>
+                </div>
+                
+                <div class="list-group list-group-flush bg-dark mb-3">
+                  <div class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between">
+                      <span class="text-light">이름</span>
+                      <span class="fw-semibold" th:text="${user.name}">사용자 이름</span>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between">
+                      <span class="text-light">포인트</span>
+                      <span class="fw-semibold" th:text="${user.point}">1000</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="text-center">
+                  <a th:href="@{/userinfo/profile/{username}(username=${user.username})}" class="btn btn-outline-primary rounded-pill fw-semibold w-100">
+                    <i class="bi bi-person-badge me-2"></i>프로필 보기
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-8">
+              <div class="row g-3">
+                <!-- 총 리뷰 수 -->
+                <div class="col-md-6 col-lg-3">
+                  <div class="card bg-primary text-white rounded-4 p-3 h-100">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <i class="bi bi-pencil-square fs-1 mb-2"></i>
+                      <h2 class="fw-bold mb-0" th:text="${totalReviews}">0</h2>
+                      <p class="mb-0">총 리뷰 수</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 평균 평점 -->
+                <div class="col-md-6 col-lg-3">
+                  <div class="card bg-warning text-dark rounded-4 p-3 h-100">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <i class="bi bi-star-fill fs-1 mb-2"></i>
+                      <h2 class="fw-bold mb-0" th:text="${averageRating}">0.0</h2>
+                      <p class="mb-0">평균 평점</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 받은 좋아요 -->
+                <div class="col-md-6 col-lg-3">
+                  <div class="card bg-danger text-white rounded-4 p-3 h-100">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <i class="bi bi-heart-fill fs-1 mb-2"></i>
+                      <h2 class="fw-bold mb-0" th:text="${totalLikes}">0</h2>
+                      <p class="mb-0">받은 좋아요</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 받은 답변 -->
+                <div class="col-md-6 col-lg-3">
+                  <div class="card bg-info text-white rounded-4 p-3 h-100">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <i class="bi bi-chat-fill fs-1 mb-2"></i>
+                      <h2 class="fw-bold mb-0" th:text="${totalReplies}">0</h2>
+                      <p class="mb-0">받은 답변</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 평점 분포 및 카테고리별 리뷰 -->
+          <div class="row mb-5">
+            <!-- 평점 분포 -->
+            <div class="col-lg-6 mb-4 mb-lg-0">
+              <div class="card bg-dark border border-secondary rounded-4 p-4 h-100">
+                <h4 class="fw-bold mb-4"><i class="bi bi-bar-chart-fill me-2 text-warning"></i>평점 분포</h4>
+                
+                <div th:if="${totalReviews == 0}" class="text-center py-4">
+                  <p class="mb-0">아직 작성한 리뷰가 없습니다.</p>
+                </div>
+                
+                <div th:unless="${totalReviews == 0}" class="rating-distribution">
+                  <div class="d-flex align-items-center mb-2" th:each="rating : ${#numbers.sequence(5, 1)}">
+                    <div class="me-2 text-warning" style="width: 70px;">
+                      <span th:text="${rating}">5</span>
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                    <div class="progress flex-grow-1 bg-dark border border-secondary" style="height: 25px;">
+                      <div class="progress-bar bg-warning" role="progressbar"
+                           th:style="'width: ' + (${totalReviews > 0 ? (ratingDistribution.get(rating) * 100 / totalReviews) : 0}) + '%'"
+                           th:attr="aria-valuenow=${ratingDistribution.get(rating)}"
+                           aria-valuemin="0" th:aria-valuemax="${totalReviews}">
+                      </div>
+                    </div>
+                    <div class="ms-2 text-light" style="width: 50px;">
+                      <span th:text="${ratingDistribution.get(rating)}">0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 카테고리별 리뷰 -->
+            <div class="col-lg-6">
+              <div class="card bg-dark border border-secondary rounded-4 p-4 h-100">
+                <h4 class="fw-bold mb-4"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>카테고리별 리뷰</h4>
+                
+                <div th:if="${reviewsByCategory.isEmpty()}" class="text-center py-4">
+                  <p class="mb-0">아직 작성한 리뷰가 없습니다.</p>
+                </div>
+                
+                <div th:unless="${reviewsByCategory.isEmpty()}" class="category-distribution">
+                  <div class="d-flex align-items-center mb-2" th:each="category : ${reviewsByCategory.entrySet()}">
+                    <div class="me-2 text-primary" style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      <span th:text="${category.key}">카테고리</span>
+                    </div>
+                    <div class="progress flex-grow-1 bg-dark border border-secondary" style="height: 25px;">
+                      <div class="progress-bar bg-primary" role="progressbar"
+                           th:style="'width: ' + (${category.value * 100 / totalReviews}) + '%'"
+                           th:attr="aria-valuenow=${category.value}"
+                           aria-valuemin="0" th:aria-valuemax="${totalReviews}">
+                      </div>
+                    </div>
+                    <div class="ms-2 text-light" style="width: 50px;">
+                      <span th:text="${category.value}">0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 가장 인기 있는 리뷰 -->
+          <div class="mb-5">
+            <h3 class="fw-bold mb-4"><i class="bi bi-trophy-fill me-2 text-warning"></i>가장 인기 있는 리뷰</h3>
+            
+            <div th:if="${#lists.isEmpty(mostLikedReviews)}" class="text-center py-5">
+              <i class="bi bi-emoji-frown fs-1 mb-3 text-light"></i>
+              <p class="fs-5">아직 작성한 리뷰가 없습니다.</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(mostLikedReviews)}" class="row g-4">
+              <div class="col-md-4" th:each="review, iterStat : ${mostLikedReviews}">
+                <div class="card h-100 bg-dark border border-secondary rounded-3">
+                  <div class="card-header bg-dark border-secondary py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="badge bg-warning text-dark rounded-pill px-3 py-2" th:text="${iterStat.count + '위'}">1위</span>
+                      <span class="badge bg-danger rounded-pill px-3 py-2">
+                        <i class="bi bi-heart-fill me-1"></i><span th:text="${review.likesCount}">0</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title fw-bold mb-2" th:text="${review.title}">리뷰 제목</h5>
+                    <div class="text-warning mb-2">
+                      <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, review.rating)}"></i>
+                      <i class="bi bi-star" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}"></i>
+                    </div>
+                    <p class="card-text text-truncate" th:text="${review.content}">리뷰 내용</p>
+                    <p class="card-text text-light">
+                      <small>
+                        <i class="bi bi-calendar-event me-1"></i>
+                        <span th:text="${#temporals.format(review.regDate, 'yyyy-MM-dd')}">2023-01-01</span>
+                      </small>
+                    </p>
+                  </div>
+                  <div class="card-footer bg-dark border-secondary">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="text-light" th:text="${review.recipe.title}">레시피 제목</span>
+                      <a th:href="@{/reviews/view/{id}(id=${review.id})}" class="btn btn-sm btn-outline-primary rounded-pill">
+                        <i class="bi bi-eye me-1"></i>보기
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 모든 리뷰 목록 -->
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h3 class="fw-bold mb-0"><i class="bi bi-list-ul me-2"></i>모든 리뷰</h3>
+              <a th:href="@{/reviews/register}" class="btn btn-primary rounded-pill fw-semibold">
+                <i class="bi bi-plus-circle me-2"></i>새 리뷰 작성
+              </a>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(userReviews)}" class="text-center py-5">
+              <i class="bi bi-clipboard-x fs-1 mb-3 text-light"></i>
+              <p class="fs-5">아직 작성한 리뷰가 없습니다.</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(userReviews)}" class="table-responsive">
+              <table class="table table-dark table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">레시피</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">평점</th>
+                    <th scope="col">작성일</th>
+                    <th scope="col">좋아요</th>
+                    <th scope="col">답변</th>
+                    <th scope="col">관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="review : ${userReviews}">
+                    <td>
+                      <a th:href="@{/recipe/view(id=${review.recipe.id})}" class="text-decoration-none text-white">
+                        <span th:text="${review.recipe.title}">레시피 제목</span>
+                      </a>
+                    </td>
+                    <td th:text="${review.title}">리뷰 제목</td>
+                    <td>
+                      <div class="text-warning">
+                        <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, review.rating)}"></i>
+                        <i class="bi bi-star" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}"></i>
+                      </div>
+                    </td>
+                    <td th:text="${#temporals.format(review.regDate, 'yyyy-MM-dd')}">2023-01-01</td>
+                    <td>
+                      <span class="badge bg-danger rounded-pill">
+                        <i class="bi bi-heart-fill me-1"></i><span th:text="${review.likesCount}">0</span>
+                      </span>
+                    </td>
+                    <td>
+                      <span th:if="${review.reply != null}" class="badge bg-success rounded-pill">
+                        <i class="bi bi-check-circle-fill me-1"></i>있음
+                      </span>
+                      <span th:unless="${review.reply != null}" class="badge bg-secondary rounded-pill">
+                        <i class="bi bi-x-circle-fill me-1"></i>없음
+                      </span>
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <a th:href="@{/reviews/view/{id}(id=${review.id})}" class="btn btn-sm btn-outline-light">
+                          <i class="bi bi-eye"></i>
+                        </a>
+                        <a th:href="@{/reviews/update/{id}(id=${review.id})}" class="btn btn-sm btn-outline-warning">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a th:href="@{/reviews/delete/{id}(id=${review.id})}" class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('정말 삭제하시겠습니까?');">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- 버튼 -->
+          <div class="text-center mt-5">
+            <a th:href="@{/userinfo/userinfo}" class="btn btn-outline-light rounded-pill fw-semibold px-4">
+              <i class="bi bi-arrow-left me-2"></i>회원 정보로 돌아가기
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</html>

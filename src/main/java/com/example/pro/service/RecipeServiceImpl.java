@@ -129,17 +129,37 @@ public class RecipeServiceImpl implements RecipeService {
 
 
     @Override
-    public List<RecipeDTO> getAllRecipe() {
-           List<RecipeEntity> recipeEntityList = recipeRepository.findAll();
-//           log.info("recipeEntityList.getUser(): " + recipeEntityList.get(1).getUser().getUsername());
+    public List<RecipeDTO> getAllRecipe(String sortBy) {
+        List<RecipeEntity> recipeEntityList = recipeRepository.findAll();
         List<RecipeDTO> recipeListDTOs = recipeEntityList.stream()
-                .map( recipeEntity -> {
-                    RecipeDTO recipeDTO = entityToDto(recipeEntity);
-//                    log.info("recipeDTO.getUsername(): " + recipeDTO.getUsername());
-                    return recipeDTO;
-                })
+                .map(this::entityToDto)
                 .collect(Collectors.toList());
+
+        // Apply sorting based on sortBy parameter
+        sortRecipesByParameter(recipeListDTOs, sortBy);
+
         return recipeListDTOs;
+    }
+
+    // Helper method to sort recipes based on the sortBy parameter
+    private void sortRecipesByParameter(List<RecipeDTO> recipes, String sortBy) {
+        if (sortBy != null) {
+            if ("rating_high".equals(sortBy)) {
+                recipes.sort((r1, r2) -> Double.compare(r2.getAverageRating(), r1.getAverageRating()));
+            } else if ("rating_low".equals(sortBy)) {
+                recipes.sort((r1, r2) -> Double.compare(r1.getAverageRating(), r2.getAverageRating()));
+            } else if ("newest".equals(sortBy)) {
+                recipes.sort((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()));
+            } else if ("oldest".equals(sortBy)) {
+                recipes.sort((r1, r2) -> r1.getCreatedAt().compareTo(r2.getCreatedAt()));
+            }
+        } else {
+            // Default sorting: highest rating first, then newest
+            recipes.sort((r1, r2) -> {
+                int ratingCompare = Double.compare(r2.getAverageRating(), r1.getAverageRating());
+                return ratingCompare != 0 ? ratingCompare : r2.getCreatedAt().compareTo(r1.getCreatedAt());
+            });
+        }
     }
 
     @Override
@@ -170,7 +190,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<RecipeDTO> searchRecipes(String searchType, String keyword) {
+    public List<RecipeDTO> searchRecipes(String searchType, String keyword, String sortBy) {
         List<RecipeEntity> entityList;
 
         if ("title".equals(searchType)) {
@@ -181,19 +201,30 @@ public class RecipeServiceImpl implements RecipeService {
             entityList = List.of(); // 빈 리스트 반환
         }
 
-        return entityList.stream()
+        List<RecipeDTO> recipeDTOs = entityList.stream()
                 .map(this::entityToDto)
                 .collect(Collectors.toList());
+
+        // Apply sorting
+        sortRecipesByParameter(recipeDTOs, sortBy);
+
+        return recipeDTOs;
     }
 
     @Override
-    public List<RecipeDTO> findByCategory(String category) {
+    public List<RecipeDTO> findByCategory(String category, String sortBy) {
         List<RecipeEntity> entityList = recipeRepository.findByCategory(category);
-        return entityList.stream()
+        List<RecipeDTO> recipeDTOs = entityList.stream()
                 .map(this::entityToDto)
                 .collect(Collectors.toList());
+
+        // Apply sorting
+        sortRecipesByParameter(recipeDTOs, sortBy);
+
+        return recipeDTOs;
     }
 
+    @Override
     public List<RecipeDTO> getRecentRecipes() {
         List<RecipeEntity> recentEntities = recipeRepository.findTop4ByOrderByCreatedAtDesc();
 
@@ -210,7 +241,22 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<RecipeDTO> searchByCategoryAndKeyword(String category, String searchType, String keyword) {
+    public List<RecipeDTO> getTopRatedRecipes(int limit) {
+        // Get all recipes
+        List<RecipeEntity> allRecipes = recipeRepository.findAll();
+
+        // Convert to DTOs and sort by rating
+        List<RecipeDTO> recipeDTOs = allRecipes.stream()
+                .map(this::entityToDto)
+                .sorted((r1, r2) -> Double.compare(r2.getAverageRating(), r1.getAverageRating()))
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        return recipeDTOs;
+    }
+
+    @Override
+    public List<RecipeDTO> searchByCategoryAndKeyword(String category, String searchType, String keyword, String sortBy) {
         List<RecipeEntity> entityList;
 
         if ("title".equals(searchType)) {
@@ -221,9 +267,14 @@ public class RecipeServiceImpl implements RecipeService {
             entityList = List.of(); // 빈 리스트
         }
 
-        return entityList.stream()
+        List<RecipeDTO> recipeDTOs = entityList.stream()
                 .map(this::entityToDto)
                 .collect(Collectors.toList());
+
+        // Apply sorting
+        sortRecipesByParameter(recipeDTOs, sortBy);
+
+        return recipeDTOs;
     }
 
 
@@ -328,4 +379,3 @@ public class RecipeServiceImpl implements RecipeService {
 
 
 }
-

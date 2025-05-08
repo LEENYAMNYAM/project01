@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+
+<div class="container-fluid text-white p-5" layout:fragment="content">
+  <section class="page-section">
+    <div class="container">
+      <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-body p-4">
+          <h2 class="text-center fw-bold mb-4 fs-1">📜 리뷰 이력</h2>
+          <p class="text-center mb-4">시간에 따른 리뷰 활동과 패턴을 확인하세요.</p>
+          
+          <!-- 사용자 정보 -->
+          <div class="row mb-5">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+              <div class="card bg-dark border border-secondary rounded-4 p-4 h-100">
+                <div class="text-center mb-4">
+                  <div class="avatar-placeholder bg-primary rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 100px; height: 100px;">
+                    <span class="fs-1 fw-bold text-white" th:text="${user.username.substring(0, 1).toUpperCase()}">U</span>
+                  </div>
+                  <h3 class="fw-bold mb-0" th:text="${user.username}">Username</h3>
+                  <p class="text-light" th:text="${user.email}">user@example.com</p>
+                </div>
+                
+                <div class="list-group list-group-flush bg-dark mb-3">
+                  <div class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between">
+                      <span class="text-light">이름</span>
+                      <span class="fw-semibold" th:text="${user.name}">사용자 이름</span>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-dark border-secondary py-2">
+                    <div class="d-flex justify-content-between">
+                      <span class="text-light">포인트</span>
+                      <span class="fw-semibold" th:text="${user.point}">1000</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="text-center">
+                  <a th:href="@{/userinfo/review-dashboard}" class="btn btn-outline-primary rounded-pill fw-semibold w-100">
+                    <i class="bi bi-bar-chart-fill me-2"></i>리뷰 대시보드
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-8">
+              <div class="row g-3">
+                <!-- 총 리뷰 수 -->
+                <div class="col-md-6 col-lg-3">
+                  <div class="card bg-primary text-white rounded-4 p-3 h-100">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <i class="bi bi-pencil-square fs-1 mb-2"></i>
+                      <h2 class="fw-bold mb-0" th:text="${totalReviews}">0</h2>
+                      <p class="mb-0">총 리뷰 수</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 평균 평점 -->
+                <div class="col-md-6 col-lg-3">
+                  <div class="card bg-warning text-dark rounded-4 p-3 h-100">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <i class="bi bi-star-fill fs-1 mb-2"></i>
+                      <h2 class="fw-bold mb-0" th:text="${averageRating}">0.0</h2>
+                      <p class="mb-0">평균 평점</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 받은 좋아요 -->
+                <div class="col-md-6 col-lg-3">
+                  <div class="card bg-danger text-white rounded-4 p-3 h-100">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <i class="bi bi-heart-fill fs-1 mb-2"></i>
+                      <h2 class="fw-bold mb-0" th:text="${totalLikes}">0</h2>
+                      <p class="mb-0">받은 좋아요</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 받은 답변 -->
+                <div class="col-md-6 col-lg-3">
+                  <div class="card bg-info text-white rounded-4 p-3 h-100">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <i class="bi bi-chat-fill fs-1 mb-2"></i>
+                      <h2 class="fw-bold mb-0" th:text="${totalReplies}">0</h2>
+                      <p class="mb-0">받은 답변</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 시간에 따른 리뷰 활동 그래프 -->
+          <div class="card bg-dark border border-secondary rounded-4 p-4 mb-5">
+            <h4 class="fw-bold mb-4"><i class="bi bi-graph-up me-2 text-primary"></i>시간에 따른 리뷰 활동</h4>
+            
+            <div th:if="${#lists.isEmpty(reviewsByMonth)}" class="text-center py-4">
+              <p class="mb-0">아직 작성한 리뷰가 없습니다.</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(reviewsByMonth)}" class="mb-4">
+              <canvas id="reviewActivityChart" height="200"></canvas>
+            </div>
+            
+            <div class="text-center mt-3 small text-light">
+              <p>월별 리뷰 작성 수를 보여줍니다. 시간이 지남에 따라 리뷰 활동이 어떻게 변화하는지 확인하세요.</p>
+            </div>
+          </div>
+          
+          <!-- 시간에 따른 평점 변화 그래프 -->
+          <div class="card bg-dark border border-secondary rounded-4 p-4 mb-5">
+            <h4 class="fw-bold mb-4"><i class="bi bi-graph-up-arrow me-2 text-warning"></i>시간에 따른 평점 변화</h4>
+            
+            <div th:if="${#lists.isEmpty(ratingsByMonth)}" class="text-center py-4">
+              <p class="mb-0">아직 작성한 리뷰가 없습니다.</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(ratingsByMonth)}" class="mb-4">
+              <canvas id="ratingTrendChart" height="200"></canvas>
+            </div>
+            
+            <div class="text-center mt-3 small text-light">
+              <p>월별 평균 평점 변화를 보여줍니다. 시간이 지남에 따라 평점 패턴이 어떻게 변화하는지 확인하세요.</p>
+            </div>
+          </div>
+          
+          <!-- 카테고리별 리뷰 패턴 -->
+          <div class="card bg-dark border border-secondary rounded-4 p-4 mb-5">
+            <h4 class="fw-bold mb-4"><i class="bi bi-pie-chart-fill me-2 text-success"></i>카테고리별 리뷰 패턴</h4>
+            
+            <div th:if="${#lists.isEmpty(reviewsByCategory)}" class="text-center py-4">
+              <p class="mb-0">아직 작성한 리뷰가 없습니다.</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(reviewsByCategory)}" class="row">
+              <div class="col-md-6">
+                <canvas id="categoryPieChart" height="250"></canvas>
+              </div>
+              <div class="col-md-6">
+                <h5 class="fw-bold mb-3">카테고리별 평균 평점</h5>
+                <div class="table-responsive">
+                  <table class="table table-dark table-hover">
+                    <thead>
+                      <tr>
+                        <th>카테고리</th>
+                        <th>리뷰 수</th>
+                        <th>평균 평점</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="category : ${reviewsByCategory.entrySet()}">
+                        <td th:text="${category.key}">카테고리</td>
+                        <td th:text="${category.value}">0</td>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <span class="me-2" th:text="${ratingsByCategory.get(category.key)}">0.0</span>
+                            <div class="text-warning">
+                              <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, #numbers.formatInteger(ratingsByCategory.get(category.key), 1))}"></i>
+                              <i class="bi bi-star-half" th:if="${ratingsByCategory.get(category.key) - #numbers.formatInteger(ratingsByCategory.get(category.key), 1) >= 0.5}"></i>
+                              <i class="bi bi-star" th:each="i : ${#numbers.sequence(#numbers.formatInteger(ratingsByCategory.get(category.key) + 0.5, 1) + 1, 5)}"></i>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 시간순 리뷰 이력 -->
+          <div class="card bg-dark border border-secondary rounded-4 p-4">
+            <h4 class="fw-bold mb-4"><i class="bi bi-clock-history me-2 text-info"></i>시간순 리뷰 이력</h4>
+            
+            <div th:if="${#lists.isEmpty(chronologicalReviews)}" class="text-center py-4">
+              <p class="mb-0">아직 작성한 리뷰가 없습니다.</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(chronologicalReviews)}" class="timeline">
+              <div class="timeline-item" th:each="review, iterStat : ${chronologicalReviews}">
+                <div class="timeline-date">
+                  <div class="badge bg-primary rounded-pill px-3 py-2" th:text="${#temporals.format(review.regDate, 'yyyy-MM-dd')}">2023-01-01</div>
+                </div>
+                <div class="timeline-content card bg-dark border border-secondary rounded-3">
+                  <div class="card-header bg-dark border-secondary py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="card-title mb-0 text-truncate" th:text="${review.title}">리뷰 제목</h5>
+                      <span class="badge bg-warning text-dark rounded-pill px-2 py-1">
+                        <i class="bi bi-star-fill me-1"></i><span th:text="${review.rating}">5</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text" th:text="${review.content}">리뷰 내용</p>
+                    <p class="card-text">
+                      <small class="text-light">
+                        <i class="bi bi-book me-1"></i>
+                        <span th:text="${review.recipe.title}">레시피 제목</span>
+                      </small>
+                    </p>
+                  </div>
+                  <div class="card-footer bg-dark border-secondary">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="text-danger">
+                        <i class="bi bi-heart-fill me-1"></i>
+                        <span th:text="${review.likesCount}">0</span>
+                      </span>
+                      <a th:href="@{/reviews/view/{id}(id=${review.id})}" class="btn btn-sm btn-outline-primary rounded-pill">
+                        <i class="bi bi-eye me-1"></i>상세 보기
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 버튼 -->
+          <div class="text-center mt-5">
+            <a th:href="@{/userinfo/userinfo}" class="btn btn-outline-light rounded-pill fw-semibold px-4">
+              <i class="bi bi-arrow-left me-2"></i>회원 정보로 돌아가기
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Chart.js 라이브러리 추가 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- 차트 생성을 위한 JavaScript -->
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      // 리뷰 활동 차트
+      const reviewActivityChart = document.getElementById('reviewActivityChart');
+      if (reviewActivityChart) {
+        const reviewsByMonth = /*[[${reviewsByMonth}]]*/ {};
+        
+        if (Object.keys(reviewsByMonth).length > 0) {
+          // 데이터 준비
+          const labels = Object.keys(reviewsByMonth).sort(); // 날짜 정렬
+          const data = labels.map(label => reviewsByMonth[label]);
+          
+          // 월 이름으로 변환 (YYYY-MM 형식을 YYYY년 MM월로 변환)
+          const formattedLabels = labels.map(label => {
+            const parts = label.split('-');
+            return `${parts[0]}년 ${parts[1]}월`;
+          });
+          
+          // 차트 생성
+          new Chart(reviewActivityChart, {
+            type: 'bar',
+            data: {
+              labels: formattedLabels,
+              datasets: [{
+                label: '월별 리뷰 수',
+                data: data,
+                backgroundColor: '#0d6efd', // 파란색 (primary 색상)
+                borderColor: '#0d6efd',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  labels: {
+                    color: '#fff' // 흰색 텍스트
+                  }
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  titleColor: '#fff',
+                  bodyColor: '#fff',
+                  callbacks: {
+                    label: function(context) {
+                      return `리뷰 수: ${context.parsed.y}개`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    color: '#fff', // 흰색 텍스트
+                    stepSize: 1
+                  },
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.1)' // 흰색 그리드 (투명도 낮게)
+                  }
+                },
+                x: {
+                  ticks: {
+                    color: '#fff' // 흰색 텍스트
+                  },
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.1)' // 흰색 그리드 (투명도 낮게)
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+      
+      // 평점 추세 차트
+      const ratingTrendChart = document.getElementById('ratingTrendChart');
+      if (ratingTrendChart) {
+        const ratingsByMonth = /*[[${ratingsByMonth}]]*/ {};
+        
+        if (Object.keys(ratingsByMonth).length > 0) {
+          // 데이터 준비
+          const labels = Object.keys(ratingsByMonth).sort(); // 날짜 정렬
+          const data = labels.map(label => ratingsByMonth[label]);
+          
+          // 월 이름으로 변환 (YYYY-MM 형식을 YYYY년 MM월로 변환)
+          const formattedLabels = labels.map(label => {
+            const parts = label.split('-');
+            return `${parts[0]}년 ${parts[1]}월`;
+          });
+          
+          // 차트 생성
+          new Chart(ratingTrendChart, {
+            type: 'line',
+            data: {
+              labels: formattedLabels,
+              datasets: [{
+                label: '월별 평균 평점',
+                data: data,
+                borderColor: '#ffc107', // 노란색 (warning 색상)
+                backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: '#ffc107',
+                pointRadius: 4,
+                tension: 0.2, // 곡선 부드러움
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  labels: {
+                    color: '#fff' // 흰색 텍스트
+                  }
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  titleColor: '#fff',
+                  bodyColor: '#fff',
+                  callbacks: {
+                    label: function(context) {
+                      return `평균 평점: ${context.parsed.y}점`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  min: 0,
+                  max: 5,
+                  ticks: {
+                    color: '#fff', // 흰색 텍스트
+                    stepSize: 1
+                  },
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.1)' // 흰색 그리드 (투명도 낮게)
+                  }
+                },
+                x: {
+                  ticks: {
+                    color: '#fff' // 흰색 텍스트
+                  },
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.1)' // 흰색 그리드 (투명도 낮게)
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+      
+      // 카테고리 파이 차트
+      const categoryPieChart = document.getElementById('categoryPieChart');
+      if (categoryPieChart) {
+        const reviewsByCategory = /*[[${reviewsByCategory}]]*/ {};
+        
+        if (Object.keys(reviewsByCategory).length > 0) {
+          // 데이터 준비
+          const labels = Object.keys(reviewsByCategory);
+          const data = labels.map(label => reviewsByCategory[label]);
+          
+          // 색상 배열
+          const backgroundColors = [
+            '#0d6efd', // primary
+            '#6f42c1', // purple
+            '#d63384', // pink
+            '#dc3545', // danger
+            '#fd7e14', // orange
+            '#ffc107', // warning
+            '#198754', // success
+            '#20c997', // teal
+            '#0dcaf0', // info
+            '#6c757d'  // secondary
+          ];
+          
+          // 차트 생성
+          new Chart(categoryPieChart, {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{
+                data: data,
+                backgroundColor: backgroundColors.slice(0, labels.length),
+                borderColor: '#212529', // 어두운 배경에 맞게 테두리 색상 설정
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'right',
+                  labels: {
+                    color: '#fff' // 흰색 텍스트
+                  }
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  titleColor: '#fff',
+                  bodyColor: '#fff',
+                  callbacks: {
+                    label: function(context) {
+                      const label = context.label || '';
+                      const value = context.parsed || 0;
+                      const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                      const percentage = Math.round((value / total) * 100);
+                      return `${label}: ${value}개 (${percentage}%)`;
+                    }
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+    });
+  </script>
+  
+  <!-- 타임라인 스타일 -->
+  <style>
+    .timeline {
+      position: relative;
+      padding: 20px 0;
+    }
+    
+    .timeline:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20px;
+      height: 100%;
+      width: 4px;
+      background: #0d6efd;
+      border-radius: 2px;
+    }
+    
+    .timeline-item {
+      position: relative;
+      margin-bottom: 30px;
+      padding-left: 60px;
+    }
+    
+    .timeline-date {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+    
+    .timeline-content {
+      position: relative;
+    }
+    
+    @media (max-width: 767.98px) {
+      .timeline:before {
+        left: 10px;
+      }
+      
+      .timeline-item {
+        padding-left: 40px;
+      }
+      
+      .timeline-date {
+        transform: translateX(-25%);
+      }
+    }
+  </style>
+</div>
+</html>

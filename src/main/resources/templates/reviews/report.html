@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+<div class="container-fluid text-white p-5" layout:fragment="content">
+    <section class="page-section">
+        <div class="container">
+            <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-danger border-0 py-3">
+                    <h2 class="fw-bold mb-0 fs-3">⚠️ 리뷰 신고하기</h2>
+                </div>
+                <div class="card-body p-4">
+                    <!-- 에러 메시지 표시 -->
+                    <div th:if="${param.error}" class="alert alert-danger rounded-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span th:text="${param.error}">에러 메시지</span>
+                    </div>
+                    
+                    <!-- 리뷰 정보 -->
+                    <div class="mb-4">
+                        <h3 class="card-title fw-bold">
+                            <span th:text="${recipe.title}">레시피 제목</span>
+                            <span class="text-light fw-normal">에 대한 리뷰</span>
+                        </h3>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                            <span class="text-light"><i class="bi bi-person-fill me-1"></i><span th:text="${review.buyer.username}">작성자</span></span>
+                            <span class="text-light"><i class="bi bi-calendar-fill me-1"></i><span th:text="${#temporals.format(review.regDate, 'yyyy-MM-dd HH:mm')}">작성일</span></span>
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2" th:text="${'★ ' + review.rating}">★ 5</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 리뷰 내용 -->
+                    <div class="card bg-dark border border-secondary rounded-3 p-3 mb-4">
+                        <h5 class="fw-bold mb-2" th:text="${review.title}">리뷰 제목</h5>
+                        <p class="mb-0" th:text="${review.content}">리뷰 내용</p>
+                    </div>
+                    
+                    <!-- 신고 폼 -->
+                    <form th:action="@{/reviews/report/{id}(id=${review.id})}" method="post">
+                        <div class="mb-4">
+                            <label for="reason" class="form-label fw-semibold">신고 사유</label>
+                            <select id="reason" name="reason" class="form-select form-select-lg rounded-3 shadow-sm" required>
+                                <option value="">신고 사유 선택</option>
+                                <option value="부적절한 언어 사용">부적절한 언어 사용</option>
+                                <option value="스팸 또는 광고성 내용">스팸 또는 광고성 내용</option>
+                                <option value="허위 정보">허위 정보</option>
+                                <option value="개인정보 노출">개인정보 노출</option>
+                                <option value="혐오 발언">혐오 발언</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4" id="otherReasonContainer" style="display: none;">
+                            <label for="otherReason" class="form-label fw-semibold">기타 사유 설명</label>
+                            <textarea id="otherReason" class="form-control form-control-lg rounded-3 shadow-sm" rows="3" 
+                                      placeholder="신고 사유를 자세히 설명해주세요"></textarea>
+                        </div>
+                        
+                        <div class="alert alert-warning rounded-3" role="alert">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <span>신고된 리뷰는 관리자 검토 후 적절한 조치가 취해집니다. 허위 신고는 제재 대상이 될 수 있습니다.</span>
+                        </div>
+                        
+                        <!-- 버튼 -->
+                        <div class="d-flex justify-content-between mt-5">
+                            <a th:href="@{/reviews/view/{id}(id=${review.id})}" class="btn btn-outline-secondary rounded-pill fw-semibold px-4">
+                                <i class="bi bi-arrow-left me-2"></i>취소
+                            </a>
+                            <button type="submit" class="btn btn-danger rounded-pill fw-semibold px-4">
+                                <i class="bi bi-flag-fill me-2"></i>신고하기
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 기타 사유 선택 시 추가 입력 필드 표시를 위한 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reasonSelect = document.getElementById('reason');
+            const otherReasonContainer = document.getElementById('otherReasonContainer');
+            const otherReasonInput = document.getElementById('otherReason');
+            const form = document.querySelector('form');
+            
+            // 신고 사유 선택 변경 이벤트
+            reasonSelect.addEventListener('change', function() {
+                if (this.value === '기타') {
+                    otherReasonContainer.style.display = 'block';
+                    otherReasonInput.setAttribute('required', 'required');
+                } else {
+                    otherReasonContainer.style.display = 'none';
+                    otherReasonInput.removeAttribute('required');
+                }
+            });
+            
+            // 폼 제출 시 기타 사유 처리
+            form.addEventListener('submit', function(event) {
+                if (reasonSelect.value === '기타' && otherReasonInput.value.trim()) {
+                    // 기타 사유를 선택하고 설명을 입력한 경우, 사유를 합쳐서 전송
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'reason';
+                    hiddenInput.value = '기타: ' + otherReasonInput.value.trim();
+                    
+                    // 기존 select 비활성화
+                    reasonSelect.disabled = true;
+                    
+                    // 폼에 hidden input 추가
+                    this.appendChild(hiddenInput);
+                }
+            });
+        });
+    </script>
+</div>
+</html>

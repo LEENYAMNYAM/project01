@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}" lang="en">
+<div class="container-fluid text-white p-5" layout:fragment="content">
+    <section class="page-section">
+        <div class="container">
+            <div class="card bg-dark text-white mb-4 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-danger border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="fw-bold mb-0 fs-3">🚨 신고된 리뷰 관리</h2>
+                        <span class="badge bg-light text-dark rounded-pill px-3 py-2 fs-5" th:text="${pendingReports.size() + ' 건'}">0 건</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- 알림 메시지 표시 -->
+                    <div th:if="${param.success}" class="alert alert-success rounded-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span th:text="${param.success}">성공 메시지</span>
+                    </div>
+                    
+                    <div th:if="${param.error}" class="alert alert-danger rounded-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span th:text="${param.error}">에러 메시지</span>
+                    </div>
+                    
+                    <!-- 신고된 리뷰가 없을 경우 -->
+                    <div th:if="${#lists.isEmpty(pendingReports)}" class="text-center py-5">
+                        <i class="bi bi-check-circle fs-1 mb-3 text-success"></i>
+                        <p class="fs-5">현재 처리 대기 중인 신고가 없습니다.</p>
+                    </div>
+                    
+                    <!-- 신고된 리뷰 목록 -->
+                    <div th:unless="${#lists.isEmpty(pendingReports)}" class="accordion" id="reportAccordion">
+                        <div th:each="report, iterStat : ${pendingReports}" class="accordion-item bg-dark border border-secondary mb-3 rounded-3 overflow-hidden">
+                            <h2 class="accordion-header" th:id="'heading' + ${report.id}">
+                                <button class="accordion-button bg-dark text-white collapsed" type="button" 
+                                        data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${report.id}" 
+                                        aria-expanded="false" th:aria-controls="'collapse' + ${report.id}">
+                                    <div class="d-flex align-items-center w-100">
+                                        <span class="badge bg-danger rounded-pill me-3" th:text="${iterStat.count}">1</span>
+                                        <div class="flex-grow-1">
+                                            <span class="fw-bold" th:text="${report.review.title}">리뷰 제목</span>
+                                            <span class="text-light ms-2">
+                                                <small>
+                                                    <i class="bi bi-person-fill me-1"></i>
+                                                    <span th:text="${report.review.buyer.username}">작성자</span>
+                                                </small>
+                                            </span>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-warning text-dark me-2" th:text="${'★ ' + report.review.rating}">★ 5</span>
+                                            <span class="text-light">
+                                                <small th:text="${#temporals.format(report.regDate, 'yyyy-MM-dd')}">신고일</small>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div th:id="'collapse' + ${report.id}" class="accordion-collapse collapse" 
+                                 th:aria-labelledby="'heading' + ${report.id}" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <!-- 신고 정보 -->
+                                    <div class="card bg-dark border border-secondary rounded-3 p-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="fw-bold mb-0">신고 정보</h5>
+                                            <span class="badge bg-secondary rounded-pill" th:text="${report.status}">PENDING</span>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3 text-secondary">신고자</div>
+                                            <div class="col-md-9" th:text="${report.reporter.username}">신고자 이름</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3 text-secondary">신고 사유</div>
+                                            <div class="col-md-9" th:text="${report.reason}">신고 사유</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3 text-secondary">신고 일시</div>
+                                            <div class="col-md-9" th:text="${#temporals.format(report.regDate, 'yyyy-MM-dd HH:mm:ss')}">신고 일시</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 리뷰 내용 -->
+                                    <div class="card bg-dark border border-secondary rounded-3 p-3 mb-3">
+                                        <h5 class="fw-bold mb-3">리뷰 내용</h5>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3 text-secondary">레시피</div>
+                                            <div class="col-md-9">
+                                                <a th:href="@{/recipe/view(id=${report.review.recipe.id})}" class="text-decoration-none text-white">
+                                                    <span th:text="${report.review.recipe.title}">레시피 제목</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3 text-secondary">작성자</div>
+                                            <div class="col-md-9" th:text="${report.review.buyer.username}">리뷰 작성자</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3 text-secondary">별점</div>
+                                            <div class="col-md-9">
+                                                <span class="text-warning">
+                                                    <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, report.review.rating)}"></i>
+                                                    <i class="bi bi-star" th:each="i : ${#numbers.sequence(report.review.rating + 1, 5)}"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3 text-secondary">제목</div>
+                                            <div class="col-md-9" th:text="${report.review.title}">리뷰 제목</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3 text-secondary">내용</div>
+                                            <div class="col-md-9" th:text="${report.review.content}">리뷰 내용</div>
+                                        </div>
+                                        <div class="row mb-2" th:if="${report.review.imagePath != null}">
+                                            <div class="col-md-3 text-secondary">이미지</div>
+                                            <div class="col-md-9">
+                                                <img th:src="@{${report.review.imagePath}}" class="img-fluid rounded-3" alt="리뷰 이미지" style="max-height: 200px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 처리 폼 -->
+                                    <form th:action="@{/reviews/moderate/{reportId}(reportId=${report.id})}" method="post">
+                                        <div class="mb-3">
+                                            <label for="action" class="form-label fw-semibold">처리 결정</label>
+                                            <select id="action" name="action" class="form-select form-select-lg rounded-3 shadow-sm" required>
+                                                <option value="">처리 방법 선택</option>
+                                                <option value="APPROVED">승인 (리뷰 숨김)</option>
+                                                <option value="REJECTED">거부 (신고 무시)</option>
+                                                <option value="EDIT_REQUESTED">수정 요청</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="comment" class="form-label fw-semibold">관리자 코멘트 (선택사항)</label>
+                                            <textarea id="comment" name="comment" class="form-control form-control-lg rounded-3 shadow-sm" rows="3" 
+                                                      placeholder="처리 사유나 추가 설명을 입력하세요"></textarea>
+                                        </div>
+                                        
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-primary rounded-pill fw-semibold px-4">
+                                                <i class="bi bi-check-circle me-2"></i>처리 완료
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 뒤로 가기 버튼 -->
+                    <div class="text-center mt-4">
+                        <a href="/" class="btn btn-outline-light rounded-pill fw-semibold px-4">
+                            <i class="bi bi-arrow-left me-2"></i>메인으로 돌아가기
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</html>

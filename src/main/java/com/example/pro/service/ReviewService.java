@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ReviewService {
     void registerReview(ReviewDTO reviewDTO);
@@ -29,6 +30,35 @@ public interface ReviewService {
     boolean hasUserLikedReview(Long reviewId, String username);
     int getReviewLikesCount(Long reviewId);
     void updateReviewLikesCount(Long reviewId);
+
+    // Rating distribution functionality
+    int[] calculateRatingDistribution(Long recipeId);
+
+    // Rating trend analysis functionality
+    Map<String, Double> calculateRatingTrend(Long recipeId);
+
+    // Comparative rating metrics functionality
+    double calculateCategoryAverageRating(String category);
+    List<RecipeEntity> findSimilarRecipes(Long recipeId, int limit);
+    int calculateRecipeRank(Long recipeId);
+
+    // User profile integration functionality
+    List<ReviewEntity> getReviewsByUsername(String username);
+
+    // User review dashboard functionality
+    double calculateUserAverageRating(String username);
+    Map<Integer, Integer> calculateUserRatingDistribution(String username);
+    int countUserReviews(String username);
+    int countUserReviewLikes(String username);
+    int countUserReviewReplies(String username);
+    List<ReviewEntity> getMostLikedReviewsByUser(String username, int limit);
+    Map<String, Integer> calculateUserReviewsByCategory(String username);
+
+    // Review history tracking functionality
+    List<ReviewEntity> getChronologicalReviewsByUser(String username);
+    Map<String, Integer> calculateReviewsByMonth(String username);
+    Map<String, Double> calculateRatingsByMonth(String username);
+    Map<String, Double> calculateRatingsByCategory(String username);
 
     default ReviewEntity dtoToEntity(ReviewDTO reviewDTO, RecipeEntity recipe) {
         ReviewEntity review = new ReviewEntity();
